@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DHM COMMUNITY | Sovereign v13.0</title>
+    <!-- Tailwind CSS v4 Browser Engine CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome Pro Icon Emulation Node Pack -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #020306;
+            --bg-card: rgba(11, 15, 26, 0.75);
+            --accent: #a855f7;
+            --accent-rgb: 168, 85, 247;
+            --accent-glow: rgba(168, 85, 247, 0.3);
+            --neon-blue: #3b82f6;
+            --neon-green: #10b981;
+            --text-color: #f8fafc;
+        }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-color);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            letter-spacing: -0.015em;
+        }
+        .glass-ui {
+            background: var(--bg-card);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .progress-indicator-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(to right, var(--accent), var(--neon-blue), var(--neon-green));
+            z-index: 1000;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        .neon-focus-glow:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 18px var(--accent-glow);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        @keyframes scaleInUi {
+            0% { transform: scale(0.96); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-premium-card {
+            animation: scaleInUi 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        #background-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        input, textarea {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+        .custom-dropdown-panel {
+            background: rgba(10, 12, 22, 0.96);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-32 relative">
+
+    <canvas id="background-canvas"></canvas>
+    <div class="progress-indicator-bar" id="scroll-track-node"></div>
+    <div id="toast-master-hub" class="fixed top-4 left-0 right-0 z-[200] flex flex-col items-center space-y-2 pointer-events-none px-4"></div>
+
+    <!-- MAINTENANCE LAYER -->
+    <div id="maintenance-lockscreen-layer" class="hidden fixed inset-0 bg-black/96 z-[150] flex flex-col items-center justify-center p-6 text-center backdrop-blur-xl">
+        <div class="glass-ui p-7 rounded-3xl max-w-sm space-y-4 border border-purple-500/20 shadow-2xl">
+            <div class="w-16 h-16 rounded-full bg-purple-950/40 border border-purple-500/30 flex items-center justify-center mx-auto">
+                <i class="fa-solid fa-screwdriver-wrench text-3xl text-purple-400 animate-bounce"></i>
+            </div>
+            <h1 class="text-lg font-black tracking-widest text-white uppercase">Server Maintenance</h1>
+            <p id="maintenance-realtime-msg" class="text-xs text-gray-400 leading-relaxed">Sedang dilakukan pemeliharaan server berkala.</p>
+        </div>
+    </div>
+
+    <!-- Bulletin Ticker Text -->
+    <div id="ticker-marquee-wrapper" class="hidden glass-ui border-none bg-gradient-to-r from-purple-950/60 via-black/80 to-blue-950/60 text-white text-[10px] font-black py-2 px-4 shadow-xl">
+        <div class="max-w-md mx-auto flex items-center">
+            <span class="bg-gradient-to-r from-purple-600 to-pink-500 text-[8px] px-1.5 py-0.5 rounded font-mono mr-2.5 flex-shrink-0 animate-pulse text-white">BULLETIN</span>
+            <marquee id="ticker-marquee-text-payload" scrollamount="4" class="font-mono tracking-wide"></marquee>
+        </div>
+    </div>
+
+    <!-- Telemetry Board -->
+    <div class="max-w-md mx-auto px-4 pt-3 flex justify-between items-center text-[9px] font-mono text-gray-500 select-none">
+        <div id="telemetry-clock" class="flex items-center gap-1 font-bold text-gray-400"><i class="fa-regular fa-clock text-purple-400"></i> 00:00:00</div>
+        <div class="flex items-center gap-2">
+            <span id="telemetry-network-badge" class="bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20 font-black">SYNCED</span>
+            <span id="telemetry-battery" class="font-bold text-gray-400"><i class="fa-solid fa-battery-full"></i> 100%</span>
+        </div>
+    </div>
+
+    <!-- Header App Bar Identity -->
+    <header class="max-w-md mx-auto px-4 mt-2 select-none">
+        <div class="glass-ui p-4 rounded-2xl flex justify-between items-center shadow-2xl relative overflow-hidden group">
+            <div class="flex items-center space-x-3.5 z-10">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-blue-600 flex items-center justify-center font-black text-2xl text-white shadow-lg shadow-purple-500/30">D</div>
+                <div>
+                    <h1 class="font-black tracking-widest text-sm bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">DHM COMMUNITY</h1>
+                </div>
+            </div>
+            <div class="flex gap-1.5 z-10">
+                <button onclick="triggerLocalPreferencesControlPanel()" class="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition active:scale-90"><i class="fa-solid fa-sliders text-xs"></i></button>
+                <button onclick="dispatchNativeSharePipeline()" class="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition active:scale-90"><i class="fa-solid fa-share-nodes text-xs"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <div id="preferences-dropdown-panel" class="hidden max-w-md mx-auto px-4 mt-2 animate-premium-card select-none">
+        <div class="glass-ui p-4 rounded-2xl space-y-3">
+            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-gears text-purple-400 mr-1.5"></i> Konfigurasi Operasional Lokal</h4>
+            <div class="grid grid-cols-1 text-center">
+                <div onclick="toggleLocalPreferenceNode('hapticState')" id="pref-widget-haptic" class="bg-white/5 border border-white/5 p-2.5 rounded-xl text-[10px] font-black cursor-pointer text-purple-400 flex items-center justify-center gap-1.5">Haptic Engine</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Dynamic Operations Context -->
+    <main class="max-w-md mx-auto p-4 space-y-4">
+        
+        <!-- CAROUSEL BANNER SHELL -->
+        <div id="carousel-banner-shell" class="hidden max-w-md mx-auto overflow-hidden relative rounded-2xl glass-ui h-32 select-none animate-premium-card border border-white/5">
+            <div id="carousel-track-container" class="carousel-track h-full"></div>
+            <div class="absolute bottom-2 right-3 flex gap-1 z-20" id="carousel-dots-container"></div>
+        </div>
+
+        <!-- ================= CONTAINER VIEWPORT 1: SCRIPTS CORE ================= -->
+        <div id="viewport-scripts-hub" class="space-y-4">
+            <!-- Statistics Panel Component -->
+            <div class="grid grid-cols-3 gap-2.5 select-none">
+                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden group">
+                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">DATABASE</p>
+                    <p id="metric-label-total" class="text-xl font-black text-white mt-0.5">0</p>
+                </div>
+                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden group border-b-2 border-pink-500/20">
+                    <p class="text-[9px] text-pink-400 font-bold uppercase tracking-wider">FAVORIT</p>
+                    <p id="metric-label-bookmarks" class="text-xl font-black text-pink-500 mt-0.5">0</p>
+                </div>
+                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden group">
+                    <p class="text-[9px] text-blue-400 font-bold uppercase tracking-wider">TOTAL COPY</p>
+                    <p id="metric-label-copies" class="text-xl font-black text-blue-400 mt-0.5">0</p>
+                </div>
+            </div>
+
+            <!-- Advanced Fuzzy Searching Input Box -->
+            <div class="glass-ui rounded-2xl p-1 flex items-center neon-focus-glow border transition duration-300">
+                <i class="fa-solid fa-wand-magic-sparkles text-purple-400 ml-3.5 mr-2 text-xs"></i>
+                <input type="text" id="pipeline-search-input-field" placeholder="Cari nama script, game, atau detail fitur..." class="bg-transparent w-full p-2.5 focus:outline-none text-xs font-medium text-gray-200">
+                <button id="pipeline-search-clear-btn" onclick="clearActiveSearchFieldPipeline()" class="hidden text-gray-500 hover:text-white mr-3.5 transition"><i class="fa-solid fa-circle-xmark text-xs"></i></button>
+                <span class="text-[8px] font-mono bg-white/5 text-gray-400 px-2 py-1 rounded-lg mr-2 font-black border border-white/5 select-none">Fuzzy</span>
+            </div>
+
+            <!-- Custom Select Dropdowns without Native Options -->
+            <div class="flex items-center gap-2 select-none relative">
+                <div class="w-1/2 relative">
+                    <div onclick="toggleCustomSelectorDropdownMenu('game-cat')" id="trigger-dropdown-game-cat" class="w-full bg-gray-900/80 glass-ui text-[11px] font-black rounded-xl pl-8 pr-4 py-3.5 text-gray-200 flex items-center justify-between cursor-pointer border border-white/5 truncate">
+                        <i class="fa-solid fa-gamepad absolute left-3 text-[10px] text-purple-400"></i>
+                        <span id="label-selected-game-cat" class="truncate">🌐 Semua Game</span>
+                        <i class="fa-solid fa-chevron-down text-[8px] text-gray-500 ml-1" id="chevron-game-cat"></i>
+                    </div>
+                    <div id="panel-dropdown-game-cat" class="hidden absolute left-0 right-0 mt-1.5 rounded-xl custom-dropdown-panel shadow-2xl z-[70] overflow-y-auto max-h-48 border custom-scrollbar">
+                        <ul id="list-options-game-cat" class="text-[11px] font-black text-gray-300"></ul>
+                    </div>
+                </div>
+                <div class="w-1/2 relative">
+                    <div onclick="toggleCustomSelectorDropdownMenu('sort-order')" id="trigger-dropdown-sort-order" class="w-full bg-gray-900/80 glass-ui text-[11px] font-black rounded-xl pl-8 pr-4 py-3.5 text-gray-200 flex items-center justify-between cursor-pointer border border-white/5 truncate">
+                        <i class="fa-solid fa-arrow-down-wide-short absolute left-3 text-[10px] text-blue-400"></i>
+                        <span id="label-selected-sort-order" class="truncate">⏰ Waktu Rilis Terbaru</span>
+                        <i class="fa-solid fa-chevron-down text-[8px] text-gray-500 ml-1" id="chevron-sort-order"></i>
+                    </div>
+                    <div id="panel-dropdown-sort-order" class="hidden absolute left-0 right-0 mt-1.5 rounded-xl custom-dropdown-panel shadow-2xl z-[70] overflow-hidden border">
+                        <ul class="text-[11px] font-black text-gray-300">
+                            <li onclick="commitActiveSortSelectionPipeline('newest', '⏰ Waktu Rilis Terbaru')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">⏰ Waktu Rilis Terbaru</li>
+                            <li onclick="commitActiveSortSelectionPipeline('popular', '📊 Salinan Terpopuler')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">📊 Salinan Terpopuler</li>
+                            <li onclick="commitActiveSortSelectionPipeline('alphabet', '🔤 Urutan Abjad Skrip')" class="p-3 hover:bg-purple-600/10 cursor-pointer flex items-center gap-1.5">🔤 Urutan Abjad Skrip</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scripts Target Box -->
+            <div class="space-y-3.5" id="live-scripts-render-target-box"></div>
+        </div>
+
+        <!-- ================= CONTAINER VIEWPORT 2: MESSAGE HUB ================= -->
+        <div id="viewport-message-hub" class="hidden space-y-4">
+            <div class="glass-ui p-5 rounded-3xl space-y-4 shadow-2xl relative animate-premium-card">
+                <div class="flex items-center gap-2 border-b border-gray-800/60 pb-3 select-none">
+                    <i class="fa-solid fa-paper-plane text-purple-400 text-sm"></i>
+                    <h3 class="text-xs font-black text-purple-400 uppercase tracking-wider">Kirim Pesan ke Admin / Owner</h3>
+                </div>
+                <div class="space-y-3">
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1">Nama Pengirim / Nickname</label>
+                        <input type="text" id="msg-sender-name" placeholder="Ketik nama Anda di sini..." class="w-full text-xs p-3.5 rounded-xl">
+                    </div>
+                    <div class="space-y-1 relative select-none">
+                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1 block mb-1">Tujuan Kirim Pesan</label>
+                        <div onclick="toggleCustomSelectorDropdownMenu('msg-target')" id="trigger-dropdown-msg-target" class="w-full text-xs p-3.5 rounded-xl bg-black/30 border border-white/10 text-white flex justify-between items-center cursor-pointer font-black tracking-wide">
+                            <span id="label-selected-msg-target">🛡️ Kirim ke Admin Panel</span>
+                            <i class="fa-solid fa-chevron-down text-[9px] text-purple-500" id="chevron-msg-target"></i>
+                        </div>
+                        <div id="panel-dropdown-msg-target" class="hidden absolute left-0 right-0 mt-1 rounded-xl custom-dropdown-panel shadow-2xl z-[70] overflow-hidden border border-purple-500/20">
+                            <ul class="text-xs font-black">
+                                <li onclick="commitActiveMsgTargetSelection('Admin', '🛡️ Kirim ke Admin Panel')" class="p-3 hover:bg-purple-600/20 cursor-pointer border-b border-white/5">🛡️ Kirim ke Admin Panel</li>
+                                <li onclick="commitActiveMsgTargetSelection('Owner', '👑 Kirim ke Owner Panel')" class="p-3 hover:bg-purple-600/20 cursor-pointer">👑 Kirim ke Owner Panel</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1">Template Laporan Cepat</label>
+                        <div class="flex gap-1 overflow-x-auto pb-1 custom-scrollbar text-[8px] font-mono font-black tracking-wider select-none">
+                            <button onclick="injectPresetTextTemplateIntoMessagePayload(1)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-amber-400 flex-shrink-0">⚠️ SCRIPT CRASH</button>
+                            <button onclick="injectPresetTextTemplateIntoMessagePayload(2)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-blue-400 flex-shrink-0">💡 REQUEST game</button>
+                            <button onclick="injectPresetTextTemplateIntoMessagePayload(3)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-emerald-400 flex-shrink-0">🤝 DONASI PARTNER</button>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1">Isi Laporan / Pesan</label>
+                        <textarea id="msg-text-content" rows="4" placeholder="Ketik pesan di sini..." class="w-full text-xs p-3.5 rounded-xl outline-none custom-scrollbar"></textarea>
+                    </div>
+                </div>
+                <button onclick="submitUserMessagePipeline()" class="w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white p-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.98] transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> KIRIM PESAN REAL-TIME
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= NEW VIEWPORT 3: DYNAMIC BOOKMARKS FAVORIT GRID ================= -->
+        <div id="viewport-favorit-hub" class="hidden space-y-4">
+            <div class="glass-ui p-4 rounded-3xl space-y-3 shadow-2xl">
+                <div class="border-b border-gray-800/60 pb-2.5 select-none">
+                    <h3 class="text-xs font-black text-pink-500 uppercase tracking-wider"><i class="fa-solid fa-heart mr-1"></i> Koleksi Skrip Favorit Anda</h3>
+                    <p class="text-[10px] text-gray-500 font-medium mt-0.5">Daftar skrip khusus yang Anda simpan secara lokal.</p>
+                </div>
+                <div id="favorit-live-render-box" class="space-y-3.5"></div>
+            </div>
+        </div>
+
+        <!-- ================= CONTAINER VIEWPORT 4: FAQ HUB ================= -->
+        <div id="viewport-faq-hub" class="hidden space-y-4">
+            <div class="glass-ui p-4 rounded-3xl space-y-3 shadow-2xl">
+                <div class="border-b border-gray-800/60 pb-2.5 select-none">
+                    <h3 class="text-xs font-black text-purple-400 uppercase tracking-wider"><i class="fa-solid fa-circle-question text-sm"></i> Frequently Asked Questions Hub</h3>
+                </div>
+                <div id="faq-accordion-live-injections-box" class="space-y-3 pt-1">
+                    <p class="text-xs text-gray-600 font-mono text-center py-4">Menghubungkan ke pusat bantuan FAQ...</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Global Floating Navigation Dock Dashboard -->
+    <div class="fixed bottom-4 left-4 right-4 glass-ui rounded-2xl p-2 grid grid-cols-4 text-center text-[10px] font-black text-gray-500 z-50 shadow-2xl border border-white/10 select-none">
+        <button onclick="switchActiveViewportContext('scripts', this)" class="text-purple-400 active-navigation-node transition transform active:scale-90"><i class="fa-solid fa-folder-open text-base block mb-0.5"></i>Scripts</button>
+        <button onclick="switchActiveViewportContext('message', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-comment-dots text-base block mb-0.5"></i>Pesan</button>
+        <button onclick="switchActiveViewportContext('favorit', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-heart text-base block mb-0.5"></i>Favorit</button>
+        <button onclick="switchActiveViewportContext('faq', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-circle-question text-base block mb-0.5"></i>FAQ Hub</button>
+    </div>
+
+    <!-- Core Script Binding Framework Module -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = { databaseURL: "https://dhm-store-default-rtdb.firebaseio.com" };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let memoryCacheEntireScriptsDataset = {};
+        let localBookmarksRegistryList = JSON.parse(localStorage.getItem('dhm_v10_bookmarks')) || [];
+        let localPreferencesConfigObject = JSON.parse(localStorage.getItem('dhm_v10_pref_config')) || { hapticState: true };
+        
+        let activeSelectedGameCategoryValue = "Semua Game";
+        let activeSelectedSortOrderValue = "newest";
+        let activeSelectedMsgTargetRoleValue = "Admin";
+        
+        let activeCarouselIndex = 0;
+        let totalCarouselBanners = 0;
+
+        document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length;
+        hydrateLocalPreferencesButtonUiState();
+        initBackgroundCanvasEmittersModule();
+
+        // Custom Dropdown Engine
+        window.toggleCustomSelectorDropdownMenu = (dropdownKeyId) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            const panel = document.getElementById(`panel-dropdown-${dropdownKeyId}`);
+            const chevron = document.getElementById(`chevron-${dropdownKeyId}`);
+            
+            ['game-cat', 'sort-order', 'msg-target'].forEach(key => {
+                if(key !== dropdownKeyId) {
+                    const p = document.getElementById(`panel-dropdown-${key}`);
+                    const c = document.getElementById(`chevron-${key}`);
+                    if(p) p.classList.add('hidden');
+                    if(c) c.classList.remove('rotate-180');
+                }
+            });
+            if(panel) panel.classList.toggle('hidden');
+            if(chevron) chevron.classList.toggle('rotate-180');
+        };
+
+        window.commitActiveCategorySelectionPipeline = (value, label) => {
+            activeSelectedGameCategoryValue = value;
+            document.getElementById('label-selected-game-cat').innerText = label;
+            toggleCustomSelectorDropdownMenu('game-cat');
+            executeMainUIRendererPipelineStreamer();
+        };
+
+        window.commitActiveSortSelectionPipeline = (value, label) => {
+            activeSelectedSortOrderValue = value;
+            document.getElementById('label-selected-sort-order').innerText = label;
+            toggleCustomSelectorDropdownMenu('sort-order');
+            executeMainUIRendererPipelineStreamer();
+        };
+
+        window.commitActiveMsgTargetSelection = (value, label) => {
+            activeSelectedMsgTargetRoleValue = value;
+            document.getElementById('label-selected-msg-target').innerText = label;
+            toggleCustomSelectorDropdownMenu('msg-target');
+        };
+
+        document.addEventListener('click', function(e) {
+            ['game-cat', 'sort-order', 'msg-target'].forEach(key => {
+                const panel = document.getElementById(`panel-dropdown-${key}`);
+                const trigger = document.getElementById(`trigger-dropdown-${key}`);
+                if (panel && trigger && !trigger.contains(e.target) && !panel.contains(e.target)) {
+                    panel.classList.add('hidden');
+                    const chevron = document.getElementById(`chevron-${key}`);
+                    if(chevron) chevron.classList.remove('rotate-180');
+                }
+            });
+        });
+
+        // Banners Sync
+        onValue(ref(db, 'banners'), (snapshot) => {
+            const track = document.getElementById('carousel-track-container');
+            const dotsContainer = document.getElementById('carousel-dots-container');
+            const bannerShell = document.getElementById('carousel-banner-shell');
+            track.innerHTML = ''; dotsContainer.innerHTML = '';
+            
+            if(snapshot.exists()) {
+                const bannersList = Object.entries(snapshot.val());
+                totalCarouselBanners = bannersList.length;
+                if(totalCarouselBanners > 0) {
+                    bannerShell.classList.remove('hidden');
+                    bannersList.forEach(([key, value], idx) => {
+                        const bgInlineStyle = value.imageUrl ? `background: url('${value.imageUrl}') center/cover no-repeat;` : '';
+                        track.innerHTML += `
+                            <div class="w-full h-full flex-shrink-0 flex flex-col justify-center px-5 relative" style="${bgInlineStyle}">
+                                <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px] z-0"></div>
+                                <div class="z-10 relative">
+                                    <span class="text-[7px] bg-purple-600 border border-purple-500/30 text-white px-2 py-0.5 rounded font-mono font-black uppercase tracking-widest w-max block">${value.badge || 'INFO'}</span>
+                                    <h2 class="text-xs font-black text-white mt-1 uppercase tracking-wide truncate">${value.title}</h2>
+                                    <p class="text-[10px] text-gray-300 font-medium line-clamp-1 mt-0.5">${value.subtitle}</p>
+                                </div>
+                            </div>`;
+                        dotsContainer.innerHTML += `<span class="w-1.5 h-1.5 rounded-full ${idx === 0 ? 'bg-white' : 'bg-white/30'} transition-all duration-300" id="dot-${idx}"></span>`;
+                    });
+                } else { bannerShell.classList.add('hidden'); }
+            } else { bannerShell.classList.add('hidden'); }
+        });
+
+        setInterval(() => {
+            if(totalCarouselBanners <= 1) return;
+            const track = document.getElementById('carousel-track-container');
+            activeCarouselIndex = (activeCarouselIndex + 1) % totalCarouselBanners;
+            if(track) track.style.transform = `translateX(-${activeCarouselIndex * 100}%)`;
+            for(let i=0; i<totalCarouselBanners; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if(dot) dot.className = i === activeCarouselIndex ? "w-1.5 h-1.5 rounded-full bg-white transition-all duration-300" : "w-1.5 h-1.5 rounded-full bg-white/30 transition-all duration-300";
+            }
+        }, 5000);
+
+        // Clock & Battery
+        setInterval(() => {
+            const timeInstanceObject = new Date();
+            document.getElementById('telemetry-clock').innerHTML = `<i class="fa-regular fa-clock text-purple-400"></i> ${timeInstanceObject.toTimeString().split(' ')[0]}`;
+        }, 1000);
+
+        if(navigator.getBattery) {
+            navigator.getBattery().then(b => {
+                const updateUi = () => {
+                    const lvl = Math.round(b.level * 100);
+                    document.getElementById('telemetry-battery').innerHTML = `<i class="fa-solid fa-battery-three-quarters ${lvl < 25 ? 'text-red-500' : 'text-amber-400'}"></i> ${lvl}%`;
+                };
+                updateUi(); b.addEventListener('levelchange', updateUi);
+            });
+        }
+
+        // Network
+        window.addEventListener('offline', () => { document.getElementById('telemetry-network-badge').className = "bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded border border-red-500/20 font-black"; document.getElementById('telemetry-network-badge').innerText = "OFFLINE"; });
+        window.addEventListener('online', () => { document.getElementById('telemetry-network-badge').className = "bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20 font-black"; document.getElementById('telemetry-network-badge').innerText = "SYNCED"; });
+
+        // Toast
+        window.dispatchSystemToastNotificationNotification = (msg, type = 'success') => {
+            const hub = document.getElementById('toast-master-hub');
+            const toast = document.createElement('div');
+            toast.className = `glass-ui flex items-center gap-3 text-white px-4 py-3 rounded-full text-xs font-black border ${type === 'success' ? 'border-emerald-500/20' : 'border-red-500/20'} shadow-2xl opacity-0 transition duration-300 transform translate-y-[-15px] pointer-events-auto`;
+            toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse"></span> ${msg}`;
+            hub.appendChild(toast);
+            setTimeout(() => toast.classList.remove('opacity-0', 'translate-y-[-15px]'), 15);
+            setTimeout(() => { toast.classList.add('opacity-0', 'scale-90'); setTimeout(() => toast.remove(), 300); }, 3500);
+        };
+
+        // Remote Guard Switch
+        onValue(ref(db, 'system_guard'), (snap) => {
+            if(snap.exists()) {
+                const guard = snap.val();
+                const screen = document.getElementById('maintenance-lockscreen-layer');
+                if(guard.maintenanceMode === true || guard.maintenanceMode === "true") {
+                    screen.classList.remove('hidden'); document.getElementById('maintenance-realtime-msg').innerText = guard.maintenanceMessage || 'Sistem Sedang Maintenance Server.';
+                } else { screen.classList.add('hidden'); }
+                const marquee = document.getElementById('ticker-marquee-wrapper');
+                if(guard.announcement && guard.announcement.enabled === true) {
+                    marquee.classList.remove('hidden'); document.getElementById('ticker-marquee-text-payload').innerText = guard.announcement.text || '';
+                } else { marquee.classList.add('hidden'); }
+            }
+        });
+
+        onValue(ref(db, 'settings/theme'), (snap) => { document.body.className = `min-h-screen pb-32 relative ${snap.val() || 'theme-dark'}`; });
+
+        // FAQ Load
+        onValue(ref(db, 'faqs'), (snap) => {
+            const box = document.getElementById('faq-accordion-live-injections-box'); box.innerHTML = '';
+            if(snap.exists()) {
+                Object.entries(snap.val()).forEach(([id, model], idx) => {
+                    box.innerHTML += `
+                        <div class="border-b border-gray-800/50 pb-2.5 animate-premium-card">
+                            <button onclick="window.toggleFaqCollapseRowAnimation('${idx}')" class="w-full text-left font-black text-white text-xs flex justify-between items-center py-2 focus:outline-none">
+                                <span>❓ ${model.question}</span>
+                                <i id="faq-chevron-icon-${idx}" class="fa-solid fa-chevron-down text-[9px] text-gray-500 transition duration-300"></i>
+                            </button>
+                            <p id="faq-answer-collapse-block-${idx}" class="hidden text-[11px] text-gray-400 bg-black/30 p-3 rounded-2xl mt-1.5 leading-relaxed font-medium">💡 ${model.answer}</p>
+                        </div>`;
+                });
+            } else { box.innerHTML = '<p class="text-xs text-gray-600 font-mono text-center py-4">Belum ada FAQ bantuan.</p>'; }
+        });
+
+        window.toggleFaqCollapseRowAnimation = (idx) => { triggerDeviceShortHapticFeedbackVibration(); document.getElementById(`faq-answer-collapse-block-${idx}`).classList.toggle('hidden'); };
+
+        // Messages Submissions
+        window.submitUserMessagePipeline = () => {
+            triggerDeviceShortHapticFeedbackVibration();
+            const n = document.getElementById('msg-sender-name').value.trim();
+            const m = document.getElementById('msg-text-content').value.trim();
+            if(!n || !m) return dispatchSystemToastNotificationNotification('Kolom Nama & Isi Pesan wajib diisi!', 'error');
+            set(push(ref(db, 'messages')), { sender: n, target: activeSelectedMsgTargetRoleValue, message: m, timestamp: Date.now() }).then(() => {
+                dispatchSystemToastNotificationNotification(`Pesan sukses dikirim ke ${activeSelectedMsgTargetRoleValue}!`);
+                document.getElementById('msg-sender-name').value = ''; document.getElementById('msg-text-content').value = '';
+            }).catch(() => dispatchSystemToastNotificationNotification('Gagal mengirim pesan.', 'error'));
+        };
+
+        window.injectPresetTextTemplateIntoMessagePayload = (id) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            const box = document.getElementById('msg-text-content');
+            if(id === 1) box.value = "[LAPORAN ERROR]: Skrip Hub mengalami Force Close sesaat setelah dieksekusi di Executor Mobile.";
+            else if(id === 2) box.value = "[REQUEST GAME SCRIPT]: Tolong tambahkan koleksi skrip terbaru untuk game Roblox: ";
+            else if(id === 3) box.value = "[DONASI PARTNER]: Saya berniat mengajukan proposal kerja sama.";
+        };
+
+        // Categories Load
+        onValue(ref(db, 'categories'), (snap) => {
+            const listContainer = document.getElementById('list-options-game-cat');
+            listContainer.innerHTML = `<li onclick="commitActiveCategorySelectionPipeline('Semua Game', '🌐 Semua Game')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">🌐 Semua Game</li>`;
+            if(snap.exists()) {
+                Object.values(snap.val()).forEach(categoryName => {
+                    listContainer.innerHTML += `<li onclick="commitActiveCategorySelectionPipeline('${categoryName}', '🎮 ${categoryName}')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5 truncate">🎮 ${categoryName}</li>`;
+                });
+            }
+            executeMainUIRendererPipelineStreamer();
+        });
+
+        // Scripts Load Engine Streamer
+        onValue(ref(db, 'scripts'), (snap) => { memoryCacheEntireScriptsDataset = snap.val() || {}; executeMainUIRendererPipelineStreamer(); calculateAggregatedCopiesMetricCounter(); });
+        function calculateAggregatedCopiesMetricCounter() { let total = 0; Object.values(memoryCacheEntireScriptsDataset).forEach(s => total += (s.copyCount || 0)); document.getElementById('metric-label-copies').innerText = total; }
+
+        // UPGRADED: RENDERS CONTENT ACCORDING TO DYNAMIC IMAGE SCALE OPTIONS SIZES FROM FIREBASE
+        function executeMainUIRendererPipelineStreamer() {
+            const box = document.getElementById('live-scripts-render-target-box');
+            const favBox = document.getElementById('favorit-live-render-box');
+            const search = document.getElementById('pipeline-search-input-field').value.toLowerCase();
+
+            box.innerHTML = ''; favBox.innerHTML = '';
+            let list = Object.keys(memoryCacheEntireScriptsDataset).map(k => ({ id: k, ...memoryCacheEntireScriptsDataset[k] }));
+
+            if(search) list = list.filter(item => item.title.toLowerCase().includes(search) || item.purpose.toLowerCase().includes(search));
+            if(activeSelectedGameCategoryValue !== 'Semua Game') list = list.filter(item => item.category === activeSelectedGameCategoryValue);
+
+            if(activeSelectedSortOrderValue === 'newest') list.sort((a, b) => b.timestamp - a.timestamp);
+            else if(activeSelectedSortOrderValue === 'popular') list.sort((a, b) => (b.copyCount || 0) - (a.copyCount || 0));
+            else if(activeSelectedSortOrderValue === 'alphabet') list.sort((a, b) => a.title.localeCompare(b.title));
+
+            document.getElementById('metric-label-total').innerText = list.length;
+            let favList = list.filter(item => localBookmarksRegistryList.includes(item.id));
+
+            if(list.length === 0) box.innerHTML = `<p class="text-center py-8 text-xs text-gray-600 font-mono">Skrip tidak ditemukan</p>`;
+            if(favList.length === 0) favBox.innerHTML = `<p class="text-center py-8 text-xs text-gray-600 font-mono">Belum ada skrip favorit yang disimpan</p>`;
+
+            list.forEach(item => { box.insertAdjacentHTML('beforeend', generateCoreScriptHtmlCardLayoutStructure(item, localBookmarksRegistryList.includes(item.id))); });
+            favList.forEach(item => { favBox.insertAdjacentHTML('beforeend', generateCoreScriptHtmlCardLayoutStructure(item, true)); });
+        }
+
+        function generateCoreScriptHtmlCardLayoutStructure(item, bookmarked) {
+            const size = item.imageScaleSize || 'small';
+            let mediaSectionHtml = '';
+            let mainCardContentHtml = '';
+
+            // Dynamic Styling mapping matching Admin selections layout structural designs
+            if(size === 'large') {
+                // Vertical Banner Style
+                return `
+                    <div class="glass-ui p-4 rounded-3xl space-y-3.5 relative animate-premium-card flex flex-col">
+                        <div class="relative w-full h-44 rounded-2xl overflow-hidden border border-white/5 bg-slate-900">
+                            <img src="${item.icon || 'https://via.placeholder.com/300'}" class="w-full h-full object-cover">
+                            <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-base backdrop-blur-md ${bookmarked ? 'text-pink-500' : 'text-gray-400'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
+                        </div>
+                        <div class="flex-1 min-w-0 pt-1">
+                            <span class="bg-white/5 text-gray-300 text-[8px] font-black px-2 py-0.5 rounded border border-white/5 uppercase font-mono">${item.category}</span>
+                            <h3 class="text-xs font-black text-white mt-1.5 truncate uppercase tracking-wide">${item.title}</h3>
+                            <p class="text-[11px] text-gray-400 line-clamp-2 font-medium mt-0.5">${item.purpose}</p>
+                        </div>
+                        <button onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl text-xs font-black shadow-lg active:scale-[0.97] transition mt-2"><i class="fa-solid fa-copy"></i> SALIN SOURCE CODE</button>
+                    </div>`;
+            } else {
+                // Horizontal Style (Small or Medium)
+                const imgDimensionsClass = size === 'medium' ? 'w-20 h-20 rounded-2xl' : 'w-14 h-14 rounded-2xl';
+                return `
+                    <div class="glass-ui p-4 rounded-3xl space-y-3.5 relative animate-premium-card">
+                        <div class="flex items-start gap-3.5">
+                            <img src="${item.icon || 'https://via.placeholder.com/60'}" class="${imgDimensionsClass} object-cover bg-slate-900 border border-white/5 flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <span class="bg-white/5 text-gray-300 text-[8px] font-black px-2 py-0.5 rounded border border-white/5 uppercase font-mono">${item.category}</span>
+                                <h3 class="text-xs font-black text-white mt-1.5 truncate tracking-wide uppercase">${item.title}</h3>
+                                <p class="text-[11px] text-gray-400 line-clamp-1 font-medium mt-0.5">${item.purpose}</p>
+                            </div>
+                            <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="p-1.5 text-base ${bookmarked ? 'text-pink-500' : 'text-gray-600'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl text-xs font-black shadow-lg active:scale-[0.97] transition"><i class="fa-solid fa-copy"></i> SALIN SOURCE CODE</button>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        window.executeCopyScriptPayloadPipeline = (id, b64) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            navigator.clipboard.writeText(decodeURIComponent(atob(b64))).then(() => {
+                window.dispatchSystemToastNotificationNotification('Skrip berhasil disalin!', 'success');
+                runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
+            });
+        };
+
+        window.executeTargetBookmarkTogglePipeline = (id) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            localBookmarksRegistryList = localBookmarksRegistryList.includes(id) ? localBookmarksRegistryList.filter(i => i !== id) : [...localBookmarksRegistryList, id];
+            localStorage.setItem('dhm_v10_bookmarks', JSON.stringify(localBookmarksRegistryList));
+            document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length; 
+            executeMainUIRendererPipelineStreamer();
+        };
+
+        window.switchActiveViewportContext = (id, ref) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            document.getElementById('viewport-scripts-hub').classList.toggle('hidden', id !== 'scripts');
+            document.getElementById('viewport-message-hub').classList.toggle('hidden', id !== 'message');
+            document.getElementById('viewport-favorit-hub').classList.toggle('hidden', id !== 'favorit');
+            document.getElementById('viewport-faq-hub').classList.toggle('hidden', id !== 'faq');
+            document.querySelectorAll('.active-navigation-node').forEach(n => { n.classList.remove('text-purple-400', 'active-navigation-node'); n.classList.add('text-gray-500'); });
+            ref.classList.add('text-purple-400', 'active-navigation-node'); ref.classList.remove('text-gray-500');
+        };
+
+        window.triggerLocalPreferencesControlPanel = () => { triggerDeviceShortHapticFeedbackVibration(); document.getElementById('preferences-dropdown-panel').classList.toggle('hidden'); };
+        window.toggleLocalPreferenceNode = (k) => { triggerDeviceShortHapticFeedbackVibration(); localPreferencesConfigObject[k] = !localPreferencesConfigObject[k]; localStorage.setItem('dhm_v10_pref_config', JSON.stringify(localPreferencesConfigObject)); hydrateLocalPreferencesButtonUiState(); };
+        function hydrateLocalPreferencesButtonUiState() { document.getElementById('pref-widget-haptic').className = localPreferencesConfigObject.hapticState ? "bg-purple-600/10 border border-purple-500/20 p-2.5 rounded-xl text-[10px] font-black text-purple-400 flex items-center justify-center gap-1.5" : "bg-white/5 border border-white/5 p-2.5 rounded-xl text-[10px] font-bold text-gray-500 flex items-center justify-center gap-1.5"; }
+        function triggerDeviceShortHapticFeedbackVibration() { if(localPreferencesConfigObject.hapticState && navigator.vibrate) navigator.vibrate(10); }
+        window.clearActiveSearchFieldPipeline = () => { triggerDeviceShortHapticFeedbackVibration(); document.getElementById('pipeline-search-input-field').value = ''; executeMainUIRendererPipelineStreamer(); };
+        window.dispatchNativeSharePipeline = () => { triggerDeviceShortHapticFeedbackVibration(); if(navigator.share) navigator.share({ title: 'DHM COMMUNITY', url: window.location.href }); };
+
+        function initBackgroundCanvasEmittersModule() {
+            const canvas = document.getElementById('background-canvas'); const ctx = canvas.getContext('2d');
+            let arrayParticles = []; const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+            window.addEventListener('resize', resize); resize();
+            class FloatingParticle {
+                constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.speedY = (Math.random() * 0.4) + 0.1; this.radius = Math.random() * 1.5; }
+                update() { this.y -= this.speedY; if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } }
+                draw() { ctx.fillStyle = 'rgba(168, 85, 247, 0.3)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill(); }
+            }
+            for(let i = 0; i < 35; i++) arrayParticles.push(new FloatingParticle());
+            const loop = () => { ctx.clearRect(0, 0, canvas.width, canvas.height); arrayParticles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(loop); }; loop();
+        }
+
+        document.getElementById('pipeline-search-input-field').addEventListener('input', executeMainUIRendererPipelineStreamer);
+    </script>
+</body>
+</html>
