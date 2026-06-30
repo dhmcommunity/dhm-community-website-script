@@ -108,10 +108,10 @@
     </div>
 
     <!-- Bulletin Ticker Text -->
-    <div id="ticker-marquee-wrapper" class="hidden glass-ui border-none bg-gradient-to-r from-purple-950/60 via-black/80 to-blue-950/60 text-white text-[10px] font-black py-2 px-4 shadow-xl">
+    <div id="ticker-marquee-wrapper" class="glass-ui border-none bg-gradient-to-r from-purple-950/60 via-black/80 to-blue-950/60 text-white text-[10px] font-black py-2 px-4 shadow-xl">
         <div class="max-w-md mx-auto flex items-center">
             <span class="bg-gradient-to-r from-purple-600 to-pink-500 text-[8px] px-1.5 py-0.5 rounded font-mono mr-2.5 flex-shrink-0 animate-pulse text-white">BULLETIN</span>
-            <marquee id="ticker-marquee-text-payload" scrollamount="4" class="font-mono tracking-wide"></marquee>
+            <marquee id="ticker-marquee-text-payload" scrollamount="4" class="font-mono tracking-wide">Selamat datang di DHM COMMUNITY! Dapatkan update script terbaru setiap harinya di sini. 🔥</marquee>
         </div>
     </div>
 
@@ -143,8 +143,15 @@
     <div id="preferences-dropdown-panel" class="hidden max-w-md mx-auto px-4 mt-2 animate-premium-card select-none">
         <div class="glass-ui p-4 rounded-2xl space-y-3">
             <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-gears text-purple-400 mr-1.5"></i> Konfigurasi Operasional Lokal</h4>
-            <div class="grid grid-cols-1 text-center">
+            <div class="grid grid-cols-1 text-center space-y-2">
                 <div onclick="toggleLocalPreferenceNode('hapticState')" id="pref-widget-haptic" class="bg-white/5 border border-white/5 p-2.5 rounded-xl text-[10px] font-black cursor-pointer text-purple-400 flex items-center justify-center gap-1.5">Haptic Engine</div>
+                
+                <!-- FITUR BARU 1: BACKUP & RESTORE PREFERENCES SYSTEM -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="exportFavoritesPipeline()" class="bg-white/5 border border-white/5 hover:border-purple-500/30 p-2 rounded-xl text-[10px] font-black text-gray-300 flex items-center justify-center gap-1.5 transition"><i class="fa-solid fa-download text-purple-400"></i> Ekspor Favorit</button>
+                    <button onclick="document.getElementById('import-favorites-file').click()" class="bg-white/5 border border-white/5 hover:border-purple-500/30 p-2 rounded-xl text-[10px] font-black text-gray-300 flex items-center justify-center gap-1.5 transition"><i class="fa-solid fa-upload text-blue-400"></i> Impor Favorit</button>
+                    <input type="file" id="import-favorites-file" class="hidden" accept=".json" onchange="importFavoritesPipeline(this)">
+                </div>
             </div>
         </div>
     </div>
@@ -260,7 +267,7 @@
             </div>
         </div>
 
-        <!-- ================= NEW VIEWPORT 3: DYNAMIC BOOKMARKS FAVORIT GRID ================= -->
+        <!-- ================= CONTAINER VIEWPORT 3: DYNAMIC BOOKMARKS FAVORIT GRID ================= -->
         <div id="viewport-favorit-hub" class="hidden space-y-4">
             <div class="glass-ui p-4 rounded-3xl space-y-3 shadow-2xl">
                 <div class="border-b border-gray-800/60 pb-2.5 select-none">
@@ -268,6 +275,18 @@
                     <p class="text-[10px] text-gray-500 font-medium mt-0.5">Daftar skrip khusus yang Anda simpan secara lokal.</p>
                 </div>
                 <div id="favorit-live-render-box" class="space-y-3.5"></div>
+            </div>
+
+            <!-- FITUR BARU 2: RECENT HISTORY LOGS CONTAINER -->
+            <div class="glass-ui p-4 rounded-3xl space-y-3 shadow-2xl">
+                <div class="border-b border-gray-800/60 pb-2.5 flex justify-between items-center select-none">
+                    <div>
+                        <h3 class="text-xs font-black text-blue-400 uppercase tracking-wider"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Riwayat Salinan Terakhir</h3>
+                        <p class="text-[10px] text-gray-500 font-medium mt-0.5">5 skrip terakhir yang berhasil disalin.</p>
+                    </div>
+                    <button onclick="clearRecentHistoryPipeline()" class="text-[9px] font-mono text-red-400 border border-red-500/20 px-2 py-1 rounded bg-red-500/5 hover:bg-red-500/10 active:scale-95 transition">Hapus</button>
+                </div>
+                <div id="history-live-render-box" class="space-y-2"></div>
             </div>
         </div>
 
@@ -293,6 +312,9 @@
         <button onclick="switchActiveViewportContext('faq', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-circle-question text-base block mb-0.5"></i>FAQ Hub</button>
     </div>
 
+    <!-- Scroll To Top Button -->
+    <button id="fab-scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="hidden fixed bottom-24 right-4 bg-purple-600 w-12 h-12 rounded-full text-white z-[100] shadow-2xl border border-purple-400/50 active:scale-90 transition flex items-center justify-center"><i class="fa-solid fa-arrow-up text-lg"></i></button>
+
     <!-- Core Script Binding Framework Module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -305,6 +327,9 @@
         let memoryCacheEntireScriptsDataset = {};
         let localBookmarksRegistryList = JSON.parse(localStorage.getItem('dhm_v10_bookmarks')) || [];
         let localPreferencesConfigObject = JSON.parse(localStorage.getItem('dhm_v10_pref_config')) || { hapticState: true };
+        
+        // INITIAL DATA FOR RECENT LOGS
+        let localHistoryRegistryList = JSON.parse(localStorage.getItem('dhm_v10_history')) || [];
         
         let activeSelectedGameCategoryValue = "Semua Game";
         let activeSelectedSortOrderValue = "newest";
@@ -446,10 +471,11 @@
                 if(guard.maintenanceMode === true || guard.maintenanceMode === "true") {
                     screen.classList.remove('hidden'); document.getElementById('maintenance-realtime-msg').innerText = guard.maintenanceMessage || 'Sistem Sedang Maintenance Server.';
                 } else { screen.classList.add('hidden'); }
+                
                 const marquee = document.getElementById('ticker-marquee-wrapper');
                 if(guard.announcement && guard.announcement.enabled === true) {
-                    marquee.classList.remove('hidden'); document.getElementById('ticker-marquee-text-payload').innerText = guard.announcement.text || '';
-                } else { marquee.classList.add('hidden'); }
+                    document.getElementById('ticker-marquee-text-payload').innerText = guard.announcement.text || 'Selamat datang di DHM COMMUNITY! Dapatkan update script terbaru setiap harinya di sini.';
+                }
             }
         });
 
@@ -510,7 +536,6 @@
         onValue(ref(db, 'scripts'), (snap) => { memoryCacheEntireScriptsDataset = snap.val() || {}; executeMainUIRendererPipelineStreamer(); calculateAggregatedCopiesMetricCounter(); });
         function calculateAggregatedCopiesMetricCounter() { let total = 0; Object.values(memoryCacheEntireScriptsDataset).forEach(s => total += (s.copyCount || 0)); document.getElementById('metric-label-copies').innerText = total; }
 
-        // UPGRADED: RENDERS CONTENT ACCORDING TO DYNAMIC IMAGE SCALE OPTIONS SIZES FROM FIREBASE
         function executeMainUIRendererPipelineStreamer() {
             const box = document.getElementById('live-scripts-render-target-box');
             const favBox = document.getElementById('favorit-live-render-box');
@@ -527,6 +552,8 @@
             else if(activeSelectedSortOrderValue === 'alphabet') list.sort((a, b) => a.title.localeCompare(b.title));
 
             document.getElementById('metric-label-total').innerText = list.length;
+            document.title = `DHM COMMUNITY | ${list.length} Scripts Tersedia`;
+
             let favList = list.filter(item => localBookmarksRegistryList.includes(item.id));
 
             if(list.length === 0) box.innerHTML = `<p class="text-center py-8 text-xs text-gray-600 font-mono">Skrip tidak ditemukan</p>`;
@@ -534,18 +561,27 @@
 
             list.forEach(item => { box.insertAdjacentHTML('beforeend', generateCoreScriptHtmlCardLayoutStructure(item, localBookmarksRegistryList.includes(item.id))); });
             favList.forEach(item => { favBox.insertAdjacentHTML('beforeend', generateCoreScriptHtmlCardLayoutStructure(item, true)); });
+            
+            // EXECUTE HISTORY RENDER SINKRONISASI
+            renderHistoryPipelineStreamer();
         }
 
         function generateCoreScriptHtmlCardLayoutStructure(item, bookmarked) {
             const size = item.imageScaleSize || 'small';
-            let mediaSectionHtml = '';
-            let mainCardContentHtml = '';
+            const actionButtonsHtml = `
+                <div class="flex gap-1.5 mt-2">
+                    <button onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition"><i class="fa-solid fa-copy"></i> SALIN</button>
+                    <button onclick="window.openScriptDetailTab('${item.id}')" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition border border-white/10"><i class="fa-solid fa-eye"></i> DETAIL</button>
+                </div>
+                <div class="flex gap-1.5 mt-1.5">
+                    <button onclick="window.downloadScriptTxt('${item.title}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-white/5 hover:bg-emerald-500/20 text-emerald-400 py-2 rounded-xl text-[9px] font-bold active:scale-[0.97] transition border border-emerald-500/20"><i class="fa-solid fa-download"></i> .TXT</button>
+                    <button onclick="window.shareSpecificScript('${item.title}', '${item.purpose}')" class="flex-1 bg-white/5 hover:bg-blue-500/20 text-blue-400 py-2 rounded-xl text-[9px] font-bold active:scale-[0.97] transition border border-blue-500/20"><i class="fa-solid fa-share-nodes"></i> SHARE</button>
+                </div>
+            `;
 
-            // Dynamic Styling mapping matching Admin selections layout structural designs
             if(size === 'large') {
-                // Vertical Banner Style
                 return `
-                    <div class="glass-ui p-4 rounded-3xl space-y-3.5 relative animate-premium-card flex flex-col">
+                    <div class="glass-ui p-4 rounded-3xl space-y-2 relative animate-premium-card flex flex-col">
                         <div class="relative w-full h-44 rounded-2xl overflow-hidden border border-white/5 bg-slate-900">
                             <img src="${item.icon || 'https://via.placeholder.com/300'}" class="w-full h-full object-cover">
                             <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-base backdrop-blur-md ${bookmarked ? 'text-pink-500' : 'text-gray-400'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
@@ -555,13 +591,12 @@
                             <h3 class="text-xs font-black text-white mt-1.5 truncate uppercase tracking-wide">${item.title}</h3>
                             <p class="text-[11px] text-gray-400 line-clamp-2 font-medium mt-0.5">${item.purpose}</p>
                         </div>
-                        <button onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl text-xs font-black shadow-lg active:scale-[0.97] transition mt-2"><i class="fa-solid fa-copy"></i> SALIN SOURCE CODE</button>
+                        ${actionButtonsHtml}
                     </div>`;
             } else {
-                // Horizontal Style (Small or Medium)
                 const imgDimensionsClass = size === 'medium' ? 'w-20 h-20 rounded-2xl' : 'w-14 h-14 rounded-2xl';
                 return `
-                    <div class="glass-ui p-4 rounded-3xl space-y-3.5 relative animate-premium-card">
+                    <div class="glass-ui p-4 rounded-3xl space-y-2 relative animate-premium-card">
                         <div class="flex items-start gap-3.5">
                             <img src="${item.icon || 'https://via.placeholder.com/60'}" class="${imgDimensionsClass} object-cover bg-slate-900 border border-white/5 flex-shrink-0">
                             <div class="flex-1 min-w-0">
@@ -571,9 +606,7 @@
                             </div>
                             <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="p-1.5 text-base ${bookmarked ? 'text-pink-500' : 'text-gray-600'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl text-xs font-black shadow-lg active:scale-[0.97] transition"><i class="fa-solid fa-copy"></i> SALIN SOURCE CODE</button>
-                        </div>
+                        ${actionButtonsHtml}
                     </div>`;
             }
         }
@@ -583,7 +616,87 @@
             navigator.clipboard.writeText(decodeURIComponent(atob(b64))).then(() => {
                 window.dispatchSystemToastNotificationNotification('Skrip berhasil disalin!', 'success');
                 runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
+                
+                // EKSEKUSI PUSH KE LOG RIWAYAT
+                pushToLocalHistoryRegistryPipeline(id);
             });
+        };
+
+        // FITUR BARU 2: RIWAYAT ENGINE LOGIC PIPELINE
+        window.pushToLocalHistoryRegistryPipeline = (id) => {
+            localHistoryRegistryList = [id, ...localHistoryRegistryList.filter(i => i !== id)].slice(0, 5);
+            localStorage.setItem('dhm_v10_history', JSON.stringify(localHistoryRegistryList));
+            renderHistoryPipelineStreamer();
+        };
+
+        window.clearRecentHistoryPipeline = () => {
+            triggerDeviceShortHapticFeedbackVibration();
+            localHistoryRegistryList = [];
+            localStorage.removeItem('dhm_v10_history');
+            renderHistoryPipelineStreamer();
+            window.dispatchSystemToastNotificationNotification('Riwayat salinan dibersihkan.', 'success');
+        };
+
+        function renderHistoryPipelineStreamer() {
+            const box = document.getElementById('history-live-render-box');
+            if(!box) return;
+            box.innerHTML = '';
+            if(localHistoryRegistryList.length === 0) {
+                box.innerHTML = `<p class="text-center py-4 text-xs text-gray-600 font-mono">Belum ada riwayat penyalinan</p>`;
+                return;
+            }
+            localHistoryRegistryList.forEach(id => {
+                const item = memoryCacheEntireScriptsDataset[id];
+                if(item) {
+                    box.innerHTML += `
+                        <div class="flex justify-between items-center bg-white/5 border border-white/5 p-2.5 rounded-xl text-xs font-medium animate-premium-card">
+                            <span class="text-white truncate uppercase font-bold tracking-wide max-w-[65%]">${item.title}</span>
+                            <button onclick="window.executeCopyScriptPayloadPipeline('${id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded text-[10px] font-black transition active:scale-95"><i class="fa-solid fa-copy"></i> SALIN</button>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // FITUR BARU 1: PIPELINE EKSPOR & IMPOR DATA FAVORIT
+        window.exportFavoritesPipeline = () => {
+            triggerDeviceShortHapticFeedbackVibration();
+            if (localBookmarksRegistryList.length === 0) {
+                return window.dispatchSystemToastNotificationNotification('Daftar favorit Anda kosong!', 'error');
+            }
+            const blob = new Blob([JSON.stringify(localBookmarksRegistryList)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `dhm_favorites_backup.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            window.dispatchSystemToastNotificationNotification('Berhasil mengekspor skrip favorit!', 'success');
+        };
+
+        window.importFavoritesPipeline = (inputNode) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            const file = inputNode.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (Array.isArray(parsed)) {
+                        localBookmarksRegistryList = [...new Set([...localBookmarksRegistryList, ...parsed])];
+                        localStorage.setItem('dhm_v10_bookmarks', JSON.stringify(localBookmarksRegistryList));
+                        document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length;
+                        executeMainUIRendererPipelineStreamer();
+                        window.dispatchSystemToastNotificationNotification('Berhasil memulihkan skrip favorit!', 'success');
+                    } else {
+                        window.dispatchSystemToastNotificationNotification('Format backup tidak valid!', 'error');
+                    }
+                } catch (err) {
+                    window.dispatchSystemToastNotificationNotification('Gagal memproses file cadangan.', 'error');
+                }
+            };
+            reader.readAsText(file);
+            inputNode.value = '';
         };
 
         window.executeTargetBookmarkTogglePipeline = (id) => {
@@ -625,6 +738,105 @@
         }
 
         document.getElementById('pipeline-search-input-field').addEventListener('input', executeMainUIRendererPipelineStreamer);
+        
+        // ================= KUMPULAN FITUR BARU MULAI DARI SINI =================
+        
+        // FITUR BARU: VIEW DETAIL (MODAL OVERLAY - DIJAMIN ANTI BLOKIR)
+        window.openScriptDetailTab = (id) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            const item = memoryCacheEntireScriptsDataset[id];
+            if(!item) return dispatchSystemToastNotificationNotification('Gagal memuat detail data.', 'error');
+            
+            const releaseDate = item.timestamp ? new Date(item.timestamp).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }) : 'Tidak diketahui';
+            
+            // Bikin element modal langsung di dalam halaman
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-premium-card';
+            modal.innerHTML = `
+                <div class="glass-ui p-6 rounded-3xl max-w-sm w-full border border-purple-500/30 shadow-2xl relative max-h-[90vh] flex flex-col">
+                    <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-black/50 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-xmark"></i></button>
+                    
+                    <div class="mb-3 pr-8">
+                        <span class="bg-gradient-to-r from-purple-600 to-blue-600 px-2 py-1 rounded text-[9px] font-black uppercase text-white shadow-lg"><i class="fa-solid fa-gamepad mr-1"></i>${item.category}</span>
+                        <h1 class="text-lg font-black text-white mt-2 leading-tight">${item.title}</h1>
+                        <p class="text-[11px] text-gray-400 mt-1">${item.purpose}</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mb-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                        <div>
+                            <span class="block text-[9px] text-purple-400 font-bold uppercase tracking-wider">Rilis</span>
+                            <span class="text-[11px] text-white font-medium">${releaseDate.split(' ')[0]}</span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-purple-400 font-bold uppercase tracking-wider">Total Copy</span>
+                            <span class="text-[11px] text-white font-medium">${item.copyCount || 0} Kali</span>
+                        </div>
+                    </div>
+                    
+                    <span class="text-[10px] text-purple-400 font-bold uppercase tracking-wider mb-1 block">Source Code:</span>
+                    <div class="bg-[#050505] p-3.5 rounded-xl border border-white/10 font-mono text-[10px] text-emerald-400 overflow-y-auto custom-scrollbar flex-1 mb-4" style="max-height: 25vh; white-space: pre-wrap; word-break: break-all;">${item.scriptText}</div>
+                    
+                    <button id="modal-copy-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-copy"></i> SALIN SOURCE CODE
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Event listener buat tombol copy di dalem modal
+            const copyBtn = modal.querySelector('#modal-copy-btn');
+            copyBtn.addEventListener('click', () => {
+                triggerDeviceShortHapticFeedbackVibration();
+                navigator.clipboard.writeText(item.scriptText).then(() => {
+                    window.dispatchSystemToastNotificationNotification('Script berhasil disalin dari detail!', 'success');
+                    pushToLocalHistoryRegistryPipeline(id);
+                });
+            });
+        };
+
+        // FITUR TAMBAHAN 1: DOWNLOAD SCRIPT (.TXT)
+        window.downloadScriptTxt = (title, b64) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            const text = decodeURIComponent(atob(b64));
+            const blob = new Blob([text], {type: "text/plain"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `[DHM] ${title}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            dispatchSystemToastNotificationNotification('Script berhasil di-download!', 'success');
+        };
+
+        // FITUR TAMBAHAN 2: SHARE SPESIFIK SCRIPT
+        window.shareSpecificScript = (title, purpose) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            if (navigator.share) {
+                navigator.share({
+                    title: `DHM SCRIPT: ${title}`,
+                    text: `Cek script ini: ${title}\nDeskripsi: ${purpose}\n\nTemukan di DHM COMMUNITY!`,
+                    url: window.location.href
+                }).catch(err => console.log('Share dibatalkan.'));
+            } else {
+                dispatchSystemToastNotificationNotification('Browser kamu tidak mendukung fitur Share.', 'error');
+            }
+        };
+
+        // FITUR TAMBAHAN 4: SHORTCUT ESC UNTUK CLEAR SEARCH
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.clearActiveSearchFieldPipeline();
+                document.getElementById('pipeline-search-input-field').blur();
+            }
+        });
+
+        // FITUR TAMBAHAN 5: LOGIKA SCROLL TO TOP BUTTON
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('fab-scroll-top');
+            if(window.scrollY > 300) btn.classList.remove('hidden');
+            else btn.classList.add('hidden');
+        });
     </script>
 </body>
 </html>
