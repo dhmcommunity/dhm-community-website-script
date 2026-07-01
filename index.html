@@ -48,11 +48,11 @@
             box-shadow: 0 0 18px var(--accent-glow);
         }
         .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
+            width: 6px;
+            height: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 12px;
         }
         .carousel-track {
@@ -96,6 +96,26 @@
     <div class="progress-indicator-bar" id="scroll-track-node"></div>
     <div id="toast-master-hub" class="fixed top-4 left-0 right-0 z-[200] flex flex-col items-center space-y-2 pointer-events-none px-4"></div>
 
+    <!-- ================= DISCORD POPUP LAYER (WAJIB JOIN) ================= -->
+    <div id="discord-popup-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 text-center backdrop-blur-xl">
+        <div class="glass-ui p-8 rounded-3xl max-w-sm w-full space-y-5 border border-[#5865F2]/40 shadow-2xl animate-premium-card relative">
+            <div class="w-20 h-20 rounded-full bg-[#5865F2]/20 border border-[#5865F2]/50 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(88,101,242,0.3)] relative">
+                <i class="fa-brands fa-discord text-4xl text-[#5865F2] animate-bounce"></i>
+                <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-black animate-pulse"></div>
+            </div>
+            <div>
+                <h1 class="text-xl font-black tracking-widest text-white uppercase mb-2">Akses Terkunci</h1>
+                <p class="text-[11px] text-gray-400 leading-relaxed font-medium">Anda diwajibkan untuk bergabung dengan server Discord DHM COMMUNITY terlebih dahulu agar bisa mengakses semua Script.</p>
+            </div>
+            <div class="flex flex-col pt-2">
+                <a href="https://discord.gg/PyFdf38qj5" target="_blank" onclick="window.markDiscordPopupDone()" class="w-full bg-gradient-to-r from-[#5865F2] to-[#4752C4] hover:brightness-110 text-white py-4 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-[#5865F2]/40 active:scale-[0.97] transition flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-discord text-base"></i> JOIN DISCORD SEKARANG
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- ==================================================================== -->
+
     <!-- MAINTENANCE LAYER -->
     <div id="maintenance-lockscreen-layer" class="hidden fixed inset-0 bg-black/96 z-[150] flex flex-col items-center justify-center p-6 text-center backdrop-blur-xl">
         <div class="glass-ui p-7 rounded-3xl max-w-sm space-y-4 border border-purple-500/20 shadow-2xl">
@@ -109,14 +129,14 @@
 
     <!-- Bulletin Ticker Text -->
     <div id="ticker-marquee-wrapper" class="glass-ui border-none bg-gradient-to-r from-purple-950/60 via-black/80 to-blue-950/60 text-white text-[10px] font-black py-2 px-4 shadow-xl">
-        <div class="max-w-md mx-auto flex items-center">
+        <div class="max-w-md md:max-w-6xl mx-auto flex items-center">
             <span class="bg-gradient-to-r from-purple-600 to-pink-500 text-[8px] px-1.5 py-0.5 rounded font-mono mr-2.5 flex-shrink-0 animate-pulse text-white">BULLETIN</span>
             <marquee id="ticker-marquee-text-payload" scrollamount="4" class="font-mono tracking-wide">Selamat datang di DHM COMMUNITY! Dapatkan update script terbaru setiap harinya di sini. 🔥</marquee>
         </div>
     </div>
 
     <!-- Telemetry Board -->
-    <div class="max-w-md mx-auto px-4 pt-3 flex justify-between items-center text-[9px] font-mono text-gray-500 select-none">
+    <div class="max-w-md md:max-w-6xl mx-auto px-4 pt-3 flex justify-between items-center text-[9px] font-mono text-gray-500 select-none">
         <div id="telemetry-clock" class="flex items-center gap-1 font-bold text-gray-400"><i class="fa-regular fa-clock text-purple-400"></i> 00:00:00</div>
         <div class="flex items-center gap-2">
             <span id="telemetry-network-badge" class="bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20 font-black">SYNCED</span>
@@ -125,7 +145,7 @@
     </div>
 
     <!-- Header App Bar Identity -->
-    <header class="max-w-md mx-auto px-4 mt-2 select-none">
+    <header class="max-w-md md:max-w-6xl mx-auto px-4 mt-2 select-none">
         <div class="glass-ui p-4 rounded-2xl flex justify-between items-center shadow-2xl relative overflow-hidden group">
             <div class="flex items-center space-x-3.5 z-10">
                 <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-blue-600 flex items-center justify-center font-black text-2xl text-white shadow-lg shadow-purple-500/30">D</div>
@@ -140,27 +160,20 @@
         </div>
     </header>
 
-    <div id="preferences-dropdown-panel" class="hidden max-w-md mx-auto px-4 mt-2 animate-premium-card select-none">
+    <div id="preferences-dropdown-panel" class="hidden max-w-md md:max-w-6xl mx-auto px-4 mt-2 animate-premium-card select-none">
         <div class="glass-ui p-4 rounded-2xl space-y-3">
             <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-gears text-purple-400 mr-1.5"></i> Konfigurasi Operasional Lokal</h4>
-            <div class="grid grid-cols-1 text-center space-y-2">
+            <div class="grid grid-cols-1 text-center">
                 <div onclick="toggleLocalPreferenceNode('hapticState')" id="pref-widget-haptic" class="bg-white/5 border border-white/5 p-2.5 rounded-xl text-[10px] font-black cursor-pointer text-purple-400 flex items-center justify-center gap-1.5">Haptic Engine</div>
-                
-                <!-- FITUR BARU 1: BACKUP & RESTORE PREFERENCES SYSTEM -->
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="exportFavoritesPipeline()" class="bg-white/5 border border-white/5 hover:border-purple-500/30 p-2 rounded-xl text-[10px] font-black text-gray-300 flex items-center justify-center gap-1.5 transition"><i class="fa-solid fa-download text-purple-400"></i> Ekspor Favorit</button>
-                    <button onclick="document.getElementById('import-favorites-file').click()" class="bg-white/5 border border-white/5 hover:border-purple-500/30 p-2 rounded-xl text-[10px] font-black text-gray-300 flex items-center justify-center gap-1.5 transition"><i class="fa-solid fa-upload text-blue-400"></i> Impor Favorit</button>
-                    <input type="file" id="import-favorites-file" class="hidden" accept=".json" onchange="importFavoritesPipeline(this)">
-                </div>
             </div>
         </div>
     </div>
 
     <!-- Core Dynamic Operations Context -->
-    <main class="max-w-md mx-auto p-4 space-y-4">
+    <main class="max-w-md md:max-w-6xl mx-auto p-4 space-y-4">
         
         <!-- CAROUSEL BANNER SHELL -->
-        <div id="carousel-banner-shell" class="hidden max-w-md mx-auto overflow-hidden relative rounded-2xl glass-ui h-32 select-none animate-premium-card border border-white/5">
+        <div id="carousel-banner-shell" class="hidden max-w-md md:max-w-6xl mx-auto overflow-hidden relative rounded-2xl glass-ui h-32 select-none animate-premium-card border border-white/5">
             <div id="carousel-track-container" class="carousel-track h-full"></div>
             <div class="absolute bottom-2 right-3 flex gap-1 z-20" id="carousel-dots-container"></div>
         </div>
@@ -183,12 +196,17 @@
                 </div>
             </div>
 
-            <!-- Advanced Fuzzy Searching Input Box -->
-            <div class="glass-ui rounded-2xl p-1 flex items-center neon-focus-glow border transition duration-300">
-                <i class="fa-solid fa-wand-magic-sparkles text-purple-400 ml-3.5 mr-2 text-xs"></i>
-                <input type="text" id="pipeline-search-input-field" placeholder="Cari nama script, game, atau detail fitur..." class="bg-transparent w-full p-2.5 focus:outline-none text-xs font-medium text-gray-200">
-                <button id="pipeline-search-clear-btn" onclick="clearActiveSearchFieldPipeline()" class="hidden text-gray-500 hover:text-white mr-3.5 transition"><i class="fa-solid fa-circle-xmark text-xs"></i></button>
-                <span class="text-[8px] font-mono bg-white/5 text-gray-400 px-2 py-1 rounded-lg mr-2 font-black border border-white/5 select-none">Fuzzy</span>
+            <!-- Advanced Fuzzy Searching Input Box + Quick Bookmark Filter Button -->
+            <div class="flex gap-2">
+                <div class="glass-ui rounded-2xl p-1 flex flex-1 items-center neon-focus-glow border transition duration-300">
+                    <i class="fa-solid fa-wand-magic-sparkles text-purple-400 ml-3.5 mr-2 text-xs"></i>
+                    <input type="text" id="pipeline-search-input-field" placeholder="Cari nama script, game, atau detail fitur..." class="bg-transparent w-full p-2.5 focus:outline-none text-xs font-medium text-gray-200">
+                    <button id="pipeline-search-clear-btn" onclick="clearActiveSearchFieldPipeline()" class="hidden text-gray-500 hover:text-white mr-3.5 transition"><i class="fa-solid fa-circle-xmark text-xs"></i></button>
+                    <span class="text-[8px] font-mono bg-white/5 text-gray-400 px-2 py-1 rounded-lg mr-2 font-black border border-white/5 select-none">Fuzzy</span>
+                </div>
+                <button id="quick-fav-filter-toggle" onclick="toggleQuickFavoriteFilteringMode()" class="glass-ui px-4 rounded-2xl text-gray-400 hover:text-pink-500 transition duration-300 flex items-center justify-center border border-white/5">
+                    <i class="fa-solid fa-heart text-xs"></i>
+                </button>
             </div>
 
             <!-- Custom Select Dropdowns without Native Options -->
@@ -219,12 +237,15 @@
                 </div>
             </div>
 
-            <!-- Scripts Target Box -->
-            <div class="space-y-3.5" id="live-scripts-render-target-box"></div>
+            <!-- Scripts Target Box (Desktop Grid Optimized) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="live-scripts-render-target-box"></div>
+            
+            <!-- Pagination Controls Box -->
+            <div id="pagination-controls-container" class="mt-8 mb-4 flex justify-center items-center gap-1.5 select-none"></div>
         </div>
 
         <!-- ================= CONTAINER VIEWPORT 2: MESSAGE HUB ================= -->
-        <div id="viewport-message-hub" class="hidden space-y-4">
+        <div id="viewport-message-hub" class="hidden space-y-4 max-w-xl mx-auto">
             <div class="glass-ui p-5 rounded-3xl space-y-4 shadow-2xl relative animate-premium-card">
                 <div class="flex items-center gap-2 border-b border-gray-800/60 pb-3 select-none">
                     <i class="fa-solid fa-paper-plane text-purple-400 text-sm"></i>
@@ -267,31 +288,8 @@
             </div>
         </div>
 
-        <!-- ================= CONTAINER VIEWPORT 3: DYNAMIC BOOKMARKS FAVORIT GRID ================= -->
-        <div id="viewport-favorit-hub" class="hidden space-y-4">
-            <div class="glass-ui p-4 rounded-3xl space-y-3 shadow-2xl">
-                <div class="border-b border-gray-800/60 pb-2.5 select-none">
-                    <h3 class="text-xs font-black text-pink-500 uppercase tracking-wider"><i class="fa-solid fa-heart mr-1"></i> Koleksi Skrip Favorit Anda</h3>
-                    <p class="text-[10px] text-gray-500 font-medium mt-0.5">Daftar skrip khusus yang Anda simpan secara lokal.</p>
-                </div>
-                <div id="favorit-live-render-box" class="space-y-3.5"></div>
-            </div>
-
-            <!-- FITUR BARU 2: RECENT HISTORY LOGS CONTAINER -->
-            <div class="glass-ui p-4 rounded-3xl space-y-3 shadow-2xl">
-                <div class="border-b border-gray-800/60 pb-2.5 flex justify-between items-center select-none">
-                    <div>
-                        <h3 class="text-xs font-black text-blue-400 uppercase tracking-wider"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Riwayat Salinan Terakhir</h3>
-                        <p class="text-[10px] text-gray-500 font-medium mt-0.5">5 skrip terakhir yang berhasil disalin.</p>
-                    </div>
-                    <button onclick="clearRecentHistoryPipeline()" class="text-[9px] font-mono text-red-400 border border-red-500/20 px-2 py-1 rounded bg-red-500/5 hover:bg-red-500/10 active:scale-95 transition">Hapus</button>
-                </div>
-                <div id="history-live-render-box" class="space-y-2"></div>
-            </div>
-        </div>
-
         <!-- ================= CONTAINER VIEWPORT 4: FAQ HUB ================= -->
-        <div id="viewport-faq-hub" class="hidden space-y-4">
+        <div id="viewport-faq-hub" class="hidden space-y-4 max-w-2xl mx-auto">
             <div class="glass-ui p-4 rounded-3xl space-y-3 shadow-2xl">
                 <div class="border-b border-gray-800/60 pb-2.5 select-none">
                     <h3 class="text-xs font-black text-purple-400 uppercase tracking-wider"><i class="fa-solid fa-circle-question text-sm"></i> Frequently Asked Questions Hub</h3>
@@ -305,10 +303,9 @@
     </main>
 
     <!-- Global Floating Navigation Dock Dashboard -->
-    <div class="fixed bottom-4 left-4 right-4 glass-ui rounded-2xl p-2 grid grid-cols-4 text-center text-[10px] font-black text-gray-500 z-50 shadow-2xl border border-white/10 select-none">
+    <div class="fixed bottom-4 left-4 right-4 max-w-md md:max-w-xl mx-auto glass-ui rounded-2xl p-2 grid grid-cols-3 text-center text-[10px] font-black text-gray-500 z-50 shadow-2xl border border-white/10 select-none">
         <button onclick="switchActiveViewportContext('scripts', this)" class="text-purple-400 active-navigation-node transition transform active:scale-90"><i class="fa-solid fa-folder-open text-base block mb-0.5"></i>Scripts</button>
         <button onclick="switchActiveViewportContext('message', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-comment-dots text-base block mb-0.5"></i>Pesan</button>
-        <button onclick="switchActiveViewportContext('favorit', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-heart text-base block mb-0.5"></i>Favorit</button>
         <button onclick="switchActiveViewportContext('faq', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-circle-question text-base block mb-0.5"></i>FAQ Hub</button>
     </div>
 
@@ -328,19 +325,35 @@
         let localBookmarksRegistryList = JSON.parse(localStorage.getItem('dhm_v10_bookmarks')) || [];
         let localPreferencesConfigObject = JSON.parse(localStorage.getItem('dhm_v10_pref_config')) || { hapticState: true };
         
-        // INITIAL DATA FOR RECENT LOGS
-        let localHistoryRegistryList = JSON.parse(localStorage.getItem('dhm_v10_history')) || [];
-        
         let activeSelectedGameCategoryValue = "Semua Game";
         let activeSelectedSortOrderValue = "newest";
         let activeSelectedMsgTargetRoleValue = "Admin";
+        let isQuickFavoriteFilterActive = false;
         
+        let currentPage = 1;
+        const itemsPerPage = 12;
+
         let activeCarouselIndex = 0;
         let totalCarouselBanners = 0;
 
         document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length;
         hydrateLocalPreferencesButtonUiState();
         initBackgroundCanvasEmittersModule();
+        
+        // ================= FITUR DISCORD POPUP (WAJIB JOIN) =================
+        const hasJoinedDiscord = localStorage.getItem('dhm_discord_joined');
+        if (!hasJoinedDiscord) {
+            // Tampilkan popup jika belum ada history klik join di local storage
+            document.getElementById('discord-popup-layer').classList.remove('hidden');
+        }
+
+        window.markDiscordPopupDone = () => {
+            triggerDeviceShortHapticFeedbackVibration();
+            // Simpan data bahwa user sudah mengklik Join Discord, lalu sembunyikan pop up-nya
+            localStorage.setItem('dhm_discord_joined', 'true');
+            document.getElementById('discord-popup-layer').classList.add('hidden');
+        };
+        // ====================================================================
 
         // Custom Dropdown Engine
         window.toggleCustomSelectorDropdownMenu = (dropdownKeyId) => {
@@ -364,6 +377,7 @@
             activeSelectedGameCategoryValue = value;
             document.getElementById('label-selected-game-cat').innerText = label;
             toggleCustomSelectorDropdownMenu('game-cat');
+            currentPage = 1; 
             executeMainUIRendererPipelineStreamer();
         };
 
@@ -371,6 +385,7 @@
             activeSelectedSortOrderValue = value;
             document.getElementById('label-selected-sort-order').innerText = label;
             toggleCustomSelectorDropdownMenu('sort-order');
+            currentPage = 1; 
             executeMainUIRendererPipelineStreamer();
         };
 
@@ -532,45 +547,114 @@
             executeMainUIRendererPipelineStreamer();
         });
 
+        window.toggleQuickFavoriteFilteringMode = () => {
+            triggerDeviceShortHapticFeedbackVibration();
+            isQuickFavoriteFilterActive = !isQuickFavoriteFilterActive;
+            const btn = document.getElementById('quick-fav-filter-toggle');
+            if(isQuickFavoriteFilterActive) {
+                btn.className = "glass-ui px-4 rounded-2xl text-pink-500 bg-pink-500/10 border border-pink-500/30 transition duration-300 flex items-center justify-center";
+            } else {
+                btn.className = "glass-ui px-4 rounded-2xl text-gray-400 hover:text-pink-500 transition duration-300 flex items-center justify-center border border-white/5";
+            }
+            currentPage = 1; 
+            executeMainUIRendererPipelineStreamer();
+        };
+
         // Scripts Load Engine Streamer
         onValue(ref(db, 'scripts'), (snap) => { memoryCacheEntireScriptsDataset = snap.val() || {}; executeMainUIRendererPipelineStreamer(); calculateAggregatedCopiesMetricCounter(); });
         function calculateAggregatedCopiesMetricCounter() { let total = 0; Object.values(memoryCacheEntireScriptsDataset).forEach(s => total += (s.copyCount || 0)); document.getElementById('metric-label-copies').innerText = total; }
 
         function executeMainUIRendererPipelineStreamer() {
             const box = document.getElementById('live-scripts-render-target-box');
-            const favBox = document.getElementById('favorit-live-render-box');
+            const paginationContainer = document.getElementById('pagination-controls-container');
             const search = document.getElementById('pipeline-search-input-field').value.toLowerCase();
 
-            box.innerHTML = ''; favBox.innerHTML = '';
+            box.innerHTML = ''; 
             let list = Object.keys(memoryCacheEntireScriptsDataset).map(k => ({ id: k, ...memoryCacheEntireScriptsDataset[k] }));
 
             if(search) list = list.filter(item => item.title.toLowerCase().includes(search) || item.purpose.toLowerCase().includes(search));
             if(activeSelectedGameCategoryValue !== 'Semua Game') list = list.filter(item => item.category === activeSelectedGameCategoryValue);
+            if(isQuickFavoriteFilterActive) list = list.filter(item => localBookmarksRegistryList.includes(item.id));
 
             if(activeSelectedSortOrderValue === 'newest') list.sort((a, b) => b.timestamp - a.timestamp);
             else if(activeSelectedSortOrderValue === 'popular') list.sort((a, b) => (b.copyCount || 0) - (a.copyCount || 0));
             else if(activeSelectedSortOrderValue === 'alphabet') list.sort((a, b) => a.title.localeCompare(b.title));
 
             document.getElementById('metric-label-total').innerText = list.length;
-            document.title = `DHM COMMUNITY | ${list.length} Scripts Tersedia`;
+            document.title = `DHM COMMUNITY | ${list.length} Scripts`;
 
-            let favList = list.filter(item => localBookmarksRegistryList.includes(item.id));
+            if(list.length === 0) {
+                box.innerHTML = `<p class="text-center col-span-full py-8 text-xs text-gray-600 font-mono">Skrip tidak ditemukan</p>`;
+                paginationContainer.innerHTML = '';
+                return;
+            }
 
-            if(list.length === 0) box.innerHTML = `<p class="text-center py-8 text-xs text-gray-600 font-mono">Skrip tidak ditemukan</p>`;
-            if(favList.length === 0) favBox.innerHTML = `<p class="text-center py-8 text-xs text-gray-600 font-mono">Belum ada skrip favorit yang disimpan</p>`;
+            // PAGINATION LOGIC:
+            const totalPages = Math.ceil(list.length / itemsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
 
-            list.forEach(item => { box.insertAdjacentHTML('beforeend', generateCoreScriptHtmlCardLayoutStructure(item, localBookmarksRegistryList.includes(item.id))); });
-            favList.forEach(item => { favBox.insertAdjacentHTML('beforeend', generateCoreScriptHtmlCardLayoutStructure(item, true)); });
-            
-            // EXECUTE HISTORY RENDER SINKRONISASI
-            renderHistoryPipelineStreamer();
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedList = list.slice(startIndex, endIndex);
+
+            paginatedList.forEach(item => { box.insertAdjacentHTML('beforeend', generateCoreScriptHtmlCardLayoutStructure(item, localBookmarksRegistryList.includes(item.id))); });
+
+            renderPaginationControls(totalPages);
         }
+
+        // FUNGSI RENDER TOMBOL PAGINATION
+        function renderPaginationControls(totalPages) {
+            const container = document.getElementById('pagination-controls-container');
+            container.innerHTML = '';
+            
+            if(totalPages <= 1) return;
+
+            let html = '';
+            const prevDisabled = currentPage === 1 ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 hover:text-white';
+            html += `<button onclick="window.changePage(${currentPage - 1})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 ${prevDisabled} transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>`;
+
+            let maxPagesToShow = 5;
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+            if (endPage - startPage + 1 < maxPagesToShow) {
+                startPage = Math.max(1, endPage - maxPagesToShow + 1);
+            }
+
+            if (startPage > 1) {
+                html += `<button onclick="window.changePage(1)" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition text-xs font-black">1</button>`;
+                if (startPage > 2) html += `<span class="text-gray-500 text-xs px-1">...</span>`;
+            }
+
+            for(let i = startPage; i <= endPage; i++) {
+                const activeClass = i === currentPage ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-none shadow-lg' : 'glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-white';
+                html += `<button onclick="window.changePage(${i})" class="w-8 h-8 flex items-center justify-center rounded-lg ${activeClass} transition text-xs font-black">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span class="text-gray-500 text-xs px-1">...</span>`;
+                html += `<button onclick="window.changePage(${totalPages})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition text-xs font-black">${totalPages}</button>`;
+            }
+
+            const nextDisabled = currentPage === totalPages ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 hover:text-white';
+            html += `<button onclick="window.changePage(${currentPage + 1})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 ${nextDisabled} transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>`;
+
+            container.innerHTML = html;
+        }
+
+        window.changePage = (page) => {
+            triggerDeviceShortHapticFeedbackVibration();
+            currentPage = page;
+            executeMainUIRendererPipelineStreamer();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        };
 
         function generateCoreScriptHtmlCardLayoutStructure(item, bookmarked) {
             const size = item.imageScaleSize || 'small';
             const actionButtonsHtml = `
                 <div class="flex gap-1.5 mt-2">
-                    <button onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition"><i class="fa-solid fa-copy"></i> SALIN</button>
+                    <button id="btn-copy-main-${item.id}" onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-1"><i class="fa-solid fa-copy"></i> SALIN</button>
                     <button onclick="window.openScriptDetailTab('${item.id}')" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition border border-white/10"><i class="fa-solid fa-eye"></i> DETAIL</button>
                 </div>
                 <div class="flex gap-1.5 mt-1.5">
@@ -581,30 +665,34 @@
 
             if(size === 'large') {
                 return `
-                    <div class="glass-ui p-4 rounded-3xl space-y-2 relative animate-premium-card flex flex-col">
-                        <div class="relative w-full h-44 rounded-2xl overflow-hidden border border-white/5 bg-slate-900">
-                            <img src="${item.icon || 'https://via.placeholder.com/300'}" class="w-full h-full object-cover">
-                            <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-base backdrop-blur-md ${bookmarked ? 'text-pink-500' : 'text-gray-400'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
-                        </div>
-                        <div class="flex-1 min-w-0 pt-1">
-                            <span class="bg-white/5 text-gray-300 text-[8px] font-black px-2 py-0.5 rounded border border-white/5 uppercase font-mono">${item.category}</span>
-                            <h3 class="text-xs font-black text-white mt-1.5 truncate uppercase tracking-wide">${item.title}</h3>
-                            <p class="text-[11px] text-gray-400 line-clamp-2 font-medium mt-0.5">${item.purpose}</p>
+                    <div class="glass-ui p-4 rounded-3xl space-y-2 relative animate-premium-card flex flex-col justify-between">
+                        <div>
+                            <div class="relative w-full h-40 rounded-2xl overflow-hidden border border-white/5 bg-slate-900">
+                                <img src="${item.icon || 'https://via.placeholder.com/300'}" class="w-full h-full object-cover">
+                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-base backdrop-blur-md ${bookmarked ? 'text-pink-500' : 'text-gray-400'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
+                            </div>
+                            <div class="pt-2">
+                                <span class="bg-white/5 text-gray-300 text-[8px] font-black px-2 py-0.5 rounded border border-white/5 uppercase font-mono">${item.category}</span>
+                                <h3 class="text-xs font-black text-white mt-1.5 truncate uppercase tracking-wide">${item.title}</h3>
+                                <p class="text-[11px] text-gray-400 line-clamp-2 font-medium mt-0.5">${item.purpose}</p>
+                            </div>
                         </div>
                         ${actionButtonsHtml}
                     </div>`;
             } else {
-                const imgDimensionsClass = size === 'medium' ? 'w-20 h-20 rounded-2xl' : 'w-14 h-14 rounded-2xl';
+                const imgDimensionsClass = size === 'medium' ? 'w-16 h-16 rounded-2xl' : 'w-12 h-12 rounded-2xl';
                 return `
-                    <div class="glass-ui p-4 rounded-3xl space-y-2 relative animate-premium-card">
-                        <div class="flex items-start gap-3.5">
-                            <img src="${item.icon || 'https://via.placeholder.com/60'}" class="${imgDimensionsClass} object-cover bg-slate-900 border border-white/5 flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <span class="bg-white/5 text-gray-300 text-[8px] font-black px-2 py-0.5 rounded border border-white/5 uppercase font-mono">${item.category}</span>
-                                <h3 class="text-xs font-black text-white mt-1.5 truncate tracking-wide uppercase">${item.title}</h3>
-                                <p class="text-[11px] text-gray-400 line-clamp-1 font-medium mt-0.5">${item.purpose}</p>
+                    <div class="glass-ui p-4 rounded-3xl space-y-2 relative animate-premium-card flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start gap-3">
+                                <img src="${item.icon || 'https://via.placeholder.com/60'}" class="${imgDimensionsClass} object-cover bg-slate-900 border border-white/5 flex-shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <span class="bg-white/5 text-gray-300 text-[8px] font-black px-2 py-0.5 rounded border border-white/5 uppercase font-mono">${item.category}</span>
+                                    <h3 class="text-xs font-black text-white mt-1 truncate tracking-wide uppercase">${item.title}</h3>
+                                    <p class="text-[11px] text-gray-400 line-clamp-1 font-medium mt-0.5">${item.purpose}</p>
+                                </div>
+                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="p-1 text-base ${bookmarked ? 'text-pink-500' : 'text-gray-600'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
                             </div>
-                            <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="p-1.5 text-base ${bookmarked ? 'text-pink-500' : 'text-gray-600'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
                         </div>
                         ${actionButtonsHtml}
                     </div>`;
@@ -613,90 +701,18 @@
 
         window.executeCopyScriptPayloadPipeline = (id, b64) => {
             triggerDeviceShortHapticFeedbackVibration();
-            navigator.clipboard.writeText(decodeURIComponent(atob(b64))).then(() => {
+            const originalText = decodeURIComponent(atob(b64));
+            navigator.clipboard.writeText(originalText).then(() => {
                 window.dispatchSystemToastNotificationNotification('Skrip berhasil disalin!', 'success');
                 runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
                 
-                // EKSEKUSI PUSH KE LOG RIWAYAT
-                pushToLocalHistoryRegistryPipeline(id);
-            });
-        };
-
-        // FITUR BARU 2: RIWAYAT ENGINE LOGIC PIPELINE
-        window.pushToLocalHistoryRegistryPipeline = (id) => {
-            localHistoryRegistryList = [id, ...localHistoryRegistryList.filter(i => i !== id)].slice(0, 5);
-            localStorage.setItem('dhm_v10_history', JSON.stringify(localHistoryRegistryList));
-            renderHistoryPipelineStreamer();
-        };
-
-        window.clearRecentHistoryPipeline = () => {
-            triggerDeviceShortHapticFeedbackVibration();
-            localHistoryRegistryList = [];
-            localStorage.removeItem('dhm_v10_history');
-            renderHistoryPipelineStreamer();
-            window.dispatchSystemToastNotificationNotification('Riwayat salinan dibersihkan.', 'success');
-        };
-
-        function renderHistoryPipelineStreamer() {
-            const box = document.getElementById('history-live-render-box');
-            if(!box) return;
-            box.innerHTML = '';
-            if(localHistoryRegistryList.length === 0) {
-                box.innerHTML = `<p class="text-center py-4 text-xs text-gray-600 font-mono">Belum ada riwayat penyalinan</p>`;
-                return;
-            }
-            localHistoryRegistryList.forEach(id => {
-                const item = memoryCacheEntireScriptsDataset[id];
-                if(item) {
-                    box.innerHTML += `
-                        <div class="flex justify-between items-center bg-white/5 border border-white/5 p-2.5 rounded-xl text-xs font-medium animate-premium-card">
-                            <span class="text-white truncate uppercase font-bold tracking-wide max-w-[65%]">${item.title}</span>
-                            <button onclick="window.executeCopyScriptPayloadPipeline('${id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded text-[10px] font-black transition active:scale-95"><i class="fa-solid fa-copy"></i> SALIN</button>
-                        </div>
-                    `;
+                const btn = document.getElementById(`btn-copy-main-${id}`);
+                if(btn) {
+                    const originalInner = btn.innerHTML;
+                    btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> COPIED`;
+                    setTimeout(() => { btn.innerHTML = originalInner; }, 2000);
                 }
             });
-        }
-
-        // FITUR BARU 1: PIPELINE EKSPOR & IMPOR DATA FAVORIT
-        window.exportFavoritesPipeline = () => {
-            triggerDeviceShortHapticFeedbackVibration();
-            if (localBookmarksRegistryList.length === 0) {
-                return window.dispatchSystemToastNotificationNotification('Daftar favorit Anda kosong!', 'error');
-            }
-            const blob = new Blob([JSON.stringify(localBookmarksRegistryList)], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `dhm_favorites_backup.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            window.dispatchSystemToastNotificationNotification('Berhasil mengekspor skrip favorit!', 'success');
-        };
-
-        window.importFavoritesPipeline = (inputNode) => {
-            triggerDeviceShortHapticFeedbackVibration();
-            const file = inputNode.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (Array.isArray(parsed)) {
-                        localBookmarksRegistryList = [...new Set([...localBookmarksRegistryList, ...parsed])];
-                        localStorage.setItem('dhm_v10_bookmarks', JSON.stringify(localBookmarksRegistryList));
-                        document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length;
-                        executeMainUIRendererPipelineStreamer();
-                        window.dispatchSystemToastNotificationNotification('Berhasil memulihkan skrip favorit!', 'success');
-                    } else {
-                        window.dispatchSystemToastNotificationNotification('Format backup tidak valid!', 'error');
-                    }
-                } catch (err) {
-                    window.dispatchSystemToastNotificationNotification('Gagal memproses file cadangan.', 'error');
-                }
-            };
-            reader.readAsText(file);
-            inputNode.value = '';
         };
 
         window.executeTargetBookmarkTogglePipeline = (id) => {
@@ -711,17 +727,23 @@
             triggerDeviceShortHapticFeedbackVibration();
             document.getElementById('viewport-scripts-hub').classList.toggle('hidden', id !== 'scripts');
             document.getElementById('viewport-message-hub').classList.toggle('hidden', id !== 'message');
-            document.getElementById('viewport-favorit-hub').classList.toggle('hidden', id !== 'favorit');
             document.getElementById('viewport-faq-hub').classList.toggle('hidden', id !== 'faq');
+            
             document.querySelectorAll('.active-navigation-node').forEach(n => { n.classList.remove('text-purple-400', 'active-navigation-node'); n.classList.add('text-gray-500'); });
             ref.classList.add('text-purple-400', 'active-navigation-node'); ref.classList.remove('text-gray-500');
+            window.scrollTo({top: 0, behavior: 'smooth'});
         };
 
         window.triggerLocalPreferencesControlPanel = () => { triggerDeviceShortHapticFeedbackVibration(); document.getElementById('preferences-dropdown-panel').classList.toggle('hidden'); };
         window.toggleLocalPreferenceNode = (k) => { triggerDeviceShortHapticFeedbackVibration(); localPreferencesConfigObject[k] = !localPreferencesConfigObject[k]; localStorage.setItem('dhm_v10_pref_config', JSON.stringify(localPreferencesConfigObject)); hydrateLocalPreferencesButtonUiState(); };
         function hydrateLocalPreferencesButtonUiState() { document.getElementById('pref-widget-haptic').className = localPreferencesConfigObject.hapticState ? "bg-purple-600/10 border border-purple-500/20 p-2.5 rounded-xl text-[10px] font-black text-purple-400 flex items-center justify-center gap-1.5" : "bg-white/5 border border-white/5 p-2.5 rounded-xl text-[10px] font-bold text-gray-500 flex items-center justify-center gap-1.5"; }
         function triggerDeviceShortHapticFeedbackVibration() { if(localPreferencesConfigObject.hapticState && navigator.vibrate) navigator.vibrate(10); }
-        window.clearActiveSearchFieldPipeline = () => { triggerDeviceShortHapticFeedbackVibration(); document.getElementById('pipeline-search-input-field').value = ''; executeMainUIRendererPipelineStreamer(); };
+        window.clearActiveSearchFieldPipeline = () => { 
+            triggerDeviceShortHapticFeedbackVibration(); 
+            document.getElementById('pipeline-search-input-field').value = ''; 
+            currentPage = 1; 
+            executeMainUIRendererPipelineStreamer(); 
+        };
         window.dispatchNativeSharePipeline = () => { triggerDeviceShortHapticFeedbackVibration(); if(navigator.share) navigator.share({ title: 'DHM COMMUNITY', url: window.location.href }); };
 
         function initBackgroundCanvasEmittersModule() {
@@ -737,65 +759,85 @@
             const loop = () => { ctx.clearRect(0, 0, canvas.width, canvas.height); arrayParticles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(loop); }; loop();
         }
 
-        document.getElementById('pipeline-search-input-field').addEventListener('input', executeMainUIRendererPipelineStreamer);
+        document.getElementById('pipeline-search-input-field').addEventListener('input', () => {
+            currentPage = 1; 
+            executeMainUIRendererPipelineStreamer();
+        });
         
-        // ================= KUMPULAN FITUR BARU MULAI DARI SINI =================
-        
-        // FITUR BARU: VIEW DETAIL (MODAL OVERLAY - DIJAMIN ANTI BLOKIR)
+        // VIEW DETAIL MODAL OVERLAY
         window.openScriptDetailTab = (id) => {
             triggerDeviceShortHapticFeedbackVibration();
             const item = memoryCacheEntireScriptsDataset[id];
             if(!item) return dispatchSystemToastNotificationNotification('Gagal memuat detail data.', 'error');
             
-            const releaseDate = item.timestamp ? new Date(item.timestamp).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }) : 'Tidak diketahui';
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
             
-            // Bikin element modal langsung di dalam halaman
+            const fullDate = item.timestamp ? new Date(item.timestamp).toLocaleDateString('id-ID', dateOptions) : 'Tidak diketahui';
+            const fullTime = item.timestamp ? new Date(item.timestamp).toLocaleTimeString('id-ID', timeOptions) : '--:--';
+            
+            const codeLength = item.scriptText ? item.scriptText.length : 0;
+            const scriptLinesCount = item.scriptText ? item.scriptText.split('\n').length : 0;
+            const scriptArchitectureType = item.scriptText && item.scriptText.includes('loadstring') ? 'Loadstring API' : 'Local Code Architecture';
+            
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-premium-card';
+            modal.className = 'fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-premium-card';
             modal.innerHTML = `
-                <div class="glass-ui p-6 rounded-3xl max-w-sm w-full border border-purple-500/30 shadow-2xl relative max-h-[90vh] flex flex-col">
-                    <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-black/50 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-xmark"></i></button>
+                <div class="glass-ui p-6 rounded-3xl max-w-lg w-full border border-purple-500/30 shadow-2xl relative max-h-[90vh] flex flex-col">
+                    <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-xmark"></i></button>
                     
-                    <div class="mb-3 pr-8">
-                        <span class="bg-gradient-to-r from-purple-600 to-blue-600 px-2 py-1 rounded text-[9px] font-black uppercase text-white shadow-lg"><i class="fa-solid fa-gamepad mr-1"></i>${item.category}</span>
-                        <h1 class="text-lg font-black text-white mt-2 leading-tight">${item.title}</h1>
-                        <p class="text-[11px] text-gray-400 mt-1">${item.purpose}</p>
+                    <div class="mb-4 pr-8">
+                        <span class="bg-gradient-to-r from-purple-600 to-blue-600 px-2.5 py-1 rounded-md text-[9px] font-black uppercase text-white shadow-lg tracking-wider inline-flex items-center gap-1">
+                            <i class="fa-solid fa-gamepad"></i> ${item.category}
+                        </span>
+                        <h1 class="text-lg font-black text-white mt-2.5 leading-tight tracking-wide uppercase bg-clip-text bg-gradient-to-r from-white to-gray-300">${item.title}</h1>
+                        <p class="text-[11px] text-gray-400 mt-1 font-medium leading-relaxed bg-white/5 p-2 rounded-lg border border-white/5"><i class="fa-solid fa-circle-info text-purple-400 mr-1"></i>${item.purpose}</p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 mb-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                    <div class="grid grid-cols-2 gap-3 mb-4 bg-black/40 p-3 rounded-xl border border-white/5 text-[11px]">
                         <div>
-                            <span class="block text-[9px] text-purple-400 font-bold uppercase tracking-wider">Rilis</span>
-                            <span class="text-[11px] text-white font-medium">${releaseDate.split(' ')[0]}</span>
+                            <span class="block text-[9px] text-purple-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-regular fa-calendar-days"></i> Hari / Tanggal Upload</span>
+                            <span class="text-white font-bold">${fullDate}</span>
                         </div>
                         <div>
-                            <span class="block text-[9px] text-purple-400 font-bold uppercase tracking-wider">Total Copy</span>
-                            <span class="text-[11px] text-white font-medium">${item.copyCount || 0} Kali</span>
+                            <span class="block text-[9px] text-purple-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-regular fa-clock"></i> Waktu Jam Rilis</span>
+                            <span class="text-white font-bold">${fullTime} WIB</span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-blue-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-solid fa-chart-simple"></i> Total Salinan</span>
+                            <span class="text-white font-bold">${item.copyCount || 0} Kali Digunakan</span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-amber-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-solid fa-code-branch"></i> Struktur Mekanis</span>
+                            <span class="text-amber-400 font-bold">${scriptArchitectureType}</span>
+                        </div>
+                        <div class="col-span-2 border-t border-white/5 pt-2 flex justify-between text-[10px] text-gray-400 font-mono">
+                            <span>Karakter: <b class="text-white">${codeLength}</b></span>
+                            <span>Baris Kode: <b class="text-white">${scriptLinesCount}</b></span>
                         </div>
                     </div>
                     
-                    <span class="text-[10px] text-purple-400 font-bold uppercase tracking-wider mb-1 block">Source Code:</span>
-                    <div class="bg-[#050505] p-3.5 rounded-xl border border-white/10 font-mono text-[10px] text-emerald-400 overflow-y-auto custom-scrollbar flex-1 mb-4" style="max-height: 25vh; white-space: pre-wrap; word-break: break-all;">${item.scriptText}</div>
+                    <span class="text-[10px] text-purple-400 font-black uppercase tracking-widest mb-1 block"><i class="fa-solid fa-code text-xs"></i> Source Code Script:</span>
+                    <div class="bg-[#04060a] p-3.5 rounded-xl border border-white/10 font-mono text-[10px] text-emerald-400 overflow-y-auto custom-scrollbar flex-1 mb-4 select-all" style="max-height: 25vh; white-space: pre-wrap; word-break: break-all;">${item.scriptText}</div>
                     
-                    <button id="modal-copy-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-copy"></i> SALIN SOURCE CODE
+                    <button id="modal-copy-btn" class="w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-purple-600/20 active:scale-[0.97] transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-copy"></i> SALIN SOURCE CODE SKRIP
                     </button>
                 </div>
             `;
             
             document.body.appendChild(modal);
             
-            // Event listener buat tombol copy di dalem modal
             const copyBtn = modal.querySelector('#modal-copy-btn');
             copyBtn.addEventListener('click', () => {
                 triggerDeviceShortHapticFeedbackVibration();
                 navigator.clipboard.writeText(item.scriptText).then(() => {
-                    window.dispatchSystemToastNotificationNotification('Script berhasil disalin dari detail!', 'success');
-                    pushToLocalHistoryRegistryPipeline(id);
+                    window.dispatchSystemToastNotificationNotification('Script berhasil disalin langsung dari menu detail!', 'success');
+                    runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
                 });
             });
         };
 
-        // FITUR TAMBAHAN 1: DOWNLOAD SCRIPT (.TXT)
         window.downloadScriptTxt = (title, b64) => {
             triggerDeviceShortHapticFeedbackVibration();
             const text = decodeURIComponent(atob(b64));
@@ -806,24 +848,23 @@
             a.download = `[DHM] ${title}.txt`;
             a.click();
             URL.revokeObjectURL(url);
-            dispatchSystemToastNotificationNotification('Script berhasil di-download!', 'success');
+            dispatchSystemToastNotificationNotification('File .txt berhasil di-download!', 'success');
         };
 
-        // FITUR TAMBAHAN 2: SHARE SPESIFIK SCRIPT
         window.shareSpecificScript = (title, purpose) => {
             triggerDeviceShortHapticFeedbackVibration();
             if (navigator.share) {
                 navigator.share({
                     title: `DHM SCRIPT: ${title}`,
-                    text: `Cek script ini: ${title}\nDeskripsi: ${purpose}\n\nTemukan di DHM COMMUNITY!`,
+                    text: `Dapatkan Script Terkeren ini: ${title}\nFitur: ${purpose}\n\nDownload sekarang di DHM COMMUNITY Portal!`,
                     url: window.location.href
-                }).catch(err => console.log('Share dibatalkan.'));
+                }).catch(() => {});
             } else {
-                dispatchSystemToastNotificationNotification('Browser kamu tidak mendukung fitur Share.', 'error');
+                navigator.clipboard.writeText(`DHM SCRIPT: ${title} | ${purpose} -> ${window.location.href}`);
+                dispatchSystemToastNotificationNotification('Link tautan skrip disalin ke clipboard!', 'success');
             }
         };
 
-        // FITUR TAMBAHAN 4: SHORTCUT ESC UNTUK CLEAR SEARCH
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 window.clearActiveSearchFieldPipeline();
@@ -831,10 +872,9 @@
             }
         });
 
-        // FITUR TAMBAHAN 5: LOGIKA SCROLL TO TOP BUTTON
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('fab-scroll-top');
-            if(window.scrollY > 300) btn.classList.remove('hidden');
+            if(window.scrollY > 400) btn.classList.remove('hidden');
             else btn.classList.add('hidden');
         });
     </script>
