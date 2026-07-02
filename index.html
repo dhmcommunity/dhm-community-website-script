@@ -3,91 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DHM COMMUNITY | Sovereign v13.0</title>
+    <!-- TAG PWA -->
+    <meta name="theme-color" content="#020306">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192">
+    
+    <title>DHM COMMUNITY | Sovereign v16.1 (Guarded)</title>
     <!-- Tailwind CSS v4 Browser Engine CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome Pro Icon Emulation Node Pack -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Prism.js Syntax Highlighter CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
         :root {
             --bg-main: #020306;
             --bg-card: rgba(11, 15, 26, 0.75);
             --accent: #a855f7;
-            --accent-rgb: 168, 85, 247;
             --accent-glow: rgba(168, 85, 247, 0.3);
             --neon-blue: #3b82f6;
             --neon-green: #10b981;
             --text-color: #f8fafc;
+            --border-color: rgba(255, 255, 255, 0.05);
         }
+        
         body {
             background-color: var(--bg-main);
             color: var(--text-color);
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            letter-spacing: -0.015em;
         }
         .glass-ui {
             background: var(--bg-card);
             backdrop-filter: blur(35px);
             -webkit-backdrop-filter: blur(35px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
         }
         .progress-indicator-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
+            position: fixed; top: 0; left: 0; height: 3px;
             background: linear-gradient(to right, var(--accent), var(--neon-blue), var(--neon-green));
-            z-index: 1000;
-            width: 0%;
-            transition: width 0.1s linear;
+            z-index: 1000; width: 0%; transition: width 0.1s linear;
         }
-        .neon-focus-glow:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 18px var(--accent-glow);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-        }
-        .carousel-track {
-            display: flex;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        @keyframes scaleInUi {
-            0% { transform: scale(0.96); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-premium-card {
-            animation: scaleInUi 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        #background-canvas {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            pointer-events: none;
-            opacity: 0.4;
-        }
-        input, textarea {
-            background-color: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #fff;
-        }
-        input:focus, textarea:focus {
-            border-color: var(--accent);
-            outline: none;
-        }
+        .neon-focus-glow:focus-within { border-color: var(--accent); box-shadow: 0 0 18px var(--accent-glow); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 12px; }
+        .carousel-track { display: flex; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+        @keyframes scaleInUi { 0% { transform: scale(0.96); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .animate-premium-card { animation: scaleInUi 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        #background-canvas { position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: 0.4; }
+        input, textarea { background-color: rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); color: inherit; }
+        input:focus, textarea:focus { border-color: var(--accent); outline: none; }
         .custom-dropdown-panel {
             background: rgba(10, 12, 22, 0.96);
             backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
         }
+        pre[class*="language-"] { margin: 0 !important; border-radius: 0.75rem !important; font-size: 10px !important; background: #04060a !important; }
     </style>
 </head>
 <body class="min-h-screen pb-32 relative">
@@ -96,7 +68,7 @@
     <div class="progress-indicator-bar" id="scroll-track-node"></div>
     <div id="toast-master-hub" class="fixed top-4 left-0 right-0 z-[200] flex flex-col items-center space-y-2 pointer-events-none px-4"></div>
 
-    <!-- ================= DISCORD POPUP LAYER (WAJIB JOIN) ================= -->
+    <!-- DISCORD POPUP LAYER -->
     <div id="discord-popup-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 text-center backdrop-blur-xl">
         <div class="glass-ui p-8 rounded-3xl max-w-sm w-full space-y-5 border border-[#5865F2]/40 shadow-2xl animate-premium-card relative">
             <div class="w-20 h-20 rounded-full bg-[#5865F2]/20 border border-[#5865F2]/50 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(88,101,242,0.3)] relative">
@@ -105,7 +77,7 @@
             </div>
             <div>
                 <h1 class="text-xl font-black tracking-widest text-white uppercase mb-2">Akses Terkunci</h1>
-                <p class="text-[11px] text-gray-400 leading-relaxed font-medium">Anda diwajibkan untuk bergabung dengan server Discord DHM COMMUNITY terlebih dahulu agar bisa mengakses semua Script.</p>
+                <p class="text-[11px] text-gray-400 leading-relaxed font-medium">Anda diwajibkan untuk bergabung dengan server Discord DHM COMMUNITY terlebih dahulu.</p>
             </div>
             <div class="flex flex-col pt-2">
                 <a href="https://discord.gg/PyFdf38qj5" target="_blank" onclick="window.markDiscordPopupDone()" class="w-full bg-gradient-to-r from-[#5865F2] to-[#4752C4] hover:brightness-110 text-white py-4 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-[#5865F2]/40 active:scale-[0.97] transition flex items-center justify-center gap-2">
@@ -114,7 +86,32 @@
             </div>
         </div>
     </div>
-    <!-- ==================================================================== -->
+
+    <!-- PROFILE SETUP MODAL -->
+    <div id="profile-modal-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 backdrop-blur-xl">
+        <div class="glass-ui p-6 rounded-3xl max-w-sm w-full space-y-4 border border-purple-500/30 shadow-2xl animate-premium-card relative">
+            <button onclick="window.toggleProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-xmark"></i></button>
+            <div class="text-center mb-2">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest">Pengaturan Profil</h2>
+                <p class="text-[10px] text-gray-400 mt-1">Identitas ini akan terlihat di Global Chat.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1.5 ml-1">Nickname</label>
+                    <input type="text" id="input-profile-name" maxlength="15" placeholder="Ketik namamu..." class="w-full text-xs font-bold p-3 rounded-xl border border-white/10 bg-black/50 text-center">
+                </div>
+                <div>
+                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1.5 ml-1">Pilih Avatar</label>
+                    <div class="grid grid-cols-4 gap-2" id="avatar-selection-grid"></div>
+                </div>
+                <div>
+                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1.5 ml-1">Tema Warna</label>
+                    <div class="grid grid-cols-3 gap-2" id="color-selection-grid"></div>
+                </div>
+                <button onclick="window.saveUserProfile()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2">Simpan Profil</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MAINTENANCE LAYER -->
     <div id="maintenance-lockscreen-layer" class="hidden fixed inset-0 bg-black/96 z-[150] flex flex-col items-center justify-center p-6 text-center backdrop-blur-xl">
@@ -128,43 +125,40 @@
     </div>
 
     <!-- Bulletin Ticker Text -->
-    <div id="ticker-marquee-wrapper" class="glass-ui border-none bg-gradient-to-r from-purple-950/60 via-black/80 to-blue-950/60 text-white text-[10px] font-black py-2 px-4 shadow-xl">
+    <div id="ticker-marquee-wrapper" class="glass-ui border-none bg-gradient-to-r from-purple-950/60 via-black/80 to-blue-950/60 text-white text-[10px] font-black py-2 px-4 shadow-xl mt-3">
         <div class="max-w-md md:max-w-6xl mx-auto flex items-center">
             <span class="bg-gradient-to-r from-purple-600 to-pink-500 text-[8px] px-1.5 py-0.5 rounded font-mono mr-2.5 flex-shrink-0 animate-pulse text-white">BULLETIN</span>
             <marquee id="ticker-marquee-text-payload" scrollamount="4" class="font-mono tracking-wide">Selamat datang di DHM COMMUNITY! Dapatkan update script terbaru setiap harinya di sini. 🔥</marquee>
         </div>
     </div>
 
-    <!-- Telemetry Board -->
-    <div class="max-w-md md:max-w-6xl mx-auto px-4 pt-3 flex justify-between items-center text-[9px] font-mono text-gray-500 select-none">
-        <div id="telemetry-clock" class="flex items-center gap-1 font-bold text-gray-400"><i class="fa-regular fa-clock text-purple-400"></i> 00:00:00</div>
-        <div class="flex items-center gap-2">
-            <span id="telemetry-network-badge" class="bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20 font-black">SYNCED</span>
-            <span id="telemetry-battery" class="font-bold text-gray-400"><i class="fa-solid fa-battery-full"></i> 100%</span>
-        </div>
-    </div>
-
     <!-- Header App Bar Identity -->
-    <header class="max-w-md md:max-w-6xl mx-auto px-4 mt-2 select-none">
+    <header class="max-w-md md:max-w-6xl mx-auto px-4 mt-3 select-none">
         <div class="glass-ui p-4 rounded-2xl flex justify-between items-center shadow-2xl relative overflow-hidden group">
-            <div class="flex items-center space-x-3.5 z-10">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-blue-600 flex items-center justify-center font-black text-2xl text-white shadow-lg shadow-purple-500/30">D</div>
+            <div class="flex items-center space-x-3.5 z-10 cursor-pointer active:scale-95 transition" onclick="window.toggleProfileModal()" title="Klik untuk edit profil">
+                <div id="header-avatar-bg" class="w-11 h-11 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10">
+                    <i id="header-avatar-icon" class="fa-solid fa-user-ninja"></i>
+                </div>
                 <div>
-                    <h1 class="font-black tracking-widest text-sm bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">DHM COMMUNITY</h1>
+                    <h1 class="font-black tracking-widest text-sm bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400">DHM COMMUNITY</h1>
+                    <p id="header-username-text" class="text-[9px] font-bold text-gray-400 mt-0.5 tracking-wide">Guest</p>
                 </div>
             </div>
             <div class="flex gap-1.5 z-10">
-                <button onclick="triggerLocalPreferencesControlPanel()" class="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition active:scale-90"><i class="fa-solid fa-sliders text-xs"></i></button>
-                <button onclick="dispatchNativeSharePipeline()" class="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition active:scale-90"><i class="fa-solid fa-share-nodes text-xs"></i></button>
+                <button onclick="triggerLocalPreferencesControlPanel()" class="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-purple-400 transition active:scale-90"><i class="fa-solid fa-sliders text-xs"></i></button>
             </div>
         </div>
     </header>
 
+    <!-- SETTINGS PANEL -->
     <div id="preferences-dropdown-panel" class="hidden max-w-md md:max-w-6xl mx-auto px-4 mt-2 animate-premium-card select-none">
-        <div class="glass-ui p-4 rounded-2xl space-y-3">
-            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-gears text-purple-400 mr-1.5"></i> Konfigurasi Operasional Lokal</h4>
-            <div class="grid grid-cols-1 text-center">
-                <div onclick="toggleLocalPreferenceNode('hapticState')" id="pref-widget-haptic" class="bg-white/5 border border-white/5 p-2.5 rounded-xl text-[10px] font-black cursor-pointer text-purple-400 flex items-center justify-center gap-1.5">Haptic Engine</div>
+        <div class="glass-ui p-5 rounded-2xl space-y-4 shadow-xl border border-purple-500/20">
+            <h4 class="text-[10px] font-black text-purple-400 uppercase tracking-widest border-b border-white/5 pb-2"><i class="fa-solid fa-gears mr-1.5"></i> <span data-i18n="settingsTitle">Pengaturan Sistem</span></h4>
+            <div class="grid grid-cols-1 gap-3 text-center">
+                <div onclick="toggleLanguage()" class="bg-white/5 border border-white/5 p-3 rounded-xl text-[10px] font-black cursor-pointer text-gray-400 hover:text-white transition flex flex-col items-center gap-1.5">
+                    <i class="fa-solid fa-language text-base text-blue-400"></i>
+                    <span id="lang-label">Bahasa: INDO</span>
+                </div>
             </div>
         </div>
     </div>
@@ -180,55 +174,68 @@
 
         <!-- ================= CONTAINER VIEWPORT 1: SCRIPTS CORE ================= -->
         <div id="viewport-scripts-hub" class="space-y-4">
-            <!-- Statistics Panel Component -->
+            
+            <!-- Statistics -->
             <div class="grid grid-cols-3 gap-2.5 select-none">
-                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden group">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">DATABASE</p>
-                    <p id="metric-label-total" class="text-xl font-black text-white mt-0.5">0</p>
+                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden">
+                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider" data-i18n="statDb">DATABASE</p>
+                    <p id="metric-label-total" class="text-xl font-black text-purple-400 mt-0.5">0</p>
                 </div>
-                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden group border-b-2 border-pink-500/20">
-                    <p class="text-[9px] text-pink-400 font-bold uppercase tracking-wider">FAVORIT</p>
+                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden border-b-2 border-pink-500/30">
+                    <p class="text-[9px] text-pink-400 font-bold uppercase tracking-wider" data-i18n="statFav">FAVORIT</p>
                     <p id="metric-label-bookmarks" class="text-xl font-black text-pink-500 mt-0.5">0</p>
                 </div>
-                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden group">
-                    <p class="text-[9px] text-blue-400 font-bold uppercase tracking-wider">TOTAL COPY</p>
+                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden">
+                    <p class="text-[9px] text-blue-400 font-bold uppercase tracking-wider" data-i18n="statCopy">TOTAL COPY</p>
                     <p id="metric-label-copies" class="text-xl font-black text-blue-400 mt-0.5">0</p>
                 </div>
             </div>
 
-            <!-- Advanced Fuzzy Searching Input Box + Quick Bookmark Filter Button -->
-            <div class="flex gap-2">
-                <div class="glass-ui rounded-2xl p-1 flex flex-1 items-center neon-focus-glow border transition duration-300">
-                    <i class="fa-solid fa-wand-magic-sparkles text-purple-400 ml-3.5 mr-2 text-xs"></i>
-                    <input type="text" id="pipeline-search-input-field" placeholder="Cari nama script, game, atau detail fitur..." class="bg-transparent w-full p-2.5 focus:outline-none text-xs font-medium text-gray-200">
-                    <button id="pipeline-search-clear-btn" onclick="clearActiveSearchFieldPipeline()" class="hidden text-gray-500 hover:text-white mr-3.5 transition"><i class="fa-solid fa-circle-xmark text-xs"></i></button>
-                    <span class="text-[8px] font-mono bg-white/5 text-gray-400 px-2 py-1 rounded-lg mr-2 font-black border border-white/5 select-none">Fuzzy</span>
+            <!-- SEARCH + FILTER -->
+            <div>
+                <div class="flex gap-2">
+                    <div class="glass-ui rounded-2xl p-1 flex flex-1 items-center neon-focus-glow border transition duration-300 relative">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-400 ml-3.5 mr-2 text-xs"></i>
+                        <input type="text" id="pipeline-search-input-field" placeholder="Cari nama script, game..." class="bg-transparent w-full p-2.5 focus:outline-none text-xs font-medium">
+                        
+                        <button id="voice-search-btn" class="mr-2 text-gray-500 hover:text-emerald-400 transition active:scale-90 w-8 h-8 flex items-center justify-center rounded-full bg-white/5">
+                            <i class="fa-solid fa-microphone text-xs"></i>
+                        </button>
+                        
+                        <button id="pipeline-search-clear-btn" onclick="clearActiveSearchFieldPipeline()" class="hidden text-gray-500 hover:text-white mr-3.5 transition"><i class="fa-solid fa-circle-xmark text-xs"></i></button>
+                    </div>
+                    <button id="quick-fav-filter-toggle" onclick="toggleQuickFavoriteFilteringMode()" class="glass-ui px-4 rounded-2xl text-gray-400 hover:text-pink-500 transition duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-heart text-xs"></i>
+                    </button>
                 </div>
-                <button id="quick-fav-filter-toggle" onclick="toggleQuickFavoriteFilteringMode()" class="glass-ui px-4 rounded-2xl text-gray-400 hover:text-pink-500 transition duration-300 flex items-center justify-center border border-white/5">
-                    <i class="fa-solid fa-heart text-xs"></i>
-                </button>
+
+                <!-- SEARCH HISTORY BOX -->
+                <div id="search-history-box" class="hidden flex gap-2 mt-2.5 overflow-x-auto custom-scrollbar pb-1 text-[9px] font-bold items-center">
+                    <span class="text-gray-500 flex-shrink-0 ml-1"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Riwayat:</span>
+                    <div id="search-history-pills" class="flex gap-1.5"></div>
+                </div>
             </div>
 
-            <!-- Custom Select Dropdowns without Native Options -->
-            <div class="flex items-center gap-2 select-none relative">
+            <!-- Custom Select Dropdowns -->
+            <div class="flex items-center gap-2 select-none relative pt-1">
                 <div class="w-1/2 relative">
-                    <div onclick="toggleCustomSelectorDropdownMenu('game-cat')" id="trigger-dropdown-game-cat" class="w-full bg-gray-900/80 glass-ui text-[11px] font-black rounded-xl pl-8 pr-4 py-3.5 text-gray-200 flex items-center justify-between cursor-pointer border border-white/5 truncate">
+                    <div onclick="toggleCustomSelectorDropdownMenu('game-cat')" id="trigger-dropdown-game-cat" class="w-full bg-gray-900/80 glass-ui text-[11px] font-black rounded-xl pl-8 pr-4 py-3.5 flex items-center justify-between cursor-pointer border border-white/5 truncate">
                         <i class="fa-solid fa-gamepad absolute left-3 text-[10px] text-purple-400"></i>
                         <span id="label-selected-game-cat" class="truncate">🌐 Semua Game</span>
                         <i class="fa-solid fa-chevron-down text-[8px] text-gray-500 ml-1" id="chevron-game-cat"></i>
                     </div>
                     <div id="panel-dropdown-game-cat" class="hidden absolute left-0 right-0 mt-1.5 rounded-xl custom-dropdown-panel shadow-2xl z-[70] overflow-y-auto max-h-48 border custom-scrollbar">
-                        <ul id="list-options-game-cat" class="text-[11px] font-black text-gray-300"></ul>
+                        <ul id="list-options-game-cat" class="text-[11px] font-black text-gray-400"></ul>
                     </div>
                 </div>
                 <div class="w-1/2 relative">
-                    <div onclick="toggleCustomSelectorDropdownMenu('sort-order')" id="trigger-dropdown-sort-order" class="w-full bg-gray-900/80 glass-ui text-[11px] font-black rounded-xl pl-8 pr-4 py-3.5 text-gray-200 flex items-center justify-between cursor-pointer border border-white/5 truncate">
+                    <div onclick="toggleCustomSelectorDropdownMenu('sort-order')" id="trigger-dropdown-sort-order" class="w-full bg-gray-900/80 glass-ui text-[11px] font-black rounded-xl pl-8 pr-4 py-3.5 flex items-center justify-between cursor-pointer border border-white/5 truncate">
                         <i class="fa-solid fa-arrow-down-wide-short absolute left-3 text-[10px] text-blue-400"></i>
                         <span id="label-selected-sort-order" class="truncate">⏰ Waktu Rilis Terbaru</span>
                         <i class="fa-solid fa-chevron-down text-[8px] text-gray-500 ml-1" id="chevron-sort-order"></i>
                     </div>
                     <div id="panel-dropdown-sort-order" class="hidden absolute left-0 right-0 mt-1.5 rounded-xl custom-dropdown-panel shadow-2xl z-[70] overflow-hidden border">
-                        <ul class="text-[11px] font-black text-gray-300">
+                        <ul class="text-[11px] font-black text-gray-400">
                             <li onclick="commitActiveSortSelectionPipeline('newest', '⏰ Waktu Rilis Terbaru')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">⏰ Waktu Rilis Terbaru</li>
                             <li onclick="commitActiveSortSelectionPipeline('popular', '📊 Salinan Terpopuler')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">📊 Salinan Terpopuler</li>
                             <li onclick="commitActiveSortSelectionPipeline('alphabet', '🔤 Urutan Abjad Skrip')" class="p-3 hover:bg-purple-600/10 cursor-pointer flex items-center gap-1.5">🔤 Urutan Abjad Skrip</li>
@@ -237,33 +244,59 @@
                 </div>
             </div>
 
-            <!-- Scripts Target Box (Desktop Grid Optimized) -->
+            <!-- Scripts Target Box -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="live-scripts-render-target-box"></div>
             
             <!-- Pagination Controls Box -->
             <div id="pagination-controls-container" class="mt-8 mb-4 flex justify-center items-center gap-1.5 select-none"></div>
         </div>
 
-        <!-- ================= CONTAINER VIEWPORT 2: MESSAGE HUB ================= -->
+        <!-- ================= CONTAINER VIEWPORT 2: GLOBAL CHAT HUB ================= -->
+        <div id="viewport-chat-hub" class="hidden space-y-4 max-w-xl mx-auto">
+            <div class="glass-ui p-4 md:p-5 rounded-3xl shadow-2xl relative animate-premium-card flex flex-col h-[65vh]">
+                <div class="flex items-center justify-between border-b border-gray-800/60 pb-3 mb-3 select-none flex-shrink-0">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                            <i class="fa-solid fa-earth-americas text-emerald-400 text-xs"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-black text-emerald-400 uppercase tracking-wider">DHM GLOBAL CHAT</h3>
+                            <p class="text-[9px] text-gray-400"><i class="fa-solid fa-circle text-[6px] text-emerald-500 animate-pulse mr-1"></i>Real-time Public Room</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Messages Container -->
+                <div id="chat-messages-container" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar flex flex-col pb-2">
+                    <p class="text-center text-xs text-gray-500 font-mono py-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Menghubungkan ke server...</p>
+                </div>
+
+                <!-- Chat Input Area -->
+                <div class="mt-3 flex gap-2 flex-shrink-0 bg-black/40 p-1.5 rounded-2xl border border-white/5">
+                    <input type="text" id="chat-input-text" placeholder="Ketik pesan untuk semua orang..." class="flex-1 text-xs px-3 bg-transparent border-none outline-none font-medium text-white" maxlength="150" onkeypress="if(event.key === 'Enter') window.sendGlobalChatMessage()">
+                    <button onclick="window.sendGlobalChatMessage()" class="w-10 h-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white flex items-center justify-center transition active:scale-90 shadow-lg shadow-emerald-500/20 flex-shrink-0">
+                        <i class="fa-solid fa-paper-plane text-[11px]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= CONTAINER VIEWPORT 3: MESSAGE HUB ================= -->
         <div id="viewport-message-hub" class="hidden space-y-4 max-w-xl mx-auto">
             <div class="glass-ui p-5 rounded-3xl space-y-4 shadow-2xl relative animate-premium-card">
                 <div class="flex items-center gap-2 border-b border-gray-800/60 pb-3 select-none">
                     <i class="fa-solid fa-paper-plane text-purple-400 text-sm"></i>
-                    <h3 class="text-xs font-black text-purple-400 uppercase tracking-wider">Kirim Pesan ke Admin / Owner</h3>
+                    <h3 class="text-xs font-black text-purple-400 uppercase tracking-wider">Kirim Laporan Khusus</h3>
                 </div>
                 <div class="space-y-3">
-                    <div class="space-y-1">
-                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1">Nama Pengirim / Nickname</label>
-                        <input type="text" id="msg-sender-name" placeholder="Ketik nama Anda di sini..." class="w-full text-xs p-3.5 rounded-xl">
-                    </div>
                     <div class="space-y-1 relative select-none">
                         <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1 block mb-1">Tujuan Kirim Pesan</label>
-                        <div onclick="toggleCustomSelectorDropdownMenu('msg-target')" id="trigger-dropdown-msg-target" class="w-full text-xs p-3.5 rounded-xl bg-black/30 border border-white/10 text-white flex justify-between items-center cursor-pointer font-black tracking-wide">
+                        <div onclick="toggleCustomSelectorDropdownMenu('msg-target')" id="trigger-dropdown-msg-target" class="w-full text-xs p-3.5 rounded-xl bg-black/30 border border-white/10 flex justify-between items-center cursor-pointer font-black tracking-wide">
                             <span id="label-selected-msg-target">🛡️ Kirim ke Admin Panel</span>
                             <i class="fa-solid fa-chevron-down text-[9px] text-purple-500" id="chevron-msg-target"></i>
                         </div>
                         <div id="panel-dropdown-msg-target" class="hidden absolute left-0 right-0 mt-1 rounded-xl custom-dropdown-panel shadow-2xl z-[70] overflow-hidden border border-purple-500/20">
-                            <ul class="text-xs font-black">
+                            <ul class="text-xs font-black text-gray-400">
                                 <li onclick="commitActiveMsgTargetSelection('Admin', '🛡️ Kirim ke Admin Panel')" class="p-3 hover:bg-purple-600/20 cursor-pointer border-b border-white/5">🛡️ Kirim ke Admin Panel</li>
                                 <li onclick="commitActiveMsgTargetSelection('Owner', '👑 Kirim ke Owner Panel')" class="p-3 hover:bg-purple-600/20 cursor-pointer">👑 Kirim ke Owner Panel</li>
                             </ul>
@@ -272,23 +305,41 @@
                     <div class="space-y-1">
                         <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1">Template Laporan Cepat</label>
                         <div class="flex gap-1 overflow-x-auto pb-1 custom-scrollbar text-[8px] font-mono font-black tracking-wider select-none">
-                            <button onclick="injectPresetTextTemplateIntoMessagePayload(1)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-amber-400 flex-shrink-0">⚠️ SCRIPT CRASH</button>
-                            <button onclick="injectPresetTextTemplateIntoMessagePayload(2)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-blue-400 flex-shrink-0">💡 REQUEST game</button>
-                            <button onclick="injectPresetTextTemplateIntoMessagePayload(3)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-emerald-400 flex-shrink-0">🤝 DONASI PARTNER</button>
+                            <button onclick="window.injectPresetTextTemplateIntoMessagePayload(1)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-amber-400 flex-shrink-0">⚠️ SCRIPT PATCHED</button>
+                            <button onclick="window.injectPresetTextTemplateIntoMessagePayload(2)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-blue-400 flex-shrink-0">💡 REQUEST SCRIPT</button>
+                            <button onclick="window.injectPresetTextTemplateIntoMessagePayload(3)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-emerald-400 flex-shrink-0">🤝 LAPORAN LAIN</button>
                         </div>
                     </div>
                     <div class="space-y-1">
                         <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1">Isi Laporan / Pesan</label>
-                        <textarea id="msg-text-content" rows="4" placeholder="Ketik pesan di sini..." class="w-full text-xs p-3.5 rounded-xl outline-none custom-scrollbar"></textarea>
+                        <textarea id="private-msg-text-content" rows="4" placeholder="Ketik pesan rahasia / laporanmu di sini..." class="w-full text-xs p-3.5 rounded-xl outline-none custom-scrollbar"></textarea>
                     </div>
                 </div>
-                <button onclick="submitUserMessagePipeline()" class="w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white p-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.98] transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-paper-plane"></i> KIRIM PESAN REAL-TIME
+                <button onclick="window.submitPrivateUserMessagePipeline()" class="w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white p-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.98] transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> KIRIM LAPORAN SEKARANG
                 </button>
             </div>
         </div>
 
-        <!-- ================= CONTAINER VIEWPORT 4: FAQ HUB ================= -->
+        <!-- ================= CONTAINER VIEWPORT 4: LEADERBOARD HUB ================= -->
+        <div id="viewport-leaderboard-hub" class="hidden space-y-4 max-w-xl mx-auto">
+            <div class="glass-ui p-5 rounded-3xl space-y-4 shadow-2xl relative animate-premium-card">
+                <div class="flex items-center gap-3 border-b border-gray-800/60 pb-4 select-none">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-600 to-yellow-400 flex items-center justify-center shadow-[0_0_15px_rgba(251,191,36,0.3)]">
+                        <i class="fa-solid fa-crown text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-black text-amber-400 uppercase tracking-widest">Top Script Terpopuler</h3>
+                        <p class="text-[10px] text-gray-400 mt-0.5">Daftar 10 script paling banyak digunakan.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3" id="leaderboard-render-target-box">
+                    <p class="text-xs text-gray-600 font-mono text-center py-4">Memuat data papan peringkat...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= CONTAINER VIEWPORT 5: FAQ HUB ================= -->
         <div id="viewport-faq-hub" class="hidden space-y-4 max-w-2xl mx-auto">
             <div class="glass-ui p-4 rounded-3xl space-y-3 shadow-2xl">
                 <div class="border-b border-gray-800/60 pb-2.5 select-none">
@@ -303,19 +354,27 @@
     </main>
 
     <!-- Global Floating Navigation Dock Dashboard -->
-    <div class="fixed bottom-4 left-4 right-4 max-w-md md:max-w-xl mx-auto glass-ui rounded-2xl p-2 grid grid-cols-3 text-center text-[10px] font-black text-gray-500 z-50 shadow-2xl border border-white/10 select-none">
-        <button onclick="switchActiveViewportContext('scripts', this)" class="text-purple-400 active-navigation-node transition transform active:scale-90"><i class="fa-solid fa-folder-open text-base block mb-0.5"></i>Scripts</button>
-        <button onclick="switchActiveViewportContext('message', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-comment-dots text-base block mb-0.5"></i>Pesan</button>
-        <button onclick="switchActiveViewportContext('faq', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-circle-question text-base block mb-0.5"></i>FAQ Hub</button>
+    <div class="fixed bottom-4 left-4 right-4 max-w-md md:max-w-xl mx-auto glass-ui rounded-2xl p-1.5 grid grid-cols-5 text-center text-[9px] font-black text-gray-500 z-50 shadow-2xl select-none">
+        <button onclick="switchActiveViewportContext('scripts', this)" class="text-purple-400 active-navigation-node transition transform active:scale-90"><i class="fa-solid fa-folder-open text-base block mb-0.5"></i><span data-i18n="navScript">Scripts</span></button>
+        <button onclick="switchActiveViewportContext('chat', this)" class="hover:text-gray-300 transition transform active:scale-90 relative">
+            <i class="fa-solid fa-comments text-base block mb-0.5"></i><span data-i18n="navChat">Chat</span>
+            <span class="absolute top-0 right-2 w-2 h-2 bg-emerald-500 rounded-full animate-pulse border border-gray-900"></span>
+        </button>
+        <button onclick="switchActiveViewportContext('message', this)" class="hover:text-gray-300 transition transform active:scale-90 relative">
+            <i class="fa-solid fa-paper-plane text-base block mb-0.5"></i>Lapor
+        </button>
+        <button onclick="switchActiveViewportContext('leaderboard', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-crown text-base block mb-0.5"></i><span data-i18n="navPop">Populer</span></button>
+        <button onclick="switchActiveViewportContext('faq', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-circle-question text-base block mb-0.5"></i>FAQ</button>
     </div>
 
-    <!-- Scroll To Top Button -->
-    <button id="fab-scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="hidden fixed bottom-24 right-4 bg-purple-600 w-12 h-12 rounded-full text-white z-[100] shadow-2xl border border-purple-400/50 active:scale-90 transition flex items-center justify-center"><i class="fa-solid fa-arrow-up text-lg"></i></button>
+    <!-- Scripts CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-lua.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <!-- Core Script Binding Framework Module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, push, set, runTransaction, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = { databaseURL: "https://dhm-store-default-rtdb.firebaseio.com" };
         const app = initializeApp(firebaseConfig);
@@ -323,7 +382,15 @@
 
         let memoryCacheEntireScriptsDataset = {};
         let localBookmarksRegistryList = JSON.parse(localStorage.getItem('dhm_v10_bookmarks')) || [];
-        let localPreferencesConfigObject = JSON.parse(localStorage.getItem('dhm_v10_pref_config')) || { hapticState: true };
+        
+        // FEATURE: USER PROFILE STATE
+        let dhmUserProfile = JSON.parse(localStorage.getItem('dhm_user_profile')) || {
+            name: 'Guest' + Math.floor(Math.random() * 9000 + 1000),
+            avatar: 'fa-user-ninja',
+            color: 'bg-gradient-to-tr from-purple-600 to-blue-600'
+        };
+
+        let searchHistoryList = JSON.parse(localStorage.getItem('dhm_search_history')) || [];
         
         let activeSelectedGameCategoryValue = "Semua Game";
         let activeSelectedSortOrderValue = "newest";
@@ -332,35 +399,345 @@
         
         let currentPage = 1;
         const itemsPerPage = 12;
-
         let activeCarouselIndex = 0;
         let totalCarouselBanners = 0;
 
         document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length;
-        hydrateLocalPreferencesButtonUiState();
-        initBackgroundCanvasEmittersModule();
+
+        // Render Skeleton Loader
+        window.renderSkeletonLoading = () => {
+            const box = document.getElementById('live-scripts-render-target-box');
+            let skeletons = '';
+            for(let i = 0; i < 6; i++) {
+                skeletons += `
+                <div class="glass-ui p-4 rounded-3xl space-y-3 animate-pulse border border-white/5">
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-16 h-16 bg-white/5 rounded-2xl flex-shrink-0"></div>
+                        <div class="flex-1 min-w-0 pt-1 space-y-2">
+                            <div class="h-3 bg-white/10 rounded w-1/3"></div>
+                            <div class="h-4 bg-white/10 rounded w-3/4"></div>
+                            <div class="h-2 bg-white/5 rounded w-1/2 mt-1"></div>
+                        </div>
+                    </div>
+                    <div class="h-10 bg-white/5 rounded-xl w-full mt-3"></div>
+                </div>`;
+            }
+            box.innerHTML = skeletons;
+        };
+        renderSkeletonLoading();
+
+        // ================= NEW FEATURE: NAME GUARD / RESERVED NAME FILTER =================
+        window.isReservedName = (name) => {
+            const forbiddenNames = [
+                "owner", "admin", "pemilik dhm", "partner dhm", "dhm admin", "owner dhm", "🛡️ admin"
+            ];
+            return forbiddenNames.includes(name.toLowerCase().trim());
+        };
+
+        // ================= FEATURE 2: USER PROFILE SYSTEM =================
+        window.avatars = ['fa-user-ninja', 'fa-ghost', 'fa-robot', 'fa-skull', 'fa-user-astronaut', 'fa-cat', 'fa-dragon', 'fa-mask'];
+        window.colors = [
+            'bg-gradient-to-tr from-purple-600 to-blue-600',
+            'bg-gradient-to-tr from-emerald-500 to-teal-700',
+            'bg-gradient-to-tr from-rose-500 to-pink-700',
+            'bg-gradient-to-tr from-amber-500 to-orange-700',
+            'bg-gradient-to-tr from-gray-700 to-gray-900',
+            'bg-gradient-to-tr from-cyan-500 to-blue-700'
+        ];
         
-        // ================= FITUR DISCORD POPUP (WAJIB JOIN) =================
-        const hasJoinedDiscord = localStorage.getItem('dhm_discord_joined');
-        if (!hasJoinedDiscord) {
-            // Tampilkan popup jika belum ada history klik join di local storage
-            document.getElementById('discord-popup-layer').classList.remove('hidden');
+        window.tempSelectedAvatar = dhmUserProfile.avatar;
+        window.tempSelectedColor = dhmUserProfile.color;
+
+        window.applyHeaderProfile = () => {
+            document.getElementById('header-username-text').innerText = dhmUserProfile.name;
+            const bg = document.getElementById('header-avatar-bg');
+            bg.className = `w-11 h-11 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10 ${dhmUserProfile.color}`;
+            document.getElementById('header-avatar-icon').className = `fa-solid ${dhmUserProfile.avatar}`;
+        };
+        window.applyHeaderProfile();
+
+        window.toggleProfileModal = () => {
+            const modal = document.getElementById('profile-modal-layer');
+            if(modal.classList.contains('hidden')) {
+                document.getElementById('input-profile-name').value = dhmUserProfile.name;
+                window.tempSelectedAvatar = dhmUserProfile.avatar;
+                window.tempSelectedColor = dhmUserProfile.color;
+                window.renderProfileSelectors();
+            }
+            modal.classList.toggle('hidden');
+        };
+
+        window.renderProfileSelectors = () => {
+            const avGrid = document.getElementById('avatar-selection-grid');
+            avGrid.innerHTML = window.avatars.map(icon => `
+                <button onclick="window.tempSelectedAvatar='${icon}'; window.renderProfileSelectors()" class="h-10 rounded-xl flex items-center justify-center text-lg border ${window.tempSelectedAvatar === icon ? 'bg-white/20 border-white text-white scale-110 shadow-lg' : 'bg-black/30 border-white/5 text-gray-500'} transition active:scale-95"><i class="fa-solid ${icon}"></i></button>
+            `).join('');
+
+            const colGrid = document.getElementById('color-selection-grid');
+            colGrid.innerHTML = window.colors.map(bg => `
+                <button onclick="window.tempSelectedColor='${bg}'; window.renderProfileSelectors()" class="h-8 rounded-xl ${bg} border-2 ${window.tempSelectedColor === bg ? 'border-white scale-110 shadow-lg' : 'border-transparent'} transition active:scale-95"></button>
+            `).join('');
+        };
+
+        window.saveUserProfile = () => {
+            const newName = document.getElementById('input-profile-name').value.trim();
+            if(!newName) return window.dispatchSystemToastNotificationNotification('Nickname tidak boleh kosong!', 'error');
+            
+            // CEK NAMA TERLARANG SEBELUM DISIMPAN
+            if(window.isReservedName(newName)) {
+                return window.dispatchSystemToastNotificationNotification('Gagal! Nama tersebut tidak diizinkan / dilarang.', 'error');
+            }
+
+            dhmUserProfile = { name: newName, avatar: window.tempSelectedAvatar, color: window.tempSelectedColor };
+            localStorage.setItem('dhm_user_profile', JSON.stringify(dhmUserProfile));
+            window.applyHeaderProfile();
+            window.toggleProfileModal();
+            window.dispatchSystemToastNotificationNotification('Profil berhasil disimpan!', 'success');
+        };
+
+        // ================= FEATURE: PRIVATE ADMIN/OWNER MESSAGE SYSTEM =================
+        window.commitActiveMsgTargetSelection = (value, label) => {
+            activeSelectedMsgTargetRoleValue = value;
+            document.getElementById('label-selected-msg-target').innerText = label;
+            toggleCustomSelectorDropdownMenu('msg-target');
+        };
+
+        window.submitPrivateUserMessagePipeline = () => {
+            const n = dhmUserProfile.name;
+            const m = document.getElementById('private-msg-text-content').value.trim();
+            
+            if(!m) return window.dispatchSystemToastNotificationNotification('Isi laporan wajib diisi!', 'error');
+            
+            set(push(ref(db, 'messages')), { 
+                sender: n, 
+                target: activeSelectedMsgTargetRoleValue, 
+                message: m, 
+                timestamp: Date.now() 
+            }).then(() => {
+                window.dispatchSystemToastNotificationNotification(`Laporan sukses dikirim ke ${activeSelectedMsgTargetRoleValue}!`);
+                document.getElementById('private-msg-text-content').value = '';
+            }).catch(() => window.dispatchSystemToastNotificationNotification('Gagal mengirim laporan.', 'error'));
+        };
+
+        window.injectPresetTextTemplateIntoMessagePayload = (id) => {
+            const box = document.getElementById('private-msg-text-content');
+            if(id === 1) box.value = "[SCRIPT PATCHED / RUSAK]: Tolong update script ini karena sudah tidak berfungsi di Executor Mobile: ";
+            else if(id === 2) box.value = "[REQUEST SCRIPT GAME]: Tolong tambahkan script terbaru untuk game Roblox: ";
+            else if(id === 3) box.value = "[LAPORAN BUG / LAINNYA]: ";
+        };
+
+
+        // ================= FEATURE 1: GLOBAL CHAT SYSTEM =================
+        const chatContainer = document.getElementById('chat-messages-container');
+        const chatQueryRef = query(ref(db, 'global_chat'), orderByChild('timestamp'), limitToLast(60));
+        
+        onValue(chatQueryRef, (snapshot) => {
+            chatContainer.innerHTML = '';
+            if(snapshot.exists()) {
+                const messages = Object.values(snapshot.val());
+                messages.forEach(msg => {
+                    const isMe = msg.sender === dhmUserProfile.name;
+                    const timeStr = new Date(msg.timestamp).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+                    
+                    if(isMe) {
+                        chatContainer.innerHTML += `
+                            <div class="flex justify-end mb-1">
+                                <div class="max-w-[80%]">
+                                    <div class="flex items-center justify-end gap-1.5 mb-0.5">
+                                        <span class="text-[8px] text-gray-500">${timeStr}</span>
+                                        <span class="text-[9px] font-black text-gray-400">Kamu</span>
+                                    </div>
+                                    <div class="bg-emerald-600 text-white px-3.5 py-2.5 rounded-2xl rounded-tr-sm text-[11px] shadow-md border border-emerald-500/50 break-words leading-relaxed font-medium">
+                                        ${escapeHTML(msg.text)}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        chatContainer.innerHTML += `
+                            <div class="flex justify-start gap-2 mb-1">
+                                <div class="w-8 h-8 rounded-full ${msg.color || 'bg-gray-700'} flex items-center justify-center flex-shrink-0 border border-white/10 mt-2 shadow-sm">
+                                    <i class="fa-solid ${msg.avatar || 'fa-user'} text-[10px] text-white"></i>
+                                </div>
+                                <div class="max-w-[75%]">
+                                    <div class="flex items-center justify-start gap-1.5 mb-0.5">
+                                        <span class="text-[9px] font-black text-purple-400 tracking-wide">${escapeHTML(msg.sender)}</span>
+                                        <span class="text-[8px] text-gray-500">${timeStr}</span>
+                                    </div>
+                                    <div class="bg-white/5 text-gray-200 px-3.5 py-2.5 rounded-2xl rounded-tl-sm text-[11px] shadow-md border border-white/10 break-words leading-relaxed font-medium">
+                                        ${escapeHTML(msg.text)}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            } else {
+                chatContainer.innerHTML = '<p class="text-center text-xs text-gray-500 font-mono py-10 mt-10">Belum ada obrolan. Jadilah yang pertama menyapa!</p>';
+            }
+        });
+
+        window.sendGlobalChatMessage = () => {
+            const input = document.getElementById('chat-input-text');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            // CEK NAMA TERLARANG LAGI SAAT MENGIRIM CHAT (Pencegahan Bypass)
+            if(window.isReservedName(dhmUserProfile.name)) {
+                return window.dispatchSystemToastNotificationNotification('Silakan ganti nama profilmu! Nama saat ini dilarang.', 'error');
+            }
+
+            // Anti-Spam: Delay 3 detik
+            const lastMsgTime = localStorage.getItem('dhm_last_msg_time') || 0;
+            if(Date.now() - lastMsgTime < 3000) {
+                return window.dispatchSystemToastNotificationNotification('Jangan spam! Tunggu sebentar.', 'error');
+            }
+
+            set(push(ref(db, 'global_chat')), {
+                sender: dhmUserProfile.name,
+                avatar: dhmUserProfile.avatar,
+                color: dhmUserProfile.color,
+                text: text,
+                timestamp: Date.now()
+            }).then(() => {
+                input.value = '';
+                localStorage.setItem('dhm_last_msg_time', Date.now());
+            }).catch(() => window.dispatchSystemToastNotificationNotification('Gagal mengirim pesan.', 'error'));
+        };
+
+        // ================= FEATURE 20: SEARCH HISTORY =================
+        function renderSearchHistoryBox() {
+            const box = document.getElementById('search-history-box');
+            const pillsBox = document.getElementById('search-history-pills');
+            
+            if(searchHistoryList.length === 0) {
+                box.classList.add('hidden');
+                return;
+            }
+            
+            box.classList.remove('hidden');
+            pillsBox.innerHTML = searchHistoryList.map(term => `
+                <button onclick="window.triggerSearchFromHistory('${term}')" class="bg-white/5 border border-white/10 hover:border-purple-500/50 hover:text-purple-400 px-3 py-1.5 rounded-lg text-gray-400 transition active:scale-95 flex-shrink-0 whitespace-nowrap shadow-sm">${term}</button>
+            `).join('');
         }
 
-        window.markDiscordPopupDone = () => {
-            triggerDeviceShortHapticFeedbackVibration();
-            // Simpan data bahwa user sudah mengklik Join Discord, lalu sembunyikan pop up-nya
-            localStorage.setItem('dhm_discord_joined', 'true');
-            document.getElementById('discord-popup-layer').classList.add('hidden');
+        window.triggerSearchFromHistory = (term) => {
+            const input = document.getElementById('pipeline-search-input-field');
+            input.value = term;
+            document.getElementById('pipeline-search-clear-btn').classList.remove('hidden');
+            currentPage = 1;
+            executeMainUIRendererPipelineStreamer();
         };
-        // ====================================================================
 
-        // Custom Dropdown Engine
+        let typingTimeout;
+        document.getElementById('pipeline-search-input-field').addEventListener('input', (e) => {
+            const clearBtn = document.getElementById('pipeline-search-clear-btn');
+            const val = e.target.value.trim();
+            
+            if (val.length > 0) { clearBtn.classList.remove('hidden'); } 
+            else { clearBtn.classList.add('hidden'); }
+            
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                if(val && val.length > 2) {
+                    const lowerVal = val.toLowerCase();
+                    searchHistoryList = searchHistoryList.filter(t => t !== lowerVal);
+                    searchHistoryList.unshift(lowerVal);
+                    if(searchHistoryList.length > 6) searchHistoryList.pop();
+                    localStorage.setItem('dhm_search_history', JSON.stringify(searchHistoryList));
+                    renderSearchHistoryBox();
+                }
+            }, 1500);
+
+            currentPage = 1; 
+            executeMainUIRendererPipelineStreamer();
+        });
+
+        renderSearchHistoryBox();
+
+
+        // ================= FEATURE 11: VOICE SEARCH =================
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            
+            const micBtn = document.getElementById('voice-search-btn');
+            const searchInput = document.getElementById('pipeline-search-input-field');
+            const clearBtn = document.getElementById('pipeline-search-clear-btn');
+
+            micBtn.addEventListener('click', () => {
+                try {
+                    recognition.lang = window.currentLanguage === 'id' ? 'id-ID' : 'en-US';
+                    recognition.start();
+                    micBtn.innerHTML = `<i class="fa-solid fa-microphone-lines text-emerald-400 animate-pulse text-xs"></i>`;
+                    window.dispatchSystemToastNotificationNotification(window.currentLanguage === 'id' ? 'Silakan bicara...' : 'Please speak...', 'success');
+                } catch(e) {}
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.replace(/\.$/, '').trim();
+                searchInput.value = transcript;
+                micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`;
+                clearBtn.classList.remove('hidden');
+                window.dispatchSystemToastNotificationNotification(`Mencari: "${transcript}"`);
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+            };
+            
+            recognition.onend = () => { micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`; };
+            recognition.onerror = (e) => {
+                micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`;
+                if(e.error !== 'no-speech') window.dispatchSystemToastNotificationNotification('Gagal mendeteksi suara / Izin ditolak.', 'error');
+            };
+        } else {
+            document.getElementById('voice-search-btn').style.display = 'none';
+        }
+
+        // ================= FEATURE 14: MULTI-LANGUAGE (INDO/ENG) =================
+        window.currentLanguage = localStorage.getItem('dhm_lang') || 'id';
+        const dict = {
+            'id': {
+                settingsTitle: "Pengaturan Sistem",
+                statDb: "DATABASE", statFav: "FAVORIT", statCopy: "TOTAL COPY",
+                navScript: "Scripts", navChat: "Chat", navPop: "Populer",
+                searchPlace: "Cari nama script, game..."
+            },
+            'en': {
+                settingsTitle: "System Settings",
+                statDb: "DATABASE", statFav: "FAVORITES", statCopy: "TOTAL COPIES",
+                navScript: "Scripts", navChat: "Chat", navPop: "Popular",
+                searchPlace: "Search script, game..."
+            }
+        };
+
+        window.toggleLanguage = () => {
+            window.currentLanguage = window.currentLanguage === 'id' ? 'en' : 'id';
+            localStorage.setItem('dhm_lang', window.currentLanguage);
+            applyLanguage();
+        };
+
+        function applyLanguage() {
+            const lang = dict[window.currentLanguage];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(lang[key]) el.innerText = lang[key];
+            });
+            document.getElementById('pipeline-search-input-field').placeholder = lang.searchPlace;
+            document.getElementById('lang-label').innerText = window.currentLanguage === 'id' ? 'Bahasa: INDO' : 'Language: ENG';
+        }
+        applyLanguage();
+
+        // ================= CORE FIREBASE & LOGIC =================
+
+        const escapeHTML = (str) => {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        };
+
         window.toggleCustomSelectorDropdownMenu = (dropdownKeyId) => {
-            triggerDeviceShortHapticFeedbackVibration();
             const panel = document.getElementById(`panel-dropdown-${dropdownKeyId}`);
             const chevron = document.getElementById(`chevron-${dropdownKeyId}`);
-            
             ['game-cat', 'sort-order', 'msg-target'].forEach(key => {
                 if(key !== dropdownKeyId) {
                     const p = document.getElementById(`panel-dropdown-${key}`);
@@ -377,22 +754,14 @@
             activeSelectedGameCategoryValue = value;
             document.getElementById('label-selected-game-cat').innerText = label;
             toggleCustomSelectorDropdownMenu('game-cat');
-            currentPage = 1; 
-            executeMainUIRendererPipelineStreamer();
+            currentPage = 1; executeMainUIRendererPipelineStreamer();
         };
 
         window.commitActiveSortSelectionPipeline = (value, label) => {
             activeSelectedSortOrderValue = value;
             document.getElementById('label-selected-sort-order').innerText = label;
             toggleCustomSelectorDropdownMenu('sort-order');
-            currentPage = 1; 
-            executeMainUIRendererPipelineStreamer();
-        };
-
-        window.commitActiveMsgTargetSelection = (value, label) => {
-            activeSelectedMsgTargetRoleValue = value;
-            document.getElementById('label-selected-msg-target').innerText = label;
-            toggleCustomSelectorDropdownMenu('msg-target');
+            currentPage = 1; executeMainUIRendererPipelineStreamer();
         };
 
         document.addEventListener('click', function(e) {
@@ -407,7 +776,50 @@
             });
         });
 
-        // Banners Sync
+        // Firebase Listeners
+        onValue(ref(db, 'system_guard'), (snap) => {
+            if(snap.exists()) {
+                const guard = snap.val();
+                const screen = document.getElementById('maintenance-lockscreen-layer');
+                if(guard.maintenanceMode === true || guard.maintenanceMode === "true") {
+                    screen.classList.remove('hidden'); document.getElementById('maintenance-realtime-msg').innerText = guard.maintenanceMessage || 'Sistem Sedang Maintenance Server.';
+                } else { screen.classList.add('hidden'); }
+                const marquee = document.getElementById('ticker-marquee-wrapper');
+                if(guard.announcement && guard.announcement.enabled === true) {
+                    document.getElementById('ticker-marquee-text-payload').innerText = guard.announcement.text || 'Selamat datang di DHM COMMUNITY! Dapatkan update script terbaru setiap harinya di sini.';
+                }
+            }
+        });
+
+        onValue(ref(db, 'faqs'), (snap) => {
+            const box = document.getElementById('faq-accordion-live-injections-box'); box.innerHTML = '';
+            if(snap.exists()) {
+                Object.entries(snap.val()).forEach(([id, model], idx) => {
+                    box.innerHTML += `
+                        <div class="border-b border-gray-800/50 pb-2.5 animate-premium-card">
+                            <button onclick="window.toggleFaqCollapseRowAnimation('${idx}')" class="w-full text-left font-black text-[var(--text-color)] text-xs flex justify-between items-center py-2 focus:outline-none">
+                                <span>❓ ${model.question}</span>
+                                <i id="faq-chevron-icon-${idx}" class="fa-solid fa-chevron-down text-[9px] text-gray-500 transition duration-300"></i>
+                            </button>
+                            <p id="faq-answer-collapse-block-${idx}" class="hidden text-[11px] text-gray-400 bg-black/10 p-3 rounded-2xl mt-1.5 leading-relaxed font-medium">💡 ${model.answer}</p>
+                        </div>`;
+                });
+            } else { box.innerHTML = '<p class="text-xs text-gray-600 font-mono text-center py-4">Belum ada FAQ bantuan.</p>'; }
+        });
+        window.toggleFaqCollapseRowAnimation = (idx) => { document.getElementById(`faq-answer-collapse-block-${idx}`).classList.toggle('hidden'); };
+
+        onValue(ref(db, 'categories'), (snap) => {
+            const listContainer = document.getElementById('list-options-game-cat');
+            listContainer.innerHTML = `<li onclick="commitActiveCategorySelectionPipeline('Semua Game', '🌐 Semua Game')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">🌐 Semua Game</li>`;
+            if(snap.exists()) {
+                Object.values(snap.val()).forEach(categoryName => {
+                    listContainer.innerHTML += `<li onclick="commitActiveCategorySelectionPipeline('${categoryName}', '🎮 ${categoryName}')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5 truncate">🎮 ${categoryName}</li>`;
+                });
+            }
+            executeMainUIRendererPipelineStreamer();
+        });
+
+        // Banners
         onValue(ref(db, 'banners'), (snapshot) => {
             const track = document.getElementById('carousel-track-container');
             const dotsContainer = document.getElementById('carousel-dots-container');
@@ -447,130 +859,57 @@
             }
         }, 5000);
 
-        // Clock & Battery
-        setInterval(() => {
-            const timeInstanceObject = new Date();
-            document.getElementById('telemetry-clock').innerHTML = `<i class="fa-regular fa-clock text-purple-400"></i> ${timeInstanceObject.toTimeString().split(' ')[0]}`;
-        }, 1000);
+        // Core Scripts Load
+        onValue(ref(db, 'scripts'), (snap) => { 
+            memoryCacheEntireScriptsDataset = snap.val() || {}; 
+            executeMainUIRendererPipelineStreamer(); 
+            calculateAggregatedCopiesMetricCounter(); 
+        });
 
-        if(navigator.getBattery) {
-            navigator.getBattery().then(b => {
-                const updateUi = () => {
-                    const lvl = Math.round(b.level * 100);
-                    document.getElementById('telemetry-battery').innerHTML = `<i class="fa-solid fa-battery-three-quarters ${lvl < 25 ? 'text-red-500' : 'text-amber-400'}"></i> ${lvl}%`;
-                };
-                updateUi(); b.addEventListener('levelchange', updateUi);
-            });
+        function calculateAggregatedCopiesMetricCounter() { 
+            let total = 0; 
+            Object.values(memoryCacheEntireScriptsDataset).forEach(s => total += (s.copyCount || 0)); 
+            document.getElementById('metric-label-copies').innerText = total; 
         }
-
-        // Network
-        window.addEventListener('offline', () => { document.getElementById('telemetry-network-badge').className = "bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded border border-red-500/20 font-black"; document.getElementById('telemetry-network-badge').innerText = "OFFLINE"; });
-        window.addEventListener('online', () => { document.getElementById('telemetry-network-badge').className = "bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20 font-black"; document.getElementById('telemetry-network-badge').innerText = "SYNCED"; });
-
-        // Toast
-        window.dispatchSystemToastNotificationNotification = (msg, type = 'success') => {
-            const hub = document.getElementById('toast-master-hub');
-            const toast = document.createElement('div');
-            toast.className = `glass-ui flex items-center gap-3 text-white px-4 py-3 rounded-full text-xs font-black border ${type === 'success' ? 'border-emerald-500/20' : 'border-red-500/20'} shadow-2xl opacity-0 transition duration-300 transform translate-y-[-15px] pointer-events-auto`;
-            toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse"></span> ${msg}`;
-            hub.appendChild(toast);
-            setTimeout(() => toast.classList.remove('opacity-0', 'translate-y-[-15px]'), 15);
-            setTimeout(() => { toast.classList.add('opacity-0', 'scale-90'); setTimeout(() => toast.remove(), 300); }, 3500);
-        };
-
-        // Remote Guard Switch
-        onValue(ref(db, 'system_guard'), (snap) => {
-            if(snap.exists()) {
-                const guard = snap.val();
-                const screen = document.getElementById('maintenance-lockscreen-layer');
-                if(guard.maintenanceMode === true || guard.maintenanceMode === "true") {
-                    screen.classList.remove('hidden'); document.getElementById('maintenance-realtime-msg').innerText = guard.maintenanceMessage || 'Sistem Sedang Maintenance Server.';
-                } else { screen.classList.add('hidden'); }
-                
-                const marquee = document.getElementById('ticker-marquee-wrapper');
-                if(guard.announcement && guard.announcement.enabled === true) {
-                    document.getElementById('ticker-marquee-text-payload').innerText = guard.announcement.text || 'Selamat datang di DHM COMMUNITY! Dapatkan update script terbaru setiap harinya di sini.';
-                }
-            }
-        });
-
-        onValue(ref(db, 'settings/theme'), (snap) => { document.body.className = `min-h-screen pb-32 relative ${snap.val() || 'theme-dark'}`; });
-
-        // FAQ Load
-        onValue(ref(db, 'faqs'), (snap) => {
-            const box = document.getElementById('faq-accordion-live-injections-box'); box.innerHTML = '';
-            if(snap.exists()) {
-                Object.entries(snap.val()).forEach(([id, model], idx) => {
-                    box.innerHTML += `
-                        <div class="border-b border-gray-800/50 pb-2.5 animate-premium-card">
-                            <button onclick="window.toggleFaqCollapseRowAnimation('${idx}')" class="w-full text-left font-black text-white text-xs flex justify-between items-center py-2 focus:outline-none">
-                                <span>❓ ${model.question}</span>
-                                <i id="faq-chevron-icon-${idx}" class="fa-solid fa-chevron-down text-[9px] text-gray-500 transition duration-300"></i>
-                            </button>
-                            <p id="faq-answer-collapse-block-${idx}" class="hidden text-[11px] text-gray-400 bg-black/30 p-3 rounded-2xl mt-1.5 leading-relaxed font-medium">💡 ${model.answer}</p>
-                        </div>`;
-                });
-            } else { box.innerHTML = '<p class="text-xs text-gray-600 font-mono text-center py-4">Belum ada FAQ bantuan.</p>'; }
-        });
-
-        window.toggleFaqCollapseRowAnimation = (idx) => { triggerDeviceShortHapticFeedbackVibration(); document.getElementById(`faq-answer-collapse-block-${idx}`).classList.toggle('hidden'); };
-
-        // Messages Submissions
-        window.submitUserMessagePipeline = () => {
-            triggerDeviceShortHapticFeedbackVibration();
-            const n = document.getElementById('msg-sender-name').value.trim();
-            const m = document.getElementById('msg-text-content').value.trim();
-            if(!n || !m) return dispatchSystemToastNotificationNotification('Kolom Nama & Isi Pesan wajib diisi!', 'error');
-            set(push(ref(db, 'messages')), { sender: n, target: activeSelectedMsgTargetRoleValue, message: m, timestamp: Date.now() }).then(() => {
-                dispatchSystemToastNotificationNotification(`Pesan sukses dikirim ke ${activeSelectedMsgTargetRoleValue}!`);
-                document.getElementById('msg-sender-name').value = ''; document.getElementById('msg-text-content').value = '';
-            }).catch(() => dispatchSystemToastNotificationNotification('Gagal mengirim pesan.', 'error'));
-        };
-
-        window.injectPresetTextTemplateIntoMessagePayload = (id) => {
-            triggerDeviceShortHapticFeedbackVibration();
-            const box = document.getElementById('msg-text-content');
-            if(id === 1) box.value = "[LAPORAN ERROR]: Skrip Hub mengalami Force Close sesaat setelah dieksekusi di Executor Mobile.";
-            else if(id === 2) box.value = "[REQUEST GAME SCRIPT]: Tolong tambahkan koleksi skrip terbaru untuk game Roblox: ";
-            else if(id === 3) box.value = "[DONASI PARTNER]: Saya berniat mengajukan proposal kerja sama.";
-        };
-
-        // Categories Load
-        onValue(ref(db, 'categories'), (snap) => {
-            const listContainer = document.getElementById('list-options-game-cat');
-            listContainer.innerHTML = `<li onclick="commitActiveCategorySelectionPipeline('Semua Game', '🌐 Semua Game')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">🌐 Semua Game</li>`;
-            if(snap.exists()) {
-                Object.values(snap.val()).forEach(categoryName => {
-                    listContainer.innerHTML += `<li onclick="commitActiveCategorySelectionPipeline('${categoryName}', '🎮 ${categoryName}')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5 truncate">🎮 ${categoryName}</li>`;
-                });
-            }
-            executeMainUIRendererPipelineStreamer();
-        });
-
-        window.toggleQuickFavoriteFilteringMode = () => {
-            triggerDeviceShortHapticFeedbackVibration();
-            isQuickFavoriteFilterActive = !isQuickFavoriteFilterActive;
-            const btn = document.getElementById('quick-fav-filter-toggle');
-            if(isQuickFavoriteFilterActive) {
-                btn.className = "glass-ui px-4 rounded-2xl text-pink-500 bg-pink-500/10 border border-pink-500/30 transition duration-300 flex items-center justify-center";
-            } else {
-                btn.className = "glass-ui px-4 rounded-2xl text-gray-400 hover:text-pink-500 transition duration-300 flex items-center justify-center border border-white/5";
-            }
-            currentPage = 1; 
-            executeMainUIRendererPipelineStreamer();
-        };
-
-        // Scripts Load Engine Streamer
-        onValue(ref(db, 'scripts'), (snap) => { memoryCacheEntireScriptsDataset = snap.val() || {}; executeMainUIRendererPipelineStreamer(); calculateAggregatedCopiesMetricCounter(); });
-        function calculateAggregatedCopiesMetricCounter() { let total = 0; Object.values(memoryCacheEntireScriptsDataset).forEach(s => total += (s.copyCount || 0)); document.getElementById('metric-label-copies').innerText = total; }
 
         function executeMainUIRendererPipelineStreamer() {
             const box = document.getElementById('live-scripts-render-target-box');
             const paginationContainer = document.getElementById('pagination-controls-container');
+            const leaderboardBox = document.getElementById('leaderboard-render-target-box');
             const search = document.getElementById('pipeline-search-input-field').value.toLowerCase();
 
             box.innerHTML = ''; 
             let list = Object.keys(memoryCacheEntireScriptsDataset).map(k => ({ id: k, ...memoryCacheEntireScriptsDataset[k] }));
+
+            // RENDER LEADERBOARD
+            if (leaderboardBox && list.length > 0) {
+                let topScripts = [...list].sort((a, b) => (b.copyCount || 0) - (a.copyCount || 0)).slice(0, 10);
+                leaderboardBox.innerHTML = '';
+                const medalColors = ['text-yellow-400', 'text-gray-400', 'text-amber-700'];
+                const crownIcons = ['fa-crown', 'fa-medal', 'fa-medal'];
+                
+                topScripts.forEach((item, index) => {
+                    let isTop3 = index < 3;
+                    let iconColor = isTop3 ? medalColors[index] : 'text-purple-400';
+                    let iconClass = isTop3 ? crownIcons[index] : 'fa-ranking-star';
+                    let rankText = isTop3 ? ['#1 TERATAS', '#2 POPULER', '#3 FAVORIT'][index] : `#${index + 1} POPULER`;
+
+                    leaderboardBox.innerHTML += `
+                        <div class="glass-ui p-3.5 rounded-2xl border border-white/5 flex items-center gap-3.5 relative overflow-hidden group hover:bg-white/5 transition duration-300 cursor-pointer" onclick="window.openScriptDetailTab('${item.id}')">
+                            ${isTop3 ? `<div class="absolute -right-4 -top-4 w-16 h-16 bg-white/5 rounded-full blur-xl group-hover:bg-purple-500/20 transition duration-500"></div>` : ''}
+                            <div class="w-11 h-11 rounded-full bg-black/50 border border-white/10 flex items-center justify-center flex-shrink-0 ${iconColor} shadow-lg text-lg">
+                                <i class="fa-solid ${iconClass}"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <span class="text-[9px] ${iconColor} font-black uppercase tracking-wider block">${rankText}</span>
+                                <h4 class="text-xs font-black text-[var(--text-color)] truncate tracking-wide mt-0.5">${item.title}</h4>
+                                <span class="text-[10px] text-gray-400 font-medium"><i class="fa-solid fa-copy text-[9px] mr-1"></i> ${item.copyCount || 0} Kali Disalin</span>
+                            </div>
+                            <div class="w-8 h-8 flex items-center justify-center text-gray-500 group-hover:text-purple-400 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></div>
+                        </div>
+                    `;
+                });
+            }
 
             if(search) list = list.filter(item => item.title.toLowerCase().includes(search) || item.purpose.toLowerCase().includes(search));
             if(activeSelectedGameCategoryValue !== 'Semua Game') list = list.filter(item => item.category === activeSelectedGameCategoryValue);
@@ -581,15 +920,13 @@
             else if(activeSelectedSortOrderValue === 'alphabet') list.sort((a, b) => a.title.localeCompare(b.title));
 
             document.getElementById('metric-label-total').innerText = list.length;
-            document.title = `DHM COMMUNITY | ${list.length} Scripts`;
 
             if(list.length === 0) {
-                box.innerHTML = `<p class="text-center col-span-full py-8 text-xs text-gray-600 font-mono">Skrip tidak ditemukan</p>`;
+                box.innerHTML = `<p class="text-center col-span-full py-8 text-xs text-gray-400 font-mono">Skrip tidak ditemukan</p>`;
                 paginationContainer.innerHTML = '';
                 return;
             }
 
-            // PAGINATION LOGIC:
             const totalPages = Math.ceil(list.length / itemsPerPage);
             if (currentPage > totalPages) currentPage = totalPages;
             if (currentPage < 1) currentPage = 1;
@@ -599,11 +936,9 @@
             const paginatedList = list.slice(startIndex, endIndex);
 
             paginatedList.forEach(item => { box.insertAdjacentHTML('beforeend', generateCoreScriptHtmlCardLayoutStructure(item, localBookmarksRegistryList.includes(item.id))); });
-
             renderPaginationControls(totalPages);
         }
 
-        // FUNGSI RENDER TOMBOL PAGINATION
         function renderPaginationControls(totalPages) {
             const container = document.getElementById('pagination-controls-container');
             container.innerHTML = '';
@@ -611,40 +946,37 @@
             if(totalPages <= 1) return;
 
             let html = '';
-            const prevDisabled = currentPage === 1 ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 hover:text-white';
+            const prevDisabled = currentPage === 1 ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 hover:text-purple-400';
             html += `<button onclick="window.changePage(${currentPage - 1})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 ${prevDisabled} transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>`;
 
             let maxPagesToShow = 5;
             let startPage = Math.max(1, currentPage - 2);
             let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
-            if (endPage - startPage + 1 < maxPagesToShow) {
-                startPage = Math.max(1, endPage - maxPagesToShow + 1);
-            }
+            if (endPage - startPage + 1 < maxPagesToShow) { startPage = Math.max(1, endPage - maxPagesToShow + 1); }
 
             if (startPage > 1) {
-                html += `<button onclick="window.changePage(1)" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition text-xs font-black">1</button>`;
+                html += `<button onclick="window.changePage(1)" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-purple-400 transition text-xs font-black">1</button>`;
                 if (startPage > 2) html += `<span class="text-gray-500 text-xs px-1">...</span>`;
             }
 
             for(let i = startPage; i <= endPage; i++) {
-                const activeClass = i === currentPage ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-none shadow-lg' : 'glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-white';
+                const activeClass = i === currentPage ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-none shadow-lg' : 'glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-purple-400';
                 html += `<button onclick="window.changePage(${i})" class="w-8 h-8 flex items-center justify-center rounded-lg ${activeClass} transition text-xs font-black">${i}</button>`;
             }
 
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) html += `<span class="text-gray-500 text-xs px-1">...</span>`;
-                html += `<button onclick="window.changePage(${totalPages})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition text-xs font-black">${totalPages}</button>`;
+                html += `<button onclick="window.changePage(${totalPages})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-purple-400 transition text-xs font-black">${totalPages}</button>`;
             }
 
-            const nextDisabled = currentPage === totalPages ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 hover:text-white';
+            const nextDisabled = currentPage === totalPages ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 hover:text-purple-400';
             html += `<button onclick="window.changePage(${currentPage + 1})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 ${nextDisabled} transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>`;
 
             container.innerHTML = html;
         }
 
         window.changePage = (page) => {
-            triggerDeviceShortHapticFeedbackVibration();
             currentPage = page;
             executeMainUIRendererPipelineStreamer();
             window.scrollTo({top: 0, behavior: 'smooth'});
@@ -655,11 +987,11 @@
             const actionButtonsHtml = `
                 <div class="flex gap-1.5 mt-2">
                     <button id="btn-copy-main-${item.id}" onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-1"><i class="fa-solid fa-copy"></i> SALIN</button>
-                    <button onclick="window.openScriptDetailTab('${item.id}')" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition border border-white/10"><i class="fa-solid fa-eye"></i> DETAIL</button>
+                    <button onclick="window.openScriptDetailTab('${item.id}')" class="flex-1 bg-black/10 hover:bg-black/20 text-gray-300 py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition border border-gray-500/20"><i class="fa-solid fa-eye"></i> DETAIL</button>
                 </div>
                 <div class="flex gap-1.5 mt-1.5">
-                    <button onclick="window.downloadScriptTxt('${item.title}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-white/5 hover:bg-emerald-500/20 text-emerald-400 py-2 rounded-xl text-[9px] font-bold active:scale-[0.97] transition border border-emerald-500/20"><i class="fa-solid fa-download"></i> .TXT</button>
-                    <button onclick="window.shareSpecificScript('${item.title}', '${item.purpose}')" class="flex-1 bg-white/5 hover:bg-blue-500/20 text-blue-400 py-2 rounded-xl text-[9px] font-bold active:scale-[0.97] transition border border-blue-500/20"><i class="fa-solid fa-share-nodes"></i> SHARE</button>
+                    <button onclick="window.downloadScriptTxt('${item.title}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-black/5 hover:bg-emerald-500/20 text-emerald-400 py-2 rounded-xl text-[9px] font-bold active:scale-[0.97] transition border border-emerald-500/20"><i class="fa-solid fa-download"></i> .TXT</button>
+                    <button onclick="window.shareSpecificScript('${item.title}', '${item.purpose}')" class="flex-1 bg-black/5 hover:bg-blue-500/20 text-blue-400 py-2 rounded-xl text-[9px] font-bold active:scale-[0.97] transition border border-blue-500/20"><i class="fa-solid fa-share-nodes"></i> SHARE</button>
                 </div>
             `;
 
@@ -669,12 +1001,12 @@
                         <div>
                             <div class="relative w-full h-40 rounded-2xl overflow-hidden border border-white/5 bg-slate-900">
                                 <img src="${item.icon || 'https://via.placeholder.com/300'}" class="w-full h-full object-cover">
-                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-base backdrop-blur-md ${bookmarked ? 'text-pink-500' : 'text-gray-400'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
+                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-base backdrop-blur-md ${bookmarked ? 'text-pink-500' : 'text-gray-300'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
                             </div>
                             <div class="pt-2">
-                                <span class="bg-white/5 text-gray-300 text-[8px] font-black px-2 py-0.5 rounded border border-white/5 uppercase font-mono">${item.category}</span>
-                                <h3 class="text-xs font-black text-white mt-1.5 truncate uppercase tracking-wide">${item.title}</h3>
-                                <p class="text-[11px] text-gray-400 line-clamp-2 font-medium mt-0.5">${item.purpose}</p>
+                                <span class="bg-black/10 text-gray-400 text-[8px] font-black px-2 py-0.5 rounded border border-gray-500/20 uppercase font-mono">${item.category}</span>
+                                <h3 class="text-xs font-black text-[var(--text-color)] mt-1.5 truncate uppercase tracking-wide">${item.title}</h3>
+                                <p class="text-[11px] text-gray-500 line-clamp-2 font-medium mt-0.5">${item.purpose}</p>
                             </div>
                         </div>
                         ${actionButtonsHtml}
@@ -687,11 +1019,11 @@
                             <div class="flex items-start gap-3">
                                 <img src="${item.icon || 'https://via.placeholder.com/60'}" class="${imgDimensionsClass} object-cover bg-slate-900 border border-white/5 flex-shrink-0">
                                 <div class="flex-1 min-w-0">
-                                    <span class="bg-white/5 text-gray-300 text-[8px] font-black px-2 py-0.5 rounded border border-white/5 uppercase font-mono">${item.category}</span>
-                                    <h3 class="text-xs font-black text-white mt-1 truncate tracking-wide uppercase">${item.title}</h3>
-                                    <p class="text-[11px] text-gray-400 line-clamp-1 font-medium mt-0.5">${item.purpose}</p>
+                                    <span class="bg-black/10 text-gray-400 text-[8px] font-black px-2 py-0.5 rounded border border-gray-500/20 uppercase font-mono">${item.category}</span>
+                                    <h3 class="text-xs font-black text-[var(--text-color)] mt-1 truncate tracking-wide uppercase">${item.title}</h3>
+                                    <p class="text-[11px] text-gray-500 line-clamp-1 font-medium mt-0.5">${item.purpose}</p>
                                 </div>
-                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="p-1 text-base ${bookmarked ? 'text-pink-500' : 'text-gray-600'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
+                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="p-1 text-base ${bookmarked ? 'text-pink-500' : 'text-gray-400'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
                             </div>
                         </div>
                         ${actionButtonsHtml}
@@ -700,12 +1032,11 @@
         }
 
         window.executeCopyScriptPayloadPipeline = (id, b64) => {
-            triggerDeviceShortHapticFeedbackVibration();
             const originalText = decodeURIComponent(atob(b64));
             navigator.clipboard.writeText(originalText).then(() => {
                 window.dispatchSystemToastNotificationNotification('Skrip berhasil disalin!', 'success');
                 runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
-                
+                confetti({ zIndex: 9999, particleCount: 100, spread: 70, origin: { y: 0.6 } });
                 const btn = document.getElementById(`btn-copy-main-${id}`);
                 if(btn) {
                     const originalInner = btn.innerHTML;
@@ -716,7 +1047,6 @@
         };
 
         window.executeTargetBookmarkTogglePipeline = (id) => {
-            triggerDeviceShortHapticFeedbackVibration();
             localBookmarksRegistryList = localBookmarksRegistryList.includes(id) ? localBookmarksRegistryList.filter(i => i !== id) : [...localBookmarksRegistryList, id];
             localStorage.setItem('dhm_v10_bookmarks', JSON.stringify(localBookmarksRegistryList));
             document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length; 
@@ -724,58 +1054,42 @@
         };
 
         window.switchActiveViewportContext = (id, ref) => {
-            triggerDeviceShortHapticFeedbackVibration();
             document.getElementById('viewport-scripts-hub').classList.toggle('hidden', id !== 'scripts');
+            document.getElementById('viewport-chat-hub').classList.toggle('hidden', id !== 'chat');
             document.getElementById('viewport-message-hub').classList.toggle('hidden', id !== 'message');
+            document.getElementById('viewport-leaderboard-hub').classList.toggle('hidden', id !== 'leaderboard');
             document.getElementById('viewport-faq-hub').classList.toggle('hidden', id !== 'faq');
             
             document.querySelectorAll('.active-navigation-node').forEach(n => { n.classList.remove('text-purple-400', 'active-navigation-node'); n.classList.add('text-gray-500'); });
             ref.classList.add('text-purple-400', 'active-navigation-node'); ref.classList.remove('text-gray-500');
             window.scrollTo({top: 0, behavior: 'smooth'});
+            
+            if(id === 'chat') {
+                const box = document.getElementById('chat-messages-container');
+                box.scrollTop = box.scrollHeight;
+            }
         };
 
-        window.triggerLocalPreferencesControlPanel = () => { triggerDeviceShortHapticFeedbackVibration(); document.getElementById('preferences-dropdown-panel').classList.toggle('hidden'); };
-        window.toggleLocalPreferenceNode = (k) => { triggerDeviceShortHapticFeedbackVibration(); localPreferencesConfigObject[k] = !localPreferencesConfigObject[k]; localStorage.setItem('dhm_v10_pref_config', JSON.stringify(localPreferencesConfigObject)); hydrateLocalPreferencesButtonUiState(); };
-        function hydrateLocalPreferencesButtonUiState() { document.getElementById('pref-widget-haptic').className = localPreferencesConfigObject.hapticState ? "bg-purple-600/10 border border-purple-500/20 p-2.5 rounded-xl text-[10px] font-black text-purple-400 flex items-center justify-center gap-1.5" : "bg-white/5 border border-white/5 p-2.5 rounded-xl text-[10px] font-bold text-gray-500 flex items-center justify-center gap-1.5"; }
-        function triggerDeviceShortHapticFeedbackVibration() { if(localPreferencesConfigObject.hapticState && navigator.vibrate) navigator.vibrate(10); }
+        window.triggerLocalPreferencesControlPanel = () => { 
+            document.getElementById('preferences-dropdown-panel').classList.toggle('hidden'); 
+        };
+        
         window.clearActiveSearchFieldPipeline = () => { 
-            triggerDeviceShortHapticFeedbackVibration(); 
-            document.getElementById('pipeline-search-input-field').value = ''; 
+            const input = document.getElementById('pipeline-search-input-field');
+            input.value = ''; 
+            document.getElementById('pipeline-search-clear-btn').classList.add('hidden');
             currentPage = 1; 
             executeMainUIRendererPipelineStreamer(); 
         };
-        window.dispatchNativeSharePipeline = () => { triggerDeviceShortHapticFeedbackVibration(); if(navigator.share) navigator.share({ title: 'DHM COMMUNITY', url: window.location.href }); };
-
-        function initBackgroundCanvasEmittersModule() {
-            const canvas = document.getElementById('background-canvas'); const ctx = canvas.getContext('2d');
-            let arrayParticles = []; const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-            window.addEventListener('resize', resize); resize();
-            class FloatingParticle {
-                constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.speedY = (Math.random() * 0.4) + 0.1; this.radius = Math.random() * 1.5; }
-                update() { this.y -= this.speedY; if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } }
-                draw() { ctx.fillStyle = 'rgba(168, 85, 247, 0.3)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill(); }
-            }
-            for(let i = 0; i < 35; i++) arrayParticles.push(new FloatingParticle());
-            const loop = () => { ctx.clearRect(0, 0, canvas.width, canvas.height); arrayParticles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(loop); }; loop();
-        }
-
-        document.getElementById('pipeline-search-input-field').addEventListener('input', () => {
-            currentPage = 1; 
-            executeMainUIRendererPipelineStreamer();
-        });
         
-        // VIEW DETAIL MODAL OVERLAY
         window.openScriptDetailTab = (id) => {
-            triggerDeviceShortHapticFeedbackVibration();
             const item = memoryCacheEntireScriptsDataset[id];
-            if(!item) return dispatchSystemToastNotificationNotification('Gagal memuat detail data.', 'error');
+            if(!item) return window.dispatchSystemToastNotificationNotification('Gagal memuat detail data.', 'error');
             
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const timeOptions = { hour: '2-digit', minute: '2-digit' };
-            
             const fullDate = item.timestamp ? new Date(item.timestamp).toLocaleDateString('id-ID', dateOptions) : 'Tidak diketahui';
             const fullTime = item.timestamp ? new Date(item.timestamp).toLocaleTimeString('id-ID', timeOptions) : '--:--';
-            
             const codeLength = item.scriptText ? item.scriptText.length : 0;
             const scriptLinesCount = item.scriptText ? item.scriptText.split('\n').length : 0;
             const scriptArchitectureType = item.scriptText && item.scriptText.includes('loadstring') ? 'Loadstring API' : 'Local Code Architecture';
@@ -784,41 +1098,41 @@
             modal.className = 'fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-premium-card';
             modal.innerHTML = `
                 <div class="glass-ui p-6 rounded-3xl max-w-lg w-full border border-purple-500/30 shadow-2xl relative max-h-[90vh] flex flex-col">
-                    <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-xmark"></i></button>
+                    <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90 z-50"><i class="fa-solid fa-xmark"></i></button>
                     
                     <div class="mb-4 pr-8">
                         <span class="bg-gradient-to-r from-purple-600 to-blue-600 px-2.5 py-1 rounded-md text-[9px] font-black uppercase text-white shadow-lg tracking-wider inline-flex items-center gap-1">
                             <i class="fa-solid fa-gamepad"></i> ${item.category}
                         </span>
-                        <h1 class="text-lg font-black text-white mt-2.5 leading-tight tracking-wide uppercase bg-clip-text bg-gradient-to-r from-white to-gray-300">${item.title}</h1>
-                        <p class="text-[11px] text-gray-400 mt-1 font-medium leading-relaxed bg-white/5 p-2 rounded-lg border border-white/5"><i class="fa-solid fa-circle-info text-purple-400 mr-1"></i>${item.purpose}</p>
+                        <h1 class="text-lg font-black text-[var(--text-color)] mt-2.5 leading-tight tracking-wide uppercase">${item.title}</h1>
+                        <p class="text-[11px] text-gray-400 mt-1 font-medium leading-relaxed bg-black/10 p-2 rounded-lg border border-gray-500/20"><i class="fa-solid fa-circle-info text-purple-400 mr-1"></i>${item.purpose}</p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 mb-4 bg-black/40 p-3 rounded-xl border border-white/5 text-[11px]">
+                    <div class="grid grid-cols-2 gap-3 mb-4 bg-black/10 p-3 rounded-xl border border-gray-500/20 text-[11px]">
                         <div>
-                            <span class="block text-[9px] text-purple-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-regular fa-calendar-days"></i> Hari / Tanggal Upload</span>
-                            <span class="text-white font-bold">${fullDate}</span>
+                            <span class="block text-[9px] text-purple-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-regular fa-calendar-days"></i> Hari / Tanggal</span>
+                            <span class="text-[var(--text-color)] font-bold">${fullDate}</span>
                         </div>
                         <div>
-                            <span class="block text-[9px] text-purple-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-regular fa-clock"></i> Waktu Jam Rilis</span>
-                            <span class="text-white font-bold">${fullTime} WIB</span>
+                            <span class="block text-[9px] text-purple-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-regular fa-clock"></i> Waktu Rilis</span>
+                            <span class="text-[var(--text-color)] font-bold">${fullTime} WIB</span>
                         </div>
                         <div>
                             <span class="block text-[9px] text-blue-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-solid fa-chart-simple"></i> Total Salinan</span>
-                            <span class="text-white font-bold">${item.copyCount || 0} Kali Digunakan</span>
+                            <span class="text-[var(--text-color)] font-bold">${item.copyCount || 0} Kali Digunakan</span>
                         </div>
                         <div>
                             <span class="block text-[9px] text-amber-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-solid fa-code-branch"></i> Struktur Mekanis</span>
-                            <span class="text-amber-400 font-bold">${scriptArchitectureType}</span>
+                            <span class="text-amber-500 font-bold">${scriptArchitectureType}</span>
                         </div>
-                        <div class="col-span-2 border-t border-white/5 pt-2 flex justify-between text-[10px] text-gray-400 font-mono">
-                            <span>Karakter: <b class="text-white">${codeLength}</b></span>
-                            <span>Baris Kode: <b class="text-white">${scriptLinesCount}</b></span>
+                        <div class="col-span-2 border-t border-gray-500/20 pt-2 flex justify-between text-[10px] text-gray-500 font-mono">
+                            <span>Karakter: <b class="text-[var(--text-color)]">${codeLength}</b></span>
+                            <span>Baris Kode: <b class="text-[var(--text-color)]">${scriptLinesCount}</b></span>
                         </div>
                     </div>
                     
                     <span class="text-[10px] text-purple-400 font-black uppercase tracking-widest mb-1 block"><i class="fa-solid fa-code text-xs"></i> Source Code Script:</span>
-                    <div class="bg-[#04060a] p-3.5 rounded-xl border border-white/10 font-mono text-[10px] text-emerald-400 overflow-y-auto custom-scrollbar flex-1 mb-4 select-all" style="max-height: 25vh; white-space: pre-wrap; word-break: break-all;">${item.scriptText}</div>
+                    <pre class="bg-[#04060a] p-3.5 rounded-xl border border-white/10 font-mono text-[10px] overflow-y-auto custom-scrollbar flex-1 mb-4 select-all shadow-inner" style="max-height: 25vh;"><code class="language-lua">${escapeHTML(item.scriptText)}</code></pre>
                     
                     <button id="modal-copy-btn" class="w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-purple-600/20 active:scale-[0.97] transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-copy"></i> SALIN SOURCE CODE SKRIP
@@ -827,19 +1141,19 @@
             `;
             
             document.body.appendChild(modal);
+            setTimeout(() => { Prism.highlightAllUnder(modal); }, 0);
             
             const copyBtn = modal.querySelector('#modal-copy-btn');
             copyBtn.addEventListener('click', () => {
-                triggerDeviceShortHapticFeedbackVibration();
                 navigator.clipboard.writeText(item.scriptText).then(() => {
                     window.dispatchSystemToastNotificationNotification('Script berhasil disalin langsung dari menu detail!', 'success');
                     runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
+                    confetti({ zIndex: 9999, particleCount: 100, spread: 70, origin: { y: 0.6 } });
                 });
             });
         };
 
         window.downloadScriptTxt = (title, b64) => {
-            triggerDeviceShortHapticFeedbackVibration();
             const text = decodeURIComponent(atob(b64));
             const blob = new Blob([text], {type: "text/plain"});
             const url = URL.createObjectURL(blob);
@@ -848,35 +1162,27 @@
             a.download = `[DHM] ${title}.txt`;
             a.click();
             URL.revokeObjectURL(url);
-            dispatchSystemToastNotificationNotification('File .txt berhasil di-download!', 'success');
+            window.dispatchSystemToastNotificationNotification('File .txt berhasil di-download!', 'success');
         };
 
         window.shareSpecificScript = (title, purpose) => {
-            triggerDeviceShortHapticFeedbackVibration();
             if (navigator.share) {
-                navigator.share({
-                    title: `DHM SCRIPT: ${title}`,
-                    text: `Dapatkan Script Terkeren ini: ${title}\nFitur: ${purpose}\n\nDownload sekarang di DHM COMMUNITY Portal!`,
-                    url: window.location.href
-                }).catch(() => {});
+                navigator.share({ title: `DHM SCRIPT: ${title}`, text: `Dapatkan Script Terkeren ini: ${title}\nFitur: ${purpose}\n\nDownload sekarang di DHM COMMUNITY Portal!`, url: window.location.href }).catch(() => {});
             } else {
                 navigator.clipboard.writeText(`DHM SCRIPT: ${title} | ${purpose} -> ${window.location.href}`);
-                dispatchSystemToastNotificationNotification('Link tautan skrip disalin ke clipboard!', 'success');
+                window.dispatchSystemToastNotificationNotification('Link tautan skrip disalin ke clipboard!', 'success');
             }
         };
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                window.clearActiveSearchFieldPipeline();
-                document.getElementById('pipeline-search-input-field').blur();
-            }
-        });
-
-        window.addEventListener('scroll', () => {
-            const btn = document.getElementById('fab-scroll-top');
-            if(window.scrollY > 400) btn.classList.remove('hidden');
-            else btn.classList.add('hidden');
-        });
+        window.dispatchSystemToastNotificationNotification = (msg, type = 'success') => {
+            const hub = document.getElementById('toast-master-hub');
+            const toast = document.createElement('div');
+            toast.className = `glass-ui flex items-center gap-3 text-white px-4 py-3 rounded-full text-xs font-black border ${type === 'success' ? 'border-emerald-500/20' : 'border-red-500/20'} shadow-2xl opacity-0 transition duration-300 transform translate-y-[-15px] pointer-events-auto`;
+            toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse"></span> ${msg}`;
+            hub.appendChild(toast);
+            setTimeout(() => toast.classList.remove('opacity-0', 'translate-y-[-15px]'), 15);
+            setTimeout(() => { toast.classList.add('opacity-0', 'scale-90'); setTimeout(() => toast.remove(), 300); }, 3500);
+        };
     </script>
 </body>
 </html>
