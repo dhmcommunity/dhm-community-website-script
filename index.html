@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- TAG PWA -->
     <meta name="theme-color" content="#020306">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://via.placeholder.com/192">
     
-    <title>DHM COMMUNITY | WEBSITE (Guarded)</title>
-    <!-- Tailwind CSS v4 Browser Engine CDN -->
+    <title>DHM COMMUNITY | Sovereign v20.5 (Ultra Custom)</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome Pro Icon Emulation Node Pack -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Prism.js Syntax Highlighter CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Orbitron:wght@400;700;900&family=Press+Start+2P&family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --bg-main: #020306;
@@ -25,21 +24,28 @@
             --neon-green: #10b981;
             --text-color: #f8fafc;
             --border-color: rgba(255, 255, 255, 0.05);
+            --card-radius: 1.5rem;
+            --elem-radius: 0.75rem;
         }
         
         body {
             background-color: var(--bg-main);
             color: var(--text-color);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.5s ease, font-family 0.3s ease;
         }
         .glass-ui {
             background: var(--bg-card);
             backdrop-filter: blur(35px);
             -webkit-backdrop-filter: blur(35px);
             border: 1px solid var(--border-color);
+            border-radius: var(--card-radius) !important;
+            transition: border-radius 0.3s ease;
         }
+        .dynamic-elem { border-radius: var(--elem-radius) !important; transition: border-radius 0.3s ease; }
+        
         .progress-indicator-bar {
             position: fixed; top: 0; left: 0; height: 3px;
             background: linear-gradient(to right, var(--accent), var(--neon-blue), var(--neon-green));
@@ -47,283 +53,342 @@
         }
         .neon-focus-glow:focus-within { border-color: var(--accent); box-shadow: 0 0 18px var(--accent-glow); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 12px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--accent); opacity: 0.5; border-radius: 12px; }
         .carousel-track { display: flex; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
         @keyframes scaleInUi { 0% { transform: scale(0.96); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .animate-premium-card { animation: scaleInUi 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        #background-canvas { position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: 0.4; }
-        input, textarea { background-color: rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); color: inherit; }
-        input:focus, textarea:focus { border-color: var(--accent); outline: none; }
+        #background-particles { position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: 0.6; }
+        input, textarea, select { background-color: rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); color: inherit; }
+        input:focus, textarea:focus, select:focus { border-color: var(--accent); outline: none; }
+        select option { background: #0a0c16; color: #fff; }
         .custom-dropdown-panel {
-            background: rgba(10, 12, 22, 0.96);
+            background: var(--bg-card);
             backdrop-filter: blur(25px);
             border: 1px solid var(--border-color);
+            border-radius: var(--card-radius) !important;
         }
-        pre[class*="language-"] { margin: 0 !important; border-radius: 0.75rem !important; font-size: 10px !important; background: #04060a !important; }
+        pre[class*="language-"] { margin: 0 !important; border-radius: var(--elem-radius) !important; font-size: 10px !important; background: #04060a !important; }
+        @keyframes badgeGlow { 0%, 100% { filter: drop-shadow(0 0 5px var(--accent)); } 50% { filter: drop-shadow(0 0 12px var(--accent)); } }
+        .badge-verified { animation: badgeGlow 2s infinite; color: var(--accent) !important; }
+        .offline-banner { position: fixed; top: 0; left: 0; right: 0; background: #ef4444; color: white; text-align: center; font-size: 10px; font-weight: bold; padding: 4px; z-index: 9999; display: none; }
+        #bottom-nav-bar { transition: transform 0.3s ease-in-out; }
+        .premium-hover-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .premium-hover-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px var(--accent-glow); }
+        @keyframes floatUpFade { 
+            0% { transform: translateY(0) scale(0.5) translateX(-50%); opacity: 0; } 
+            20% { transform: translateY(-10px) scale(1.2) translateX(-50%); opacity: 1; } 
+            100% { transform: translateY(-60px) scale(1) translateX(-50%); opacity: 0; } 
+        }
+        
+        .accent-text-glow { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+        .accent-bg-gradient { background: linear-gradient(to right, var(--accent), var(--neon-blue)); }
+        
+        /* FIX: Class khusus untuk text gradient agar tidak menjadi blok kotak */
+        .accent-text-gradient {
+            background: linear-gradient(to right, var(--accent), var(--neon-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
     </style>
 </head>
-<body class="min-h-screen pb-32 relative">
+<body class="min-h-screen pb-32 relative" onclick="window.playAudioSfx('click')">
 
-    <canvas id="background-canvas"></canvas>
+    <div id="offline-network-banner" class="offline-banner"><i class="fa-solid fa-wifi-slash"></i> Koneksi Terputus. Menunggu Jaringan...</div>
+    <div id="background-particles"></div>
     <div class="progress-indicator-bar" id="scroll-track-node"></div>
     <div id="toast-master-hub" class="fixed top-4 left-0 right-0 z-[200] flex flex-col items-center space-y-2 pointer-events-none px-4"></div>
 
-    <!-- DISCORD POPUP LAYER -->
+    <button id="fab-scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="fixed bottom-24 right-4 w-10 h-10 accent-bg-gradient rounded-full shadow-lg text-white flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 z-[100] active:scale-90">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+    <button id="fab-scroll-bottom" onclick="window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'})" class="fixed bottom-36 right-4 w-10 h-10 bg-gradient-to-tr from-gray-700 to-gray-900 border border-white/10 rounded-full shadow-lg text-white flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 z-[100] active:scale-90">
+        <i class="fa-solid fa-arrow-down"></i>
+    </button>
+
     <div id="discord-popup-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 text-center backdrop-blur-xl">
-        <div class="glass-ui p-8 rounded-3xl max-w-sm w-full space-y-5 border border-[#5865F2]/40 shadow-2xl animate-premium-card relative">
+        <div class="glass-ui p-8 max-w-sm w-full space-y-5 border border-[#5865F2]/40 shadow-2xl animate-premium-card relative">
             <div class="w-20 h-20 rounded-full bg-[#5865F2]/20 border border-[#5865F2]/50 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(88,101,242,0.3)] relative">
                 <i class="fa-brands fa-discord text-4xl text-[#5865F2] animate-bounce"></i>
-                <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-black animate-pulse"></div>
             </div>
             <div>
                 <h1 class="text-xl font-black tracking-widest text-white uppercase mb-2">Akses Terkunci</h1>
                 <p class="text-[11px] text-gray-400 leading-relaxed font-medium">Anda diwajibkan untuk bergabung dengan server Discord DHM COMMUNITY terlebih dahulu.</p>
             </div>
             <div class="flex flex-col pt-2">
-                <a href="https://discord.gg/PyFdf38qj5" target="_blank" onclick="window.markDiscordPopupDone()" class="w-full bg-gradient-to-r from-[#5865F2] to-[#4752C4] hover:brightness-110 text-white py-4 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-[#5865F2]/40 active:scale-[0.97] transition flex items-center justify-center gap-2">
+                <a href="https://discord.gg/PyFdf38qj5" target="_blank" onclick="window.markDiscordPopupDone()" class="dynamic-elem w-full bg-gradient-to-r from-[#5865F2] to-[#4752C4] hover:brightness-110 text-white py-4 font-black text-[11px] uppercase tracking-widest shadow-lg shadow-[#5865F2]/40 active:scale-[0.97] transition flex items-center justify-center gap-2">
                     <i class="fa-brands fa-discord text-base"></i> JOIN DISCORD SEKARANG
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- PROFILE SETUP MODAL -->
+    <!-- Advanced Profile Customization UI -->
     <div id="profile-modal-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 backdrop-blur-xl">
-        <div class="glass-ui p-6 rounded-3xl max-w-sm w-full space-y-4 border border-purple-500/30 shadow-2xl animate-premium-card relative">
+        <div class="glass-ui p-6 max-w-sm w-full space-y-4 shadow-2xl animate-premium-card relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             <button onclick="window.toggleProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-xmark"></i></button>
-            <div class="text-center mb-2">
-                <h2 class="text-sm font-black text-white uppercase tracking-widest">Pengaturan Profil</h2>
-                <p class="text-[10px] text-gray-400 mt-1">Identitas ini akan terlihat di Global Chat.</p>
+            <div class="text-center mb-2 mt-2">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest accent-text-glow">Pengaturan Profil & Tema</h2>
+                <p class="text-[10px] text-gray-400 mt-1">Personalisasi tampilan aplikasi penuh.</p>
             </div>
-            <div class="space-y-4">
+            <div id="guest-profile-panel" class="space-y-3">
                 <div>
-                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1.5 ml-1">Nickname</label>
-                    <input type="text" id="input-profile-name" maxlength="15" placeholder="Ketik namamu..." class="w-full text-xs font-bold p-3 rounded-xl border border-white/10 bg-black/50 text-center">
+                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1 ml-1">Nickname</label>
+                    <input type="text" id="input-profile-name" maxlength="15" placeholder="Ketik namamu..." class="dynamic-elem w-full text-xs font-bold p-3 border border-white/10 bg-black/50 text-center text-white focus:border-purple-500 transition">
                 </div>
                 <div>
-                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1.5 ml-1">Pilih Avatar</label>
+                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1 ml-1">Pilih Avatar</label>
                     <div class="grid grid-cols-4 gap-2" id="avatar-selection-grid"></div>
                 </div>
                 <div>
-                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1.5 ml-1">Tema Warna</label>
+                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1 ml-1">Warna Latar Avatar</label>
                     <div class="grid grid-cols-3 gap-2" id="color-selection-grid"></div>
                 </div>
-                <button onclick="window.saveUserProfile()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2">Simpan Profil</button>
+                
+                <div class="border-t border-white/10 pt-3 mt-2">
+                    <label class="text-[9px] font-black uppercase tracking-wider block mb-2 ml-1 accent-text-glow"><i class="fa-solid fa-wand-magic-sparkles"></i> Customisasi UI Web</label>
+                    <div class="space-y-2">
+                        <select id="input-profile-font" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
+                            <option value="outfit">Teks: Outfit (Modern & Clean)</option>
+                            <option value="orbitron">Teks: Orbitron (Sci-Fi / Gaming)</option>
+                            <option value="fira">Teks: Fira Code (Hacker / Developer)</option>
+                            <option value="pressstart">Teks: Press Start 2P (Retro 8-Bit)</option>
+                            <option value="default">Teks: Sistem Default</option>
+                        </select>
+                        
+                        <select id="input-profile-accent" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
+                            <option value="purple">Aksen Warna: Neon Purple</option>
+                            <option value="blue">Aksen Warna: Cyber Blue</option>
+                            <option value="green">Aksen Warna: Matrix Green</option>
+                            <option value="red">Aksen Warna: Crimson Red</option>
+                            <option value="gold">Aksen Warna: Royal Gold</option>
+                        </select>
+
+                        <select id="input-profile-bg" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
+                            <option value="default">Latar Tema: Deep Navy (Default)</option>
+                            <option value="pitchBlack">Latar Tema: OLED Pitch Black</option>
+                            <option value="darkPurple">Latar Tema: Void Purple</option>
+                            <option value="bloodRed">Latar Tema: Dark Blood</option>
+                        </select>
+
+                        <select id="input-profile-radius" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
+                            <option value="smooth">Bentuk UI: Smooth Rounded</option>
+                            <option value="sharp">Bentuk UI: Sharp Edges (Kotak)</option>
+                            <option value="soft">Bentuk UI: Soft Edges</option>
+                        </select>
+
+                        <select id="input-profile-particles" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
+                            <option value="on">Partikel Animasi: AKTIF</option>
+                            <option value="off">Partikel Animasi: MATI (Performa Ekstra)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-1">
+                    <button onclick="window.exportBookmarks()" class="dynamic-elem flex-1 bg-white/5 border border-white/10 text-[9px] font-black uppercase py-2.5 text-gray-300 active:scale-95 transition"><i class="fa-solid fa-file-export mr-1"></i> Export Fav</button>
+                    <input type="file" id="import-file" class="hidden" accept=".json" onchange="window.importBookmarks(event)">
+                    <button onclick="document.getElementById('import-file').click()" class="dynamic-elem flex-1 bg-white/5 border border-white/10 text-[9px] font-black uppercase py-2.5 text-gray-300 active:scale-95 transition"><i class="fa-solid fa-file-import mr-1"></i> Import Fav</button>
+                </div>
+                
+                <button onclick="window.saveUserProfile()" class="dynamic-elem w-full accent-bg-gradient text-white py-3.5 font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2">Simpan & Terapkan Tema</button>
+                
+                <button onclick="window.clearUserCache()" class="dynamic-elem w-full bg-red-900/20 border border-red-500/30 text-red-400 py-3 font-black text-[9px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2 hover:bg-red-900/50"><i class="fa-solid fa-broom mr-1"></i> Bersihkan Cache Website</button>
             </div>
         </div>
     </div>
 
-    <!-- MAINTENANCE LAYER -->
     <div id="maintenance-lockscreen-layer" class="hidden fixed inset-0 bg-black/96 z-[150] flex flex-col items-center justify-center p-6 text-center backdrop-blur-xl">
-        <div class="glass-ui p-7 rounded-3xl max-w-sm space-y-4 border border-purple-500/20 shadow-2xl">
-            <div class="w-16 h-16 rounded-full bg-purple-950/40 border border-purple-500/30 flex items-center justify-center mx-auto">
-                <i class="fa-solid fa-screwdriver-wrench text-3xl text-purple-400 animate-bounce"></i>
+        <div class="glass-ui p-7 max-w-sm space-y-4 shadow-2xl">
+            <div class="w-16 h-16 rounded-full bg-black/40 border border-white/30 flex items-center justify-center mx-auto accent-text-glow">
+                <i class="fa-solid fa-screwdriver-wrench text-3xl animate-bounce"></i>
             </div>
-            <h1 class="text-lg font-black tracking-widest text-white uppercase">Server Maintenance</h1>
+            <h1 class="text-lg font-black tracking-widest text-white uppercase accent-text-glow">Server Maintenance</h1>
             <p id="maintenance-realtime-msg" class="text-xs text-gray-400 leading-relaxed">Sedang dilakukan pemeliharaan server berkala.</p>
         </div>
     </div>
 
-    <!-- Bulletin Ticker Text -->
-    <div id="ticker-marquee-wrapper" class="glass-ui border-none bg-gradient-to-r from-purple-950/60 via-black/80 to-blue-950/60 text-white text-[10px] font-black py-2 px-4 shadow-xl mt-3">
+    <div id="ticker-marquee-wrapper" class="glass-ui border-none bg-black/60 text-white text-[10px] font-black py-2 px-4 shadow-xl mt-3">
         <div class="max-w-md md:max-w-6xl mx-auto flex items-center">
-            <span class="bg-gradient-to-r from-purple-600 to-pink-500 text-[8px] px-1.5 py-0.5 rounded font-mono mr-2.5 flex-shrink-0 animate-pulse text-white">BULLETIN</span>
+            <span class="accent-bg-gradient text-[8px] px-1.5 py-0.5 rounded font-mono mr-2.5 flex-shrink-0 animate-pulse text-white">BULLETIN</span>
             <marquee id="ticker-marquee-text-payload" scrollamount="4" class="font-mono tracking-wide">Selamat datang di DHM COMMUNITY! Dapatkan update script terbaru setiap harinya di sini. 🔥</marquee>
         </div>
     </div>
 
-    <!-- Header App Bar Identity -->
     <header class="max-w-md md:max-w-6xl mx-auto px-4 mt-3 select-none">
-        <div class="glass-ui p-4 rounded-2xl flex justify-between items-center shadow-2xl relative overflow-hidden group">
+        <div class="glass-ui p-4 flex justify-between items-center shadow-2xl relative overflow-hidden group">
             <div class="flex items-center space-x-3.5 z-10 cursor-pointer active:scale-95 transition" onclick="window.toggleProfileModal()" title="Klik untuk edit profil">
-                <div id="header-avatar-bg" class="w-11 h-11 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10">
+                <div id="header-avatar-bg" class="dynamic-elem w-11 h-11 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10 relative overflow-hidden">
                     <i id="header-avatar-icon" class="fa-solid fa-user-ninja"></i>
                 </div>
                 <div>
-                    <h1 class="font-black tracking-widest text-sm bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400">DHM COMMUNITY</h1>
-                    <p id="header-username-text" class="text-[9px] font-bold text-gray-400 mt-0.5 tracking-wide">Guest</p>
+                    <!-- FIX: Menggunakan accent-text-gradient khusus agar teks tidak berubah menjadi blok warna -->
+                    <h1 class="font-black tracking-widest text-sm accent-text-gradient pb-0.5">DHM COMMUNITY</h1>
+                    <p id="header-username-text" class="text-[9px] font-bold text-gray-400 mt-0.5 tracking-wide flex items-center gap-1">
+                        <span id="dynamic-greeting-node" class="text-[8px] text-gray-500 font-mono hidden md:inline-block mr-1"></span>
+                        <span id="username-display-node">Guest</span>
+                        <i id="verified-badge-node" class="hidden fa-solid fa-circle-check text-[11px] badge-verified" title="Verified Account"></i>
+                        <span id="streak-display-node" class="ml-1 px-1.5 py-0.5 rounded bg-white/10 text-white border border-white/20 flex items-center gap-1" title="Login Streak">
+                            <i class="fa-solid fa-fire text-[8px] accent-text-glow"></i> <span id="streak-count">0</span>
+                        </span>
+                    </p>
                 </div>
             </div>
-            <div class="flex gap-1.5 z-10">
-                <button onclick="triggerLocalPreferencesControlPanel()" class="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-purple-400 transition active:scale-90"><i class="fa-solid fa-sliders text-xs"></i></button>
+            <div class="flex gap-2 z-10 items-center">
+                <button onclick="window.toggleZenModeUI()" class="dynamic-elem bg-white/10 hover:bg-white/20 border border-white/10 text-[9px] font-black text-white px-2 py-1.5 transition active:scale-90" title="Focus Mode">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+                <button onclick="window.toggleLanguage()" id="lang-indicator-btn" class="dynamic-elem bg-white/10 hover:bg-white/20 border border-white/10 text-[9px] font-black text-white px-2.5 py-1.5 uppercase transition active:scale-90 flex items-center gap-1.5">
+                    <i class="fa-solid fa-earth-asia accent-text-glow"></i> <span id="lang-text">ID</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- SETTINGS PANEL -->
-    <div id="preferences-dropdown-panel" class="hidden max-w-md md:max-w-6xl mx-auto px-4 mt-2 animate-premium-card select-none">
-        <div class="glass-ui p-5 rounded-2xl space-y-4 shadow-xl border border-purple-500/20">
-            <h4 class="text-[10px] font-black text-purple-400 uppercase tracking-widest border-b border-white/5 pb-2"><i class="fa-solid fa-gears mr-1.5"></i> <span data-i18n="settingsTitle">Pengaturan Sistem</span></h4>
-            <div class="grid grid-cols-1 gap-3 text-center">
-                <div onclick="toggleLanguage()" class="bg-white/5 border border-white/5 p-3 rounded-xl text-[10px] font-black cursor-pointer text-gray-400 hover:text-white transition flex flex-col items-center gap-1.5">
-                    <i class="fa-solid fa-language text-base text-blue-400"></i>
-                    <span id="lang-label">Bahasa: INDO</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Core Dynamic Operations Context -->
-    <main class="max-w-md md:max-w-6xl mx-auto p-4 space-y-4">
-        
-        <!-- CAROUSEL BANNER SHELL -->
-        <div id="carousel-banner-shell" class="hidden max-w-md md:max-w-6xl mx-auto overflow-hidden relative rounded-2xl glass-ui h-32 select-none animate-premium-card border border-white/5">
+    <main class="max-w-md md:max-w-6xl mx-auto p-4 space-y-4 relative z-10">
+        <div id="carousel-banner-shell" class="hidden max-w-md md:max-w-6xl mx-auto overflow-hidden relative glass-ui h-32 select-none animate-premium-card border border-white/5">
             <div id="carousel-track-container" class="carousel-track h-full"></div>
             <div class="absolute bottom-2 right-3 flex gap-1 z-20" id="carousel-dots-container"></div>
         </div>
 
-        <!-- ================= CONTAINER VIEWPORT 1: SCRIPTS CORE ================= -->
-        <div id="viewport-scripts-hub" class="space-y-4">
-            
-            <!-- Statistics -->
+        <div id="viewport-scripts-hub" class="space-y-4 block">
             <div class="grid grid-cols-3 gap-2.5 select-none">
-                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden">
+                <div class="glass-ui p-3.5 text-center relative overflow-hidden">
                     <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider" data-i18n="statDb">DATABASE</p>
-                    <p id="metric-label-total" class="text-xl font-black text-purple-400 mt-0.5">0</p>
+                    <p id="metric-label-total" class="text-xl font-black accent-text-glow mt-0.5">0</p>
                 </div>
-                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden border-b-2 border-pink-500/30">
-                    <p class="text-[9px] text-pink-400 font-bold uppercase tracking-wider" data-i18n="statFav">FAVORIT</p>
-                    <p id="metric-label-bookmarks" class="text-xl font-black text-pink-500 mt-0.5">0</p>
+                <div class="glass-ui p-3.5 text-center relative overflow-hidden border-b-2" style="border-color: var(--accent);">
+                    <p class="text-[9px] font-bold uppercase tracking-wider accent-text-glow" data-i18n="statFav">FAVORIT</p>
+                    <p id="metric-label-bookmarks" class="text-xl font-black accent-text-glow mt-0.5">0</p>
                 </div>
-                <div class="glass-ui p-3.5 rounded-2xl text-center relative overflow-hidden">
-                    <p class="text-[9px] text-blue-400 font-bold uppercase tracking-wider" data-i18n="statCopy">TOTAL COPY</p>
-                    <p id="metric-label-copies" class="text-xl font-black text-blue-400 mt-0.5">0</p>
+                <div class="glass-ui p-3.5 text-center relative overflow-hidden">
+                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider" data-i18n="statCopy">TOTAL COPY</p>
+                    <p id="metric-label-copies" class="text-xl font-black text-white mt-0.5">0</p>
                 </div>
             </div>
 
-            <!-- SEARCH + FILTER -->
             <div>
                 <div class="flex gap-2">
-                    <div class="glass-ui rounded-2xl p-1 flex flex-1 items-center neon-focus-glow border transition duration-300 relative">
-                        <i class="fa-solid fa-wand-magic-sparkles text-purple-400 ml-3.5 mr-2 text-xs"></i>
-                        <input type="text" id="pipeline-search-input-field" placeholder="Cari nama script, game..." class="bg-transparent w-full p-2.5 focus:outline-none text-xs font-medium">
-                        
-                        <button id="voice-search-btn" class="mr-2 text-gray-500 hover:text-emerald-400 transition active:scale-90 w-8 h-8 flex items-center justify-center rounded-full bg-white/5">
+                    <div class="glass-ui p-1 flex flex-1 items-center neon-focus-glow border transition duration-300 relative" title="Tekan '/' untuk mencari">
+                        <i class="fa-solid fa-wand-magic-sparkles accent-text-glow ml-3.5 mr-2 text-xs"></i>
+                        <input type="text" id="pipeline-search-input-field" placeholder="Cari nama script, game..." class="bg-transparent w-full p-2.5 focus:outline-none text-xs font-medium relative z-10 border-none">
+                        <button id="voice-search-btn" class="mr-2 text-gray-500 hover:text-white transition active:scale-90 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 relative z-10">
                             <i class="fa-solid fa-microphone text-xs"></i>
                         </button>
-                        
-                        <button id="pipeline-search-clear-btn" onclick="clearActiveSearchFieldPipeline()" class="hidden text-gray-500 hover:text-white mr-3.5 transition"><i class="fa-solid fa-circle-xmark text-xs"></i></button>
+                        <button id="pipeline-search-clear-btn" onclick="window.clearActiveSearchFieldPipeline()" class="hidden text-gray-500 hover:text-white mr-3.5 transition relative z-10"><i class="fa-solid fa-circle-xmark text-xs"></i></button>
                     </div>
-                    <button id="quick-fav-filter-toggle" onclick="toggleQuickFavoriteFilteringMode()" class="glass-ui px-4 rounded-2xl text-gray-400 hover:text-pink-500 transition duration-300 flex items-center justify-center">
+                    <button id="quick-fav-filter-toggle" onclick="window.toggleQuickFavoriteFilteringMode()" class="glass-ui px-4 text-gray-400 transition duration-300 flex items-center justify-center relative z-10 hover:bg-white/10">
                         <i class="fa-solid fa-heart text-xs"></i>
                     </button>
                 </div>
 
-                <!-- SEARCH HISTORY BOX -->
                 <div id="search-history-box" class="hidden flex gap-2 mt-2.5 overflow-x-auto custom-scrollbar pb-1 text-[9px] font-bold items-center">
                     <span class="text-gray-500 flex-shrink-0 ml-1"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Riwayat:</span>
                     <div id="search-history-pills" class="flex gap-1.5"></div>
                 </div>
             </div>
 
-            <!-- Custom Select Dropdowns -->
-            <div class="flex items-center gap-2 select-none relative pt-1">
+            <div class="flex items-center gap-2 select-none relative pt-1 z-20">
                 <div class="w-1/2 relative">
-                    <div onclick="toggleCustomSelectorDropdownMenu('game-cat')" id="trigger-dropdown-game-cat" class="w-full bg-gray-900/80 glass-ui text-[11px] font-black rounded-xl pl-8 pr-4 py-3.5 flex items-center justify-between cursor-pointer border border-white/5 truncate">
-                        <i class="fa-solid fa-gamepad absolute left-3 text-[10px] text-purple-400"></i>
-                        <span id="label-selected-game-cat" class="truncate">🌐 Semua Game</span>
+                    <div onclick="window.toggleCustomSelectorDropdownMenu('game-cat')" id="trigger-dropdown-game-cat" class="dynamic-elem w-full bg-gray-900/80 glass-ui text-[11px] font-black pl-8 pr-4 py-3.5 flex items-center justify-between cursor-pointer border border-white/5 truncate">
+                        <i class="fa-solid fa-gamepad absolute left-3 text-[10px] accent-text-glow"></i>
+                        <span id="label-selected-game-cat" class="truncate" data-i18n="catAll">🌐 Semua Game</span>
                         <i class="fa-solid fa-chevron-down text-[8px] text-gray-500 ml-1" id="chevron-game-cat"></i>
                     </div>
-                    <div id="panel-dropdown-game-cat" class="hidden absolute left-0 right-0 mt-1.5 rounded-xl custom-dropdown-panel shadow-2xl z-[70] overflow-y-auto max-h-48 border custom-scrollbar">
+                    <div id="panel-dropdown-game-cat" class="hidden absolute left-0 right-0 mt-1.5 custom-dropdown-panel shadow-2xl z-[70] overflow-y-auto max-h-48 border custom-scrollbar">
                         <ul id="list-options-game-cat" class="text-[11px] font-black text-gray-400"></ul>
                     </div>
                 </div>
                 <div class="w-1/2 relative">
-                    <div onclick="toggleCustomSelectorDropdownMenu('sort-order')" id="trigger-dropdown-sort-order" class="w-full bg-gray-900/80 glass-ui text-[11px] font-black rounded-xl pl-8 pr-4 py-3.5 flex items-center justify-between cursor-pointer border border-white/5 truncate">
-                        <i class="fa-solid fa-arrow-down-wide-short absolute left-3 text-[10px] text-blue-400"></i>
-                        <span id="label-selected-sort-order" class="truncate">⏰ Waktu Rilis Terbaru</span>
+                    <div onclick="window.toggleCustomSelectorDropdownMenu('sort-order')" id="trigger-dropdown-sort-order" class="dynamic-elem w-full bg-gray-900/80 glass-ui text-[11px] font-black pl-8 pr-4 py-3.5 flex items-center justify-between cursor-pointer border border-white/5 truncate">
+                        <i class="fa-solid fa-arrow-down-wide-short absolute left-3 text-[10px] accent-text-glow"></i>
+                        <span id="label-selected-sort-order" class="truncate" data-i18n="sortNew">⏰ Waktu Rilis Terbaru</span>
                         <i class="fa-solid fa-chevron-down text-[8px] text-gray-500 ml-1" id="chevron-sort-order"></i>
                     </div>
-                    <div id="panel-dropdown-sort-order" class="hidden absolute left-0 right-0 mt-1.5 rounded-xl custom-dropdown-panel shadow-2xl z-[70] overflow-hidden border">
+                    <div id="panel-dropdown-sort-order" class="hidden absolute left-0 right-0 mt-1.5 custom-dropdown-panel shadow-2xl z-[70] overflow-hidden border">
                         <ul class="text-[11px] font-black text-gray-400">
-                            <li onclick="commitActiveSortSelectionPipeline('newest', '⏰ Waktu Rilis Terbaru')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">⏰ Waktu Rilis Terbaru</li>
-                            <li onclick="commitActiveSortSelectionPipeline('popular', '📊 Salinan Terpopuler')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">📊 Salinan Terpopuler</li>
-                            <li onclick="commitActiveSortSelectionPipeline('alphabet', '🔤 Urutan Abjad Skrip')" class="p-3 hover:bg-purple-600/10 cursor-pointer flex items-center gap-1.5">🔤 Urutan Abjad Skrip</li>
+                            <li onclick="window.commitActiveSortSelectionPipeline('newest', '⏰ Waktu Rilis Terbaru')" class="p-3 hover:bg-white/10 cubic-bezier cursor-pointer border-b border-white/5 flex items-center gap-1.5"><span data-i18n="sortNew">⏰ Waktu Rilis Terbaru</span></li>
+                            <li onclick="window.commitActiveSortSelectionPipeline('popular', '📊 Salinan Terpopuler')" class="p-3 hover:bg-white/10 cubic-bezier cursor-pointer border-b border-white/5 flex items-center gap-1.5"><span data-i18n="sortPop">📊 Salinan Terpopuler</span></li>
+                            <li onclick="window.commitActiveSortSelectionPipeline('alphabet', '🔤 Urutan Abjad Skrip')" class="p-3 hover:bg-white/10 cubic-bezier cursor-pointer flex items-center gap-1.5"><span data-i18n="sortAlpha">🔤 Urutan Abjad Skrip</span></li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            <!-- Scripts Target Box -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="live-scripts-render-target-box"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10" id="live-scripts-render-target-box"></div>
             
-            <!-- Pagination Controls Box -->
-            <div id="pagination-controls-container" class="mt-8 mb-4 flex justify-center items-center gap-1.5 select-none"></div>
+            <div id="pagination-controls-container" class="mt-8 mb-4 flex justify-center items-center gap-1.5 select-none relative z-10"></div>
         </div>
 
-        <!-- ================= CONTAINER VIEWPORT 2: GLOBAL CHAT HUB ================= -->
-        <div id="viewport-chat-hub" class="hidden space-y-4 max-w-xl mx-auto">
-            <div class="glass-ui p-4 md:p-5 rounded-3xl shadow-2xl relative animate-premium-card flex flex-col h-[65vh]">
-                <div class="flex items-center justify-between border-b border-gray-800/60 pb-3 mb-3 select-none flex-shrink-0">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                            <i class="fa-solid fa-earth-americas text-emerald-400 text-xs"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-black text-emerald-400 uppercase tracking-wider">DHM GLOBAL CHAT</h3>
-                            <p class="text-[9px] text-gray-400"><i class="fa-solid fa-circle text-[6px] text-emerald-500 animate-pulse mr-1"></i>Real-time Public Room</p>
-                        </div>
+        <div id="viewport-chat-hub" class="hidden space-y-4 max-w-2xl mx-auto relative z-10 h-[75vh] flex flex-col">
+            <div class="glass-ui p-4 flex-1 flex flex-col shadow-2xl overflow-hidden border-t-4" style="border-top-color: var(--accent);">
+                <div class="border-b border-gray-800/60 pb-2.5 select-none flex justify-between items-center flex-shrink-0">
+                    <h3 class="text-xs font-black uppercase tracking-wider accent-text-glow"><i class="fa-solid fa-earth-asia mr-1"></i> Global Chat Community</h3>
+                    <span class="text-[8px] bg-white/10 border border-white/20 px-2 py-0.5 rounded-full font-black animate-pulse text-white">LIVE</span>
+                </div>
+                <div id="live-chat-messages-container" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-3 mt-2 flex flex-col">
+                    <div class="flex-1 flex items-center justify-center text-[10px] text-gray-500 font-mono">Menghubungkan ke server obrolan...</div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gray-800/60 flex flex-col flex-shrink-0 relative">
+                    <div id="chat-image-preview-box" class="hidden mb-2 relative w-16 h-16 dynamic-elem border border-white/10 overflow-hidden shadow-lg shadow-black">
+                        <img id="chat-image-preview-img" src="" class="w-full h-full object-cover">
+                        <button onclick="window.cancelChatImage()" class="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] hover:bg-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                </div>
-                
-                <!-- Chat Messages Container -->
-                <div id="chat-messages-container" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar flex flex-col pb-2">
-                    <p class="text-center text-xs text-gray-500 font-mono py-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Menghubungkan ke server...</p>
-                </div>
-
-                <!-- Chat Input Area -->
-                <div class="mt-3 flex gap-2 flex-shrink-0 bg-black/40 p-1.5 rounded-2xl border border-white/5">
-                    <input type="text" id="chat-input-text" placeholder="Ketik pesan untuk semua orang..." class="flex-1 text-xs px-3 bg-transparent border-none outline-none font-medium text-white" maxlength="150" onkeypress="if(event.key === 'Enter') window.sendGlobalChatMessage()">
-                    <button onclick="window.sendGlobalChatMessage()" class="w-10 h-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white flex items-center justify-center transition active:scale-90 shadow-lg shadow-emerald-500/20 flex-shrink-0">
-                        <i class="fa-solid fa-paper-plane text-[11px]"></i>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <label class="w-9 h-9 dynamic-elem bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer active:scale-95 transition flex-shrink-0" style="hover:border-color: var(--accent);">
+                            <i class="fa-solid fa-image"></i>
+                            <input type="file" id="chat-image-input" accept="image/*" class="hidden" onchange="window.handleChatImageSelect(event)">
+                        </label>
+                        <input type="text" id="chat-text-input" placeholder="Ketik pesan komunitas..." class="dynamic-elem flex-1 bg-black/40 border border-white/10 px-3.5 py-2.5 text-xs text-white outline-none transition" style="focus:border-color: var(--accent);" onkeypress="if(event.key === 'Enter') window.sendGlobalChatMessage()">
+                        <button onclick="window.sendGlobalChatMessage()" class="dynamic-elem w-9 h-9 accent-bg-gradient text-white flex items-center justify-center active:scale-95 transition shadow-lg flex-shrink-0">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= CONTAINER VIEWPORT 3: MESSAGE HUB ================= -->
         <div id="viewport-message-hub" class="hidden space-y-4 max-w-xl mx-auto">
-            <div class="glass-ui p-5 rounded-3xl space-y-4 shadow-2xl relative animate-premium-card">
+            <div class="glass-ui p-5 space-y-4 shadow-2xl relative animate-premium-card">
                 <div class="flex items-center gap-2 border-b border-gray-800/60 pb-3 select-none">
-                    <i class="fa-solid fa-paper-plane text-purple-400 text-sm"></i>
-                    <h3 class="text-xs font-black text-purple-400 uppercase tracking-wider">Kirim Laporan Khusus</h3>
+                    <i class="fa-solid fa-paper-plane accent-text-glow text-sm"></i>
+                    <h3 class="text-xs font-black uppercase tracking-wider accent-text-glow">Kirim Laporan Khusus</h3>
                 </div>
                 <div class="space-y-3">
-                    <div class="space-y-1 relative select-none">
+                    <div class="space-y-1 relative select-none z-20">
                         <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1 block mb-1">Tujuan Kirim Pesan</label>
-                        <div onclick="toggleCustomSelectorDropdownMenu('msg-target')" id="trigger-dropdown-msg-target" class="w-full text-xs p-3.5 rounded-xl bg-black/30 border border-white/10 flex justify-between items-center cursor-pointer font-black tracking-wide">
+                        <div onclick="window.toggleCustomSelectorDropdownMenu('msg-target')" id="trigger-dropdown-msg-target" class="dynamic-elem w-full text-xs p-3.5 bg-black/30 border border-white/10 flex justify-between items-center cursor-pointer font-black tracking-wide">
                             <span id="label-selected-msg-target">🛡️ Kirim ke Admin Panel</span>
-                            <i class="fa-solid fa-chevron-down text-[9px] text-purple-500" id="chevron-msg-target"></i>
+                            <i class="fa-solid fa-chevron-down text-[9px] accent-text-glow" id="chevron-msg-target"></i>
                         </div>
-                        <div id="panel-dropdown-msg-target" class="hidden absolute left-0 right-0 mt-1 rounded-xl custom-dropdown-panel shadow-2xl z-[70] overflow-hidden border border-purple-500/20">
+                        <div id="panel-dropdown-msg-target" class="hidden absolute left-0 right-0 mt-1 custom-dropdown-panel shadow-2xl z-[70] overflow-hidden border">
                             <ul class="text-xs font-black text-gray-400">
-                                <li onclick="commitActiveMsgTargetSelection('Admin', '🛡️ Kirim ke Admin Panel')" class="p-3 hover:bg-purple-600/20 cursor-pointer border-b border-white/5">🛡️ Kirim ke Admin Panel</li>
-                                <li onclick="commitActiveMsgTargetSelection('Owner', '👑 Kirim ke Owner Panel')" class="p-3 hover:bg-purple-600/20 cursor-pointer">👑 Kirim ke Owner Panel</li>
+                                <li onclick="window.commitActiveMsgTargetSelection('Admin', '🛡️ Kirim ke Admin Panel')" class="p-3 hover:bg-white/10 cursor-pointer border-b border-white/5">🛡️ Kirim ke Admin Panel</li>
+                                <li onclick="window.commitActiveMsgTargetSelection('Owner', '👑 Kirim ke Owner Panel')" class="p-3 hover:bg-white/10 cursor-pointer">👑 Kirim ke Owner Panel</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="space-y-1">
+                    <div class="space-y-1 relative z-10">
                         <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1">Template Laporan Cepat</label>
                         <div class="flex gap-1 overflow-x-auto pb-1 custom-scrollbar text-[8px] font-mono font-black tracking-wider select-none">
-                            <button onclick="window.injectPresetTextTemplateIntoMessagePayload(1)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-amber-400 flex-shrink-0">⚠️ SCRIPT PATCHED</button>
-                            <button onclick="window.injectPresetTextTemplateIntoMessagePayload(2)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-blue-400 flex-shrink-0">💡 REQUEST SCRIPT</button>
-                            <button onclick="window.injectPresetTextTemplateIntoMessagePayload(3)" class="bg-black/60 border border-white/5 rounded-lg px-2.5 py-1.5 text-emerald-400 flex-shrink-0">🤝 LAPORAN LAIN</button>
+                            <button onclick="window.injectPresetTextTemplateIntoMessagePayload(1)" class="dynamic-elem bg-black/60 border border-white/5 px-2.5 py-1.5 text-amber-400 flex-shrink-0">⚠️ SCRIPT PATCHED</button>
+                            <button onclick="window.injectPresetTextTemplateIntoMessagePayload(2)" class="dynamic-elem bg-black/60 border border-white/5 px-2.5 py-1.5 text-blue-400 flex-shrink-0">💡 REQUEST SCRIPT</button>
+                            <button onclick="window.injectPresetTextTemplateIntoMessagePayload(3)" class="dynamic-elem bg-black/60 border border-white/5 px-2.5 py-1.5 text-emerald-400 flex-shrink-0">🤝 LAPORAN LAIN</button>
                         </div>
                     </div>
-                    <div class="space-y-1">
+                    <div class="space-y-1 relative z-10">
                         <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider px-1">Isi Laporan / Pesan</label>
-                        <textarea id="private-msg-text-content" rows="4" placeholder="Ketik pesan rahasia / laporanmu di sini..." class="w-full text-xs p-3.5 rounded-xl outline-none custom-scrollbar"></textarea>
+                        <textarea id="private-msg-text-content" rows="4" placeholder="Ketik pesan rahasia / laporanmu di sini..." class="dynamic-elem w-full text-xs p-3.5 outline-none custom-scrollbar"></textarea>
                     </div>
                 </div>
-                <button onclick="window.submitPrivateUserMessagePipeline()" class="w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white p-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.98] transition flex items-center justify-center gap-2">
+                <button onclick="window.submitPrivateUserMessagePipeline()" class="dynamic-elem w-full accent-bg-gradient text-white p-3.5 font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.98] transition flex items-center justify-center gap-2 relative z-10">
                     <i class="fa-solid fa-paper-plane"></i> KIRIM LAPORAN SEKARANG
                 </button>
             </div>
         </div>
 
-        <!-- ================= CONTAINER VIEWPORT 4: LEADERBOARD HUB ================= -->
-        <div id="viewport-leaderboard-hub" class="hidden space-y-4 max-w-xl mx-auto">
-            <div class="glass-ui p-5 rounded-3xl space-y-4 shadow-2xl relative animate-premium-card">
+        <div id="viewport-leaderboard-hub" class="hidden space-y-4 max-w-xl mx-auto relative z-10">
+            <div class="glass-ui p-5 space-y-4 shadow-2xl relative animate-premium-card">
                 <div class="flex items-center gap-3 border-b border-gray-800/60 pb-4 select-none">
                     <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-600 to-yellow-400 flex items-center justify-center shadow-[0_0_15px_rgba(251,191,36,0.3)]">
                         <i class="fa-solid fa-crown text-white text-lg"></i>
@@ -339,59 +404,278 @@
             </div>
         </div>
 
-        <!-- ================= CONTAINER VIEWPORT 5: FAQ HUB ================= -->
-        <div id="viewport-faq-hub" class="hidden space-y-4 max-w-2xl mx-auto">
-            <div class="glass-ui p-4 rounded-3xl space-y-3 shadow-2xl">
+        <div id="viewport-faq-hub" class="hidden space-y-4 max-w-2xl mx-auto relative z-10">
+            <div class="glass-ui p-4 space-y-3 shadow-2xl">
                 <div class="border-b border-gray-800/60 pb-2.5 select-none">
-                    <h3 class="text-xs font-black text-purple-400 uppercase tracking-wider"><i class="fa-solid fa-circle-question text-sm"></i> Frequently Asked Questions Hub</h3>
+                    <h3 class="text-xs font-black uppercase tracking-wider accent-text-glow"><i class="fa-solid fa-circle-question text-sm"></i> Frequently Asked Questions Hub</h3>
                 </div>
                 <div id="faq-accordion-live-injections-box" class="space-y-3 pt-1">
                     <p class="text-xs text-gray-600 font-mono text-center py-4">Menghubungkan ke pusat bantuan FAQ...</p>
                 </div>
             </div>
         </div>
-
     </main>
 
-    <!-- Global Floating Navigation Dock Dashboard -->
-    <div class="fixed bottom-4 left-4 right-4 max-w-md md:max-w-xl mx-auto glass-ui rounded-2xl p-1.5 grid grid-cols-5 text-center text-[9px] font-black text-gray-500 z-50 shadow-2xl select-none">
-        <button onclick="switchActiveViewportContext('scripts', this)" class="text-purple-400 active-navigation-node transition transform active:scale-90"><i class="fa-solid fa-folder-open text-base block mb-0.5"></i><span data-i18n="navScript">Scripts</span></button>
-        <button onclick="switchActiveViewportContext('chat', this)" class="hover:text-gray-300 transition transform active:scale-90 relative">
-            <i class="fa-solid fa-comments text-base block mb-0.5"></i><span data-i18n="navChat">Chat</span>
-            <span class="absolute top-0 right-2 w-2 h-2 bg-emerald-500 rounded-full animate-pulse border border-gray-900"></span>
+    <div id="bottom-nav-bar" class="fixed bottom-4 left-4 right-4 max-w-md md:max-w-xl mx-auto glass-ui p-1.5 grid grid-cols-5 text-center text-[9px] font-black text-gray-500 z-50 shadow-2xl select-none transition-transform duration-300">
+        <button onclick="window.switchActiveViewportContext('scripts', this)" class="accent-text-glow active-navigation-node transition transform active:scale-90"><i class="fa-solid fa-folder-open text-base block mb-0.5"></i><span data-i18n="navScript">Scripts</span></button>
+        <button onclick="window.switchActiveViewportContext('chat', this)" class="hover:text-gray-300 transition transform active:scale-90 relative"><i class="fa-solid fa-comments text-base block mb-0.5"></i><span data-i18n="navChat">Chat</span></button>
+        <button onclick="window.switchActiveViewportContext('message', this)" class="hover:text-gray-300 transition transform active:scale-90 relative">
+            <i class="fa-solid fa-paper-plane text-base block mb-0.5"></i><span data-i18n="navMsg">Lapor</span>
         </button>
-        <button onclick="switchActiveViewportContext('message', this)" class="hover:text-gray-300 transition transform active:scale-90 relative">
-            <i class="fa-solid fa-paper-plane text-base block mb-0.5"></i>Lapor
-        </button>
-        <button onclick="switchActiveViewportContext('leaderboard', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-crown text-base block mb-0.5"></i><span data-i18n="navPop">Populer</span></button>
-        <button onclick="switchActiveViewportContext('faq', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-circle-question text-base block mb-0.5"></i>FAQ</button>
+        <button onclick="window.switchActiveViewportContext('leaderboard', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-crown text-base block mb-0.5"></i><span data-i18n="navPop">Populer</span></button>
+        <button onclick="window.switchActiveViewportContext('faq', this)" class="hover:text-gray-300 transition transform active:scale-90"><i class="fa-solid fa-circle-question text-base block mb-0.5"></i><span data-i18n="navFaq">FAQ</span></button>
     </div>
 
-    <!-- Scripts CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-lua.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, push, set, runTransaction, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = { databaseURL: "https://dhm-store-default-rtdb.firebaseio.com" };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const firebaseConfig = {
+            apiKey: "AIzaSyAP3mUff64hNw1wwBdKobezuHT51Ooboxk",
+            authDomain: "dhm-store.firebaseapp.com",
+            databaseURL: "https://dhm-store-default-rtdb.firebaseio.com",
+            projectId: "dhm-store",
+            storageBucket: "dhm-store.firebasestorage.app",
+            messagingSenderId: "62010800668",
+            appId: "1:62010800668:web:8245b1dffc0a46f0aa3dd9",
+            measurementId: "G-NVVGGSQQRX"
+        };
+
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+        } catch (error) {}
+
+        const currentHour = new Date().getHours();
+        let dynamicGreeting = "Pagi";
+        if(currentHour >= 11 && currentHour < 15) dynamicGreeting = "Siang";
+        else if(currentHour >= 15 && currentHour < 18) dynamicGreeting = "Sore";
+        else if(currentHour >= 18) dynamicGreeting = "Malam";
+        const greetingNode = document.getElementById('dynamic-greeting-node');
+        if(greetingNode) greetingNode.innerText = `👋 Selamat ${dynamicGreeting}, `;
+
+        window.playAudioSfx = (type) => {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                if(type === 'click') {
+                    osc.frequency.setValueAtTime(600, ctx.currentTime);
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.02, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.05);
+                } else if(type === 'success') {
+                    osc.frequency.setValueAtTime(800, ctx.currentTime);
+                    osc.type = 'triangle';
+                    gain.gain.setValueAtTime(0.03, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.1);
+                }
+            } catch(e) {}
+        };
+
+        window.addEventListener('online', () => {
+            document.getElementById('offline-network-banner').style.display = 'none';
+            window.dispatchSystemToastNotificationNotification('Koneksi internet pulih.', 'success');
+        });
+        window.addEventListener('offline', () => {
+            document.getElementById('offline-network-banner').style.display = 'block';
+            window.playAudioSfx('click');
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                const searchInput = document.getElementById('pipeline-search-input-field');
+                if(searchInput) {
+                    window.switchActiveViewportContext('scripts', document.querySelector('.active-navigation-node'));
+                    searchInput.focus();
+                }
+            }
+            if (e.key === 'Escape') {
+                const searchInput = document.getElementById('pipeline-search-input-field');
+                if(searchInput && document.activeElement === searchInput) {
+                    searchInput.blur();
+                    window.clearActiveSearchFieldPipeline();
+                }
+            }
+        });
+
+        window.toggleZenModeUI = () => {
+            const nav = document.getElementById('bottom-nav-bar');
+            nav.classList.toggle('translate-y-24');
+            window.dispatchSystemToastNotificationNotification('Mode Fokus Diaktifkan/Dinonaktifkan', 'success');
+        };
+
+        window.calculateLoginStreak = () => {
+            const today = new Date().toDateString();
+            let streakData = JSON.parse(localStorage.getItem('dhm_login_streak')) || { count: 0, lastLogin: null };
+            if (streakData.lastLogin !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (streakData.lastLogin === yesterday.toDateString()) { streakData.count += 1; } 
+                else { streakData.count = 1; }
+                streakData.lastLogin = today;
+                localStorage.setItem('dhm_login_streak', JSON.stringify(streakData));
+            }
+            const displayNode = document.getElementById('streak-count');
+            if(displayNode) displayNode.innerText = streakData.count;
+        };
+        window.calculateLoginStreak();
+
+        if(!localStorage.getItem('dhm_lang')) {
+            const userLang = navigator.language || navigator.userLanguage;
+            window.currentLanguage = userLang.startsWith('id') ? 'id' : 'en';
+            localStorage.setItem('dhm_lang', window.currentLanguage);
+        } else {
+            window.currentLanguage = localStorage.getItem('dhm_lang');
+        }
+
+        const dict = {
+            'id': {
+                statDb: "DATABASE", statFav: "FAVORIT", statCopy: "TOTAL COPY",
+                navScript: "Scripts", navChat: "Chat", navPop: "Populer", navMsg: "Lapor", navFaq: "FAQ",
+                searchPlace: "Cari nama script... (Tekan '/')", catAll: "🌐 Semua Game", sortNew: "⏰ Waktu Rilis Terbaru", sortPop: "📊 Salinan Terpopuler", sortAlpha: "🔤 Urutan Abjad Skrip"
+            },
+            'en': {
+                statDb: "DATABASE", statFav: "FAVORITES", statCopy: "TOTAL COPIES",
+                navScript: "Scripts", navChat: "Chat", navPop: "Popular", navMsg: "Report", navFaq: "FAQ",
+                searchPlace: "Search script... (Press '/')", catAll: "🌐 All Games", sortNew: "⏰ Newest Release", sortPop: "📊 Most Copied", sortAlpha: "🔤 Alphabetical"
+            }
+        };
+
+        window.applyLanguage = () => {
+            const lang = dict[window.currentLanguage];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(lang[key]) {
+                    if (el.tagName === 'SPAN' && el.innerHTML.includes('<i')) {
+                         const iconHtml = el.innerHTML.substring(0, el.innerHTML.indexOf('>') + 1);
+                         el.innerHTML = iconHtml + " " + lang[key];
+                    } else { el.innerText = lang[key]; }
+                }
+            });
+            const searchInput = document.getElementById('pipeline-search-input-field');
+            if(searchInput) searchInput.placeholder = lang.searchPlace;
+            const langText = document.getElementById('lang-text');
+            if(langText) langText.innerText = window.currentLanguage.toUpperCase();
+        };
+
+        window.toggleLanguage = () => {
+            window.currentLanguage = window.currentLanguage === 'id' ? 'en' : 'id';
+            localStorage.setItem('dhm_lang', window.currentLanguage);
+            window.applyLanguage();
+            window.playAudioSfx('click');
+            if(activeSelectedGameCategoryValue === "Semua Game" || activeSelectedGameCategoryValue === "All Games") {
+                document.getElementById('label-selected-game-cat').innerText = dict[window.currentLanguage].catAll;
+            }
+            if(activeSelectedSortOrderValue === "newest") document.getElementById('label-selected-sort-order').innerText = dict[window.currentLanguage].sortNew;
+            else if(activeSelectedSortOrderValue === "popular") document.getElementById('label-selected-sort-order').innerText = dict[window.currentLanguage].sortPop;
+            else if(activeSelectedSortOrderValue === "alphabet") document.getElementById('label-selected-sort-order').innerText = dict[window.currentLanguage].sortAlpha;
+        };
+        window.applyLanguage();
 
         let memoryCacheEntireScriptsDataset = {};
         let localBookmarksRegistryList = JSON.parse(localStorage.getItem('dhm_v10_bookmarks')) || [];
         
-        // FEATURE: USER PROFILE STATE
         let dhmUserProfile = JSON.parse(localStorage.getItem('dhm_user_profile')) || {
             name: 'Guest' + Math.floor(Math.random() * 9000 + 1000),
             avatar: 'fa-user-ninja',
-            color: 'bg-gradient-to-tr from-purple-600 to-blue-600'
+            color: 'bg-gradient-to-tr from-purple-600 to-blue-600',
+            font: 'outfit',
+            accent: 'purple',
+            bg: 'default',
+            radius: 'smooth',
+            particles: 'on',
+            isVerified: false
+        };
+
+        window.initCustomizations = () => {
+            const root = document.documentElement;
+
+            const fontMap = {
+                'default': 'system-ui, -apple-system, sans-serif',
+                'outfit': '"Outfit", sans-serif',
+                'orbitron': '"Orbitron", sans-serif',
+                'fira': '"Fira Code", monospace',
+                'pressstart': '"Press Start 2P", cursive'
+            };
+            document.body.style.fontFamily = fontMap[dhmUserProfile.font] || fontMap['outfit'];
+
+            const accentMap = {
+                'purple': { accent: '#a855f7', glow: 'rgba(168, 85, 247, 0.3)' },
+                'blue': { accent: '#3b82f6', glow: 'rgba(59, 130, 246, 0.3)' },
+                'green': { accent: '#10b981', glow: 'rgba(16, 185, 129, 0.3)' },
+                'red': { accent: '#ef4444', glow: 'rgba(239, 68, 68, 0.3)' },
+                'gold': { accent: '#f59e0b', glow: 'rgba(245, 158, 11, 0.3)' }
+            };
+            const currentAccent = accentMap[dhmUserProfile.accent] || accentMap['purple'];
+            root.style.setProperty('--accent', currentAccent.accent);
+            root.style.setProperty('--accent-glow', currentAccent.glow);
+
+            const bgMap = {
+                'default': '#020306',
+                'pitchBlack': '#000000',
+                'darkPurple': '#0a0310',
+                'bloodRed': '#1a0505'
+            };
+            root.style.setProperty('--bg-main', bgMap[dhmUserProfile.bg] || bgMap['default']);
+
+            const radiusMap = {
+                'smooth': { card: '1.5rem', elem: '0.75rem' },
+                'sharp': { card: '0px', elem: '0px' },
+                'soft': { card: '0.5rem', elem: '0.25rem' }
+            };
+            const currentRadius = radiusMap[dhmUserProfile.radius] || radiusMap['smooth'];
+            root.style.setProperty('--card-radius', currentRadius.card);
+            root.style.setProperty('--elem-radius', currentRadius.elem);
+
+            if (dhmUserProfile.particles === 'on' || !dhmUserProfile.particles) {
+                const pDiv = document.getElementById('background-particles');
+                if(pDiv.innerHTML === '') {
+                    try {
+                        particlesJS('background-particles', {
+                            "particles": { "number": { "value": 45, "density": { "enable": true, "value_area": 800 } }, "color": { "value": [currentAccent.accent, "#ffffff"] }, "shape": { "type": "circle" }, "opacity": { "value": 0.3, "random": true }, "size": { "value": 3, "random": true }, "line_linked": { "enable": true, "distance": 150, "color": currentAccent.accent, "opacity": 0.15, "width": 1 }, "move": { "enable": true, "speed": 1.2, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } },
+                            "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true }, "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.5 } }, "push": { "particles_nb": 3 } } },
+                            "retina_detect": true
+                        });
+                    } catch (e) {}
+                }
+            } else {
+                document.getElementById('background-particles').innerHTML = '';
+            }
+        };
+        window.initCustomizations();
+
+        window.clearUserCache = () => {
+            if(confirm('Yakin ingin membersihkan sistem cache untuk memperlancar website? (Pengaturan Profil & Favorit aman)')) {
+                window.playAudioSfx('click');
+                const keepProf = localStorage.getItem('dhm_user_profile');
+                const keepFav = localStorage.getItem('dhm_v10_bookmarks');
+                const keepLan = localStorage.getItem('dhm_lang');
+                const keepDis = localStorage.getItem('dhm_discord_joined');
+                
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                if(keepProf) localStorage.setItem('dhm_user_profile', keepProf);
+                if(keepFav) localStorage.setItem('dhm_v10_bookmarks', keepFav);
+                if(keepLan) localStorage.setItem('dhm_lang', keepLan);
+                if(keepDis) localStorage.setItem('dhm_discord_joined', keepDis);
+                
+                window.dispatchSystemToastNotificationNotification('Cache memori berhasil dibersihkan! Me-refresh...', 'success');
+                setTimeout(() => { window.location.reload(); }, 1200);
+            }
         };
 
         let searchHistoryList = JSON.parse(localStorage.getItem('dhm_search_history')) || [];
-        
         let activeSelectedGameCategoryValue = "Semua Game";
         let activeSelectedSortOrderValue = "newest";
         let activeSelectedMsgTargetRoleValue = "Admin";
@@ -404,55 +688,96 @@
 
         document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length;
 
-        // Render Skeleton Loader
+        window.exportBookmarks = () => {
+            const data = localStorage.getItem('dhm_v10_bookmarks') || '[]';
+            const blob = new Blob([data], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'dhm_bookmarks.json'; a.click();
+            window.dispatchSystemToastNotificationNotification('Bookmark berhasil diexport!', 'success');
+        };
+        window.importBookmarks = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const arr = JSON.parse(ev.target.result);
+                    if(Array.isArray(arr)) {
+                        localStorage.setItem('dhm_v10_bookmarks', JSON.stringify(arr));
+                        localBookmarksRegistryList = arr;
+                        document.getElementById('metric-label-bookmarks').innerText = arr.length;
+                        window.executeMainUIRendererPipelineStreamer();
+                        window.dispatchSystemToastNotificationNotification('Bookmark berhasil diimport!', 'success');
+                    }
+                } catch(err) { window.dispatchSystemToastNotificationNotification('Format file tidak valid!', 'error'); }
+            };
+            reader.readAsText(file);
+        };
+
         window.renderSkeletonLoading = () => {
             const box = document.getElementById('live-scripts-render-target-box');
+            if(!box) return;
             let skeletons = '';
             for(let i = 0; i < 6; i++) {
                 skeletons += `
-                <div class="glass-ui p-4 rounded-3xl space-y-3 animate-pulse border border-white/5">
+                <div class="glass-ui p-4 space-y-3 animate-pulse border border-white/5">
                     <div class="flex items-start gap-3.5">
-                        <div class="w-16 h-16 bg-white/5 rounded-2xl flex-shrink-0"></div>
+                        <div class="w-16 h-16 dynamic-elem bg-white/5 flex-shrink-0"></div>
                         <div class="flex-1 min-w-0 pt-1 space-y-2">
                             <div class="h-3 bg-white/10 rounded w-1/3"></div>
                             <div class="h-4 bg-white/10 rounded w-3/4"></div>
                             <div class="h-2 bg-white/5 rounded w-1/2 mt-1"></div>
                         </div>
                     </div>
-                    <div class="h-10 bg-white/5 rounded-xl w-full mt-3"></div>
+                    <div class="h-10 dynamic-elem bg-white/5 w-full mt-3"></div>
                 </div>`;
             }
             box.innerHTML = skeletons;
         };
-        renderSkeletonLoading();
+        window.renderSkeletonLoading();
 
-        // ================= NEW FEATURE: NAME GUARD / RESERVED NAME FILTER =================
+        const recordUserActivity = (actionLabel) => {
+            if(!db) return;
+            fetch('https://api.ipify.org?format=json').then(r => r.json()).then(data => {
+                push(ref(db, 'activity_logs'), { ip: data.ip || 'unknown', user: dhmUserProfile.name, action: actionLabel, timestamp: Date.now() }).catch(()=>{});
+            }).catch(()=>{});
+        };
+        setTimeout(() => recordUserActivity("App Launched"), 2500);
+
+        if(!localStorage.getItem('dhm_discord_joined')) { document.getElementById('discord-popup-layer').classList.remove('hidden'); }
+        window.markDiscordPopupDone = () => {
+            localStorage.setItem('dhm_discord_joined', 'true');
+            document.getElementById('discord-popup-layer').classList.add('hidden');
+        };
+
+        const verifiedMasterNames = ["admin", "owner", "developer", "dhm"];
+        window.isVerifiedBadgeValid = (name) => { return verifiedMasterNames.some(v => name.toLowerCase().includes(v)); };
         window.isReservedName = (name) => {
-            const forbiddenNames = [
-                "owner", "admin", "pemilik dhm", "partner dhm", "dhm admin", "owner dhm", "🛡️ admin"
-            ];
+            const forbiddenNames = ["owner", "admin", "pemilik dhm", "partner dhm", "dhm admin", "owner dhm", "🛡️ admin"];
             return forbiddenNames.includes(name.toLowerCase().trim());
         };
 
-        // ================= FEATURE 2: USER PROFILE SYSTEM =================
         window.avatars = ['fa-user-ninja', 'fa-ghost', 'fa-robot', 'fa-skull', 'fa-user-astronaut', 'fa-cat', 'fa-dragon', 'fa-mask'];
         window.colors = [
-            'bg-gradient-to-tr from-purple-600 to-blue-600',
-            'bg-gradient-to-tr from-emerald-500 to-teal-700',
-            'bg-gradient-to-tr from-rose-500 to-pink-700',
-            'bg-gradient-to-tr from-amber-500 to-orange-700',
-            'bg-gradient-to-tr from-gray-700 to-gray-900',
-            'bg-gradient-to-tr from-cyan-500 to-blue-700'
+            'bg-gradient-to-tr from-purple-600 to-blue-600', 'bg-gradient-to-tr from-emerald-500 to-teal-700',
+            'bg-gradient-to-tr from-rose-500 to-pink-700', 'bg-gradient-to-tr from-amber-500 to-orange-700',
+            'bg-gradient-to-tr from-gray-700 to-gray-900', 'bg-gradient-to-tr from-cyan-500 to-blue-700'
         ];
         
         window.tempSelectedAvatar = dhmUserProfile.avatar;
         window.tempSelectedColor = dhmUserProfile.color;
 
         window.applyHeaderProfile = () => {
-            document.getElementById('header-username-text').innerText = dhmUserProfile.name;
+            document.getElementById('username-display-node').innerText = dhmUserProfile.name;
             const bg = document.getElementById('header-avatar-bg');
-            bg.className = `w-11 h-11 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10 ${dhmUserProfile.color}`;
-            document.getElementById('header-avatar-icon').className = `fa-solid ${dhmUserProfile.avatar}`;
+            const icon = document.getElementById('header-avatar-icon');
+            const badge = document.getElementById('verified-badge-node');
+
+            if(dhmUserProfile.isVerified || window.isVerifiedBadgeValid(dhmUserProfile.name)) { badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+
+            icon.className = `fa-solid ${dhmUserProfile.avatar}`;
+            bg.className = `dynamic-elem w-11 h-11 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10 overflow-hidden relative z-10 ${dhmUserProfile.color}`;
         };
         window.applyHeaderProfile();
 
@@ -460,279 +785,62 @@
             const modal = document.getElementById('profile-modal-layer');
             if(modal.classList.contains('hidden')) {
                 document.getElementById('input-profile-name').value = dhmUserProfile.name;
+                document.getElementById('input-profile-font').value = dhmUserProfile.font || 'outfit';
+                document.getElementById('input-profile-accent').value = dhmUserProfile.accent || 'purple';
+                document.getElementById('input-profile-bg').value = dhmUserProfile.bg || 'default';
+                document.getElementById('input-profile-radius').value = dhmUserProfile.radius || 'smooth';
+                document.getElementById('input-profile-particles').value = dhmUserProfile.particles || 'on';
+                
                 window.tempSelectedAvatar = dhmUserProfile.avatar;
                 window.tempSelectedColor = dhmUserProfile.color;
                 window.renderProfileSelectors();
             }
             modal.classList.toggle('hidden');
+            window.playAudioSfx('click');
         };
 
         window.renderProfileSelectors = () => {
             const avGrid = document.getElementById('avatar-selection-grid');
             avGrid.innerHTML = window.avatars.map(icon => `
-                <button onclick="window.tempSelectedAvatar='${icon}'; window.renderProfileSelectors()" class="h-10 rounded-xl flex items-center justify-center text-lg border ${window.tempSelectedAvatar === icon ? 'bg-white/20 border-white text-white scale-110 shadow-lg' : 'bg-black/30 border-white/5 text-gray-500'} transition active:scale-95"><i class="fa-solid ${icon}"></i></button>
+                <button onclick="window.tempSelectedAvatar='${icon}'; window.renderProfileSelectors()" class="dynamic-elem h-10 flex items-center justify-center text-lg border ${window.tempSelectedAvatar === icon ? 'bg-white/20 border-white text-white scale-110 shadow-lg' : 'bg-black/30 border-white/5 text-gray-500'} transition active:scale-95"><i class="fa-solid ${icon}"></i></button>
             `).join('');
 
             const colGrid = document.getElementById('color-selection-grid');
             colGrid.innerHTML = window.colors.map(bg => `
-                <button onclick="window.tempSelectedColor='${bg}'; window.renderProfileSelectors()" class="h-8 rounded-xl ${bg} border-2 ${window.tempSelectedColor === bg ? 'border-white scale-110 shadow-lg' : 'border-transparent'} transition active:scale-95"></button>
+                <button onclick="window.tempSelectedColor='${bg}'; window.renderProfileSelectors()" class="dynamic-elem h-8 ${bg} border-2 ${window.tempSelectedColor === bg ? 'border-white scale-110 shadow-lg' : 'border-transparent'} transition active:scale-95"></button>
             `).join('');
         };
 
         window.saveUserProfile = () => {
             const newName = document.getElementById('input-profile-name').value.trim();
+            const newFont = document.getElementById('input-profile-font').value;
+            const newAccent = document.getElementById('input-profile-accent').value;
+            const newBg = document.getElementById('input-profile-bg').value;
+            const newRadius = document.getElementById('input-profile-radius').value;
+            const newParticles = document.getElementById('input-profile-particles').value;
+            
             if(!newName) return window.dispatchSystemToastNotificationNotification('Nickname tidak boleh kosong!', 'error');
+            if(window.isReservedName(newName)) return window.dispatchSystemToastNotificationNotification('Gagal! Nama tersebut dilarang.', 'error');
             
-            // CEK NAMA TERLARANG SEBELUM DISIMPAN
-            if(window.isReservedName(newName)) {
-                return window.dispatchSystemToastNotificationNotification('Gagal! Nama tersebut tidak diizinkan / dilarang.', 'error');
-            }
-
-            dhmUserProfile = { name: newName, avatar: window.tempSelectedAvatar, color: window.tempSelectedColor };
+            dhmUserProfile = { 
+                name: newName, 
+                avatar: window.tempSelectedAvatar, 
+                color: window.tempSelectedColor, 
+                font: newFont,
+                accent: newAccent,
+                bg: newBg,
+                radius: newRadius,
+                particles: newParticles,
+                isVerified: false 
+            };
             localStorage.setItem('dhm_user_profile', JSON.stringify(dhmUserProfile));
+            
             window.applyHeaderProfile();
+            document.getElementById('background-particles').innerHTML = '';
+            window.initCustomizations();
+            
             window.toggleProfileModal();
-            window.dispatchSystemToastNotificationNotification('Profil berhasil disimpan!', 'success');
-        };
-
-        // ================= FEATURE: PRIVATE ADMIN/OWNER MESSAGE SYSTEM =================
-        window.commitActiveMsgTargetSelection = (value, label) => {
-            activeSelectedMsgTargetRoleValue = value;
-            document.getElementById('label-selected-msg-target').innerText = label;
-            toggleCustomSelectorDropdownMenu('msg-target');
-        };
-
-        window.submitPrivateUserMessagePipeline = () => {
-            const n = dhmUserProfile.name;
-            const m = document.getElementById('private-msg-text-content').value.trim();
-            
-            if(!m) return window.dispatchSystemToastNotificationNotification('Isi laporan wajib diisi!', 'error');
-            
-            set(push(ref(db, 'messages')), { 
-                sender: n, 
-                target: activeSelectedMsgTargetRoleValue, 
-                message: m, 
-                timestamp: Date.now() 
-            }).then(() => {
-                window.dispatchSystemToastNotificationNotification(`Laporan sukses dikirim ke ${activeSelectedMsgTargetRoleValue}!`);
-                document.getElementById('private-msg-text-content').value = '';
-            }).catch(() => window.dispatchSystemToastNotificationNotification('Gagal mengirim laporan.', 'error'));
-        };
-
-        window.injectPresetTextTemplateIntoMessagePayload = (id) => {
-            const box = document.getElementById('private-msg-text-content');
-            if(id === 1) box.value = "[SCRIPT PATCHED / RUSAK]: Tolong update script ini karena sudah tidak berfungsi di Executor Mobile: ";
-            else if(id === 2) box.value = "[REQUEST SCRIPT GAME]: Tolong tambahkan script terbaru untuk game Roblox: ";
-            else if(id === 3) box.value = "[LAPORAN BUG / LAINNYA]: ";
-        };
-
-
-        // ================= FEATURE 1: GLOBAL CHAT SYSTEM =================
-        const chatContainer = document.getElementById('chat-messages-container');
-        const chatQueryRef = query(ref(db, 'global_chat'), orderByChild('timestamp'), limitToLast(60));
-        
-        onValue(chatQueryRef, (snapshot) => {
-            chatContainer.innerHTML = '';
-            if(snapshot.exists()) {
-                const messages = Object.values(snapshot.val());
-                messages.forEach(msg => {
-                    const isMe = msg.sender === dhmUserProfile.name;
-                    const timeStr = new Date(msg.timestamp).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-                    
-                    if(isMe) {
-                        chatContainer.innerHTML += `
-                            <div class="flex justify-end mb-1">
-                                <div class="max-w-[80%]">
-                                    <div class="flex items-center justify-end gap-1.5 mb-0.5">
-                                        <span class="text-[8px] text-gray-500">${timeStr}</span>
-                                        <span class="text-[9px] font-black text-gray-400">Kamu</span>
-                                    </div>
-                                    <div class="bg-emerald-600 text-white px-3.5 py-2.5 rounded-2xl rounded-tr-sm text-[11px] shadow-md border border-emerald-500/50 break-words leading-relaxed font-medium">
-                                        ${escapeHTML(msg.text)}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        chatContainer.innerHTML += `
-                            <div class="flex justify-start gap-2 mb-1">
-                                <div class="w-8 h-8 rounded-full ${msg.color || 'bg-gray-700'} flex items-center justify-center flex-shrink-0 border border-white/10 mt-2 shadow-sm">
-                                    <i class="fa-solid ${msg.avatar || 'fa-user'} text-[10px] text-white"></i>
-                                </div>
-                                <div class="max-w-[75%]">
-                                    <div class="flex items-center justify-start gap-1.5 mb-0.5">
-                                        <span class="text-[9px] font-black text-purple-400 tracking-wide">${escapeHTML(msg.sender)}</span>
-                                        <span class="text-[8px] text-gray-500">${timeStr}</span>
-                                    </div>
-                                    <div class="bg-white/5 text-gray-200 px-3.5 py-2.5 rounded-2xl rounded-tl-sm text-[11px] shadow-md border border-white/10 break-words leading-relaxed font-medium">
-                                        ${escapeHTML(msg.text)}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            } else {
-                chatContainer.innerHTML = '<p class="text-center text-xs text-gray-500 font-mono py-10 mt-10">Belum ada obrolan. Jadilah yang pertama menyapa!</p>';
-            }
-        });
-
-        window.sendGlobalChatMessage = () => {
-            const input = document.getElementById('chat-input-text');
-            const text = input.value.trim();
-            if(!text) return;
-            
-            // CEK NAMA TERLARANG LAGI SAAT MENGIRIM CHAT (Pencegahan Bypass)
-            if(window.isReservedName(dhmUserProfile.name)) {
-                return window.dispatchSystemToastNotificationNotification('Silakan ganti nama profilmu! Nama saat ini dilarang.', 'error');
-            }
-
-            // Anti-Spam: Delay 3 detik
-            const lastMsgTime = localStorage.getItem('dhm_last_msg_time') || 0;
-            if(Date.now() - lastMsgTime < 3000) {
-                return window.dispatchSystemToastNotificationNotification('Jangan spam! Tunggu sebentar.', 'error');
-            }
-
-            set(push(ref(db, 'global_chat')), {
-                sender: dhmUserProfile.name,
-                avatar: dhmUserProfile.avatar,
-                color: dhmUserProfile.color,
-                text: text,
-                timestamp: Date.now()
-            }).then(() => {
-                input.value = '';
-                localStorage.setItem('dhm_last_msg_time', Date.now());
-            }).catch(() => window.dispatchSystemToastNotificationNotification('Gagal mengirim pesan.', 'error'));
-        };
-
-        // ================= FEATURE 20: SEARCH HISTORY =================
-        function renderSearchHistoryBox() {
-            const box = document.getElementById('search-history-box');
-            const pillsBox = document.getElementById('search-history-pills');
-            
-            if(searchHistoryList.length === 0) {
-                box.classList.add('hidden');
-                return;
-            }
-            
-            box.classList.remove('hidden');
-            pillsBox.innerHTML = searchHistoryList.map(term => `
-                <button onclick="window.triggerSearchFromHistory('${term}')" class="bg-white/5 border border-white/10 hover:border-purple-500/50 hover:text-purple-400 px-3 py-1.5 rounded-lg text-gray-400 transition active:scale-95 flex-shrink-0 whitespace-nowrap shadow-sm">${term}</button>
-            `).join('');
-        }
-
-        window.triggerSearchFromHistory = (term) => {
-            const input = document.getElementById('pipeline-search-input-field');
-            input.value = term;
-            document.getElementById('pipeline-search-clear-btn').classList.remove('hidden');
-            currentPage = 1;
-            executeMainUIRendererPipelineStreamer();
-        };
-
-        let typingTimeout;
-        document.getElementById('pipeline-search-input-field').addEventListener('input', (e) => {
-            const clearBtn = document.getElementById('pipeline-search-clear-btn');
-            const val = e.target.value.trim();
-            
-            if (val.length > 0) { clearBtn.classList.remove('hidden'); } 
-            else { clearBtn.classList.add('hidden'); }
-            
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                if(val && val.length > 2) {
-                    const lowerVal = val.toLowerCase();
-                    searchHistoryList = searchHistoryList.filter(t => t !== lowerVal);
-                    searchHistoryList.unshift(lowerVal);
-                    if(searchHistoryList.length > 6) searchHistoryList.pop();
-                    localStorage.setItem('dhm_search_history', JSON.stringify(searchHistoryList));
-                    renderSearchHistoryBox();
-                }
-            }, 1500);
-
-            currentPage = 1; 
-            executeMainUIRendererPipelineStreamer();
-        });
-
-        renderSearchHistoryBox();
-
-
-        // ================= FEATURE 11: VOICE SEARCH =================
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(SpeechRecognition) {
-            const recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            
-            const micBtn = document.getElementById('voice-search-btn');
-            const searchInput = document.getElementById('pipeline-search-input-field');
-            const clearBtn = document.getElementById('pipeline-search-clear-btn');
-
-            micBtn.addEventListener('click', () => {
-                try {
-                    recognition.lang = window.currentLanguage === 'id' ? 'id-ID' : 'en-US';
-                    recognition.start();
-                    micBtn.innerHTML = `<i class="fa-solid fa-microphone-lines text-emerald-400 animate-pulse text-xs"></i>`;
-                    window.dispatchSystemToastNotificationNotification(window.currentLanguage === 'id' ? 'Silakan bicara...' : 'Please speak...', 'success');
-                } catch(e) {}
-            });
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript.replace(/\.$/, '').trim();
-                searchInput.value = transcript;
-                micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`;
-                clearBtn.classList.remove('hidden');
-                window.dispatchSystemToastNotificationNotification(`Mencari: "${transcript}"`);
-                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-            };
-            
-            recognition.onend = () => { micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`; };
-            recognition.onerror = (e) => {
-                micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`;
-                if(e.error !== 'no-speech') window.dispatchSystemToastNotificationNotification('Gagal mendeteksi suara / Izin ditolak.', 'error');
-            };
-        } else {
-            document.getElementById('voice-search-btn').style.display = 'none';
-        }
-
-        // ================= FEATURE 14: MULTI-LANGUAGE (INDO/ENG) =================
-        window.currentLanguage = localStorage.getItem('dhm_lang') || 'id';
-        const dict = {
-            'id': {
-                settingsTitle: "Pengaturan Sistem",
-                statDb: "DATABASE", statFav: "FAVORIT", statCopy: "TOTAL COPY",
-                navScript: "Scripts", navChat: "Chat", navPop: "Populer",
-                searchPlace: "Cari nama script, game..."
-            },
-            'en': {
-                settingsTitle: "System Settings",
-                statDb: "DATABASE", statFav: "FAVORITES", statCopy: "TOTAL COPIES",
-                navScript: "Scripts", navChat: "Chat", navPop: "Popular",
-                searchPlace: "Search script, game..."
-            }
-        };
-
-        window.toggleLanguage = () => {
-            window.currentLanguage = window.currentLanguage === 'id' ? 'en' : 'id';
-            localStorage.setItem('dhm_lang', window.currentLanguage);
-            applyLanguage();
-        };
-
-        function applyLanguage() {
-            const lang = dict[window.currentLanguage];
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if(lang[key]) el.innerText = lang[key];
-            });
-            document.getElementById('pipeline-search-input-field').placeholder = lang.searchPlace;
-            document.getElementById('lang-label').innerText = window.currentLanguage === 'id' ? 'Bahasa: INDO' : 'Language: ENG';
-        }
-        applyLanguage();
-
-        // ================= CORE FIREBASE & LOGIC =================
-
-        const escapeHTML = (str) => {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+            window.dispatchSystemToastNotificationNotification('Tema & Profil berhasil diterapkan!', 'success');
         };
 
         window.toggleCustomSelectorDropdownMenu = (dropdownKeyId) => {
@@ -748,20 +856,27 @@
             });
             if(panel) panel.classList.toggle('hidden');
             if(chevron) chevron.classList.toggle('rotate-180');
+            window.playAudioSfx('click');
         };
 
         window.commitActiveCategorySelectionPipeline = (value, label) => {
             activeSelectedGameCategoryValue = value;
             document.getElementById('label-selected-game-cat').innerText = label;
-            toggleCustomSelectorDropdownMenu('game-cat');
-            currentPage = 1; executeMainUIRendererPipelineStreamer();
+            window.toggleCustomSelectorDropdownMenu('game-cat');
+            currentPage = 1; window.executeMainUIRendererPipelineStreamer();
         };
 
         window.commitActiveSortSelectionPipeline = (value, label) => {
             activeSelectedSortOrderValue = value;
             document.getElementById('label-selected-sort-order').innerText = label;
-            toggleCustomSelectorDropdownMenu('sort-order');
-            currentPage = 1; executeMainUIRendererPipelineStreamer();
+            window.toggleCustomSelectorDropdownMenu('sort-order');
+            currentPage = 1; window.executeMainUIRendererPipelineStreamer();
+        };
+
+        window.commitActiveMsgTargetSelection = (value, label) => {
+            activeSelectedMsgTargetRoleValue = value;
+            document.getElementById('label-selected-msg-target').innerText = label;
+            window.toggleCustomSelectorDropdownMenu('msg-target');
         };
 
         document.addEventListener('click', function(e) {
@@ -776,112 +891,233 @@
             });
         });
 
-        // Firebase Listeners
-        onValue(ref(db, 'system_guard'), (snap) => {
-            if(snap.exists()) {
-                const guard = snap.val();
-                const screen = document.getElementById('maintenance-lockscreen-layer');
-                if(guard.maintenanceMode === true || guard.maintenanceMode === "true") {
-                    screen.classList.remove('hidden'); document.getElementById('maintenance-realtime-msg').innerText = guard.maintenanceMessage || 'Sistem Sedang Maintenance Server.';
-                } else { screen.classList.add('hidden'); }
-                const marquee = document.getElementById('ticker-marquee-wrapper');
-                if(guard.announcement && guard.announcement.enabled === true) {
-                    document.getElementById('ticker-marquee-text-payload').innerText = guard.announcement.text || 'Selamat datang di DHM COMMUNITY! Dapatkan update script terbaru setiap harinya di sini.';
-                }
-            }
-        });
-
-        onValue(ref(db, 'faqs'), (snap) => {
-            const box = document.getElementById('faq-accordion-live-injections-box'); box.innerHTML = '';
-            if(snap.exists()) {
-                Object.entries(snap.val()).forEach(([id, model], idx) => {
-                    box.innerHTML += `
-                        <div class="border-b border-gray-800/50 pb-2.5 animate-premium-card">
-                            <button onclick="window.toggleFaqCollapseRowAnimation('${idx}')" class="w-full text-left font-black text-[var(--text-color)] text-xs flex justify-between items-center py-2 focus:outline-none">
-                                <span>❓ ${model.question}</span>
-                                <i id="faq-chevron-icon-${idx}" class="fa-solid fa-chevron-down text-[9px] text-gray-500 transition duration-300"></i>
-                            </button>
-                            <p id="faq-answer-collapse-block-${idx}" class="hidden text-[11px] text-gray-400 bg-black/10 p-3 rounded-2xl mt-1.5 leading-relaxed font-medium">💡 ${model.answer}</p>
-                        </div>`;
-                });
-            } else { box.innerHTML = '<p class="text-xs text-gray-600 font-mono text-center py-4">Belum ada FAQ bantuan.</p>'; }
-        });
-        window.toggleFaqCollapseRowAnimation = (idx) => { document.getElementById(`faq-answer-collapse-block-${idx}`).classList.toggle('hidden'); };
-
-        onValue(ref(db, 'categories'), (snap) => {
-            const listContainer = document.getElementById('list-options-game-cat');
-            listContainer.innerHTML = `<li onclick="commitActiveCategorySelectionPipeline('Semua Game', '🌐 Semua Game')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5">🌐 Semua Game</li>`;
-            if(snap.exists()) {
-                Object.values(snap.val()).forEach(categoryName => {
-                    listContainer.innerHTML += `<li onclick="commitActiveCategorySelectionPipeline('${categoryName}', '🎮 ${categoryName}')" class="p-3 hover:bg-purple-600/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5 truncate">🎮 ${categoryName}</li>`;
-                });
-            }
-            executeMainUIRendererPipelineStreamer();
-        });
-
-        // Banners
-        onValue(ref(db, 'banners'), (snapshot) => {
-            const track = document.getElementById('carousel-track-container');
-            const dotsContainer = document.getElementById('carousel-dots-container');
-            const bannerShell = document.getElementById('carousel-banner-shell');
-            track.innerHTML = ''; dotsContainer.innerHTML = '';
+        window.switchActiveViewportContext = (id, ref) => {
+            document.getElementById('viewport-scripts-hub').classList.toggle('hidden', id !== 'scripts');
+            document.getElementById('viewport-scripts-hub').classList.toggle('block', id === 'scripts');
+            document.getElementById('viewport-chat-hub').classList.toggle('hidden', id !== 'chat');
+            document.getElementById('viewport-message-hub').classList.toggle('hidden', id !== 'message');
+            document.getElementById('viewport-leaderboard-hub').classList.toggle('hidden', id !== 'leaderboard');
+            document.getElementById('viewport-faq-hub').classList.toggle('hidden', id !== 'faq');
             
-            if(snapshot.exists()) {
-                const bannersList = Object.entries(snapshot.val());
-                totalCarouselBanners = bannersList.length;
-                if(totalCarouselBanners > 0) {
-                    bannerShell.classList.remove('hidden');
-                    bannersList.forEach(([key, value], idx) => {
-                        const bgInlineStyle = value.imageUrl ? `background: url('${value.imageUrl}') center/cover no-repeat;` : '';
-                        track.innerHTML += `
-                            <div class="w-full h-full flex-shrink-0 flex flex-col justify-center px-5 relative" style="${bgInlineStyle}">
-                                <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px] z-0"></div>
-                                <div class="z-10 relative">
-                                    <span class="text-[7px] bg-purple-600 border border-purple-500/30 text-white px-2 py-0.5 rounded font-mono font-black uppercase tracking-widest w-max block">${value.badge || 'INFO'}</span>
-                                    <h2 class="text-xs font-black text-white mt-1 uppercase tracking-wide truncate">${value.title}</h2>
-                                    <p class="text-[10px] text-gray-300 font-medium line-clamp-1 mt-0.5">${value.subtitle}</p>
-                                </div>
-                            </div>`;
-                        dotsContainer.innerHTML += `<span class="w-1.5 h-1.5 rounded-full ${idx === 0 ? 'bg-white' : 'bg-white/30'} transition-all duration-300" id="dot-${idx}"></span>`;
-                    });
-                } else { bannerShell.classList.add('hidden'); }
-            } else { bannerShell.classList.add('hidden'); }
-        });
-
-        setInterval(() => {
-            if(totalCarouselBanners <= 1) return;
-            const track = document.getElementById('carousel-track-container');
-            activeCarouselIndex = (activeCarouselIndex + 1) % totalCarouselBanners;
-            if(track) track.style.transform = `translateX(-${activeCarouselIndex * 100}%)`;
-            for(let i=0; i<totalCarouselBanners; i++) {
-                const dot = document.getElementById(`dot-${i}`);
-                if(dot) dot.className = i === activeCarouselIndex ? "w-1.5 h-1.5 rounded-full bg-white transition-all duration-300" : "w-1.5 h-1.5 rounded-full bg-white/30 transition-all duration-300";
+            document.querySelectorAll('.active-navigation-node').forEach(n => { 
+                n.classList.remove('accent-text-glow', 'active-navigation-node'); 
+                n.classList.add('text-gray-500'); 
+            });
+            if(ref) { 
+                ref.classList.add('accent-text-glow', 'active-navigation-node'); 
+                ref.classList.remove('text-gray-500'); 
             }
-        }, 5000);
+            window.scrollTo({top: 0, behavior: 'smooth'});
+            window.playAudioSfx('click');
+        };
 
-        // Core Scripts Load
-        onValue(ref(db, 'scripts'), (snap) => { 
-            memoryCacheEntireScriptsDataset = snap.val() || {}; 
-            executeMainUIRendererPipelineStreamer(); 
-            calculateAggregatedCopiesMetricCounter(); 
-        });
+        let pendingChatImageBase64 = null;
+        window.handleChatImageSelect = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400; const MAX_HEIGHT = 400;
+                    let width = img.width; let height = img.height;
+                    if (width > height && width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    else if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                    pendingChatImageBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('chat-image-preview-img').src = pendingChatImageBase64;
+                    document.getElementById('chat-image-preview-box').classList.remove('hidden');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+        
+        window.cancelChatImage = () => {
+            pendingChatImageBase64 = null;
+            document.getElementById('chat-image-input').value = '';
+            document.getElementById('chat-image-preview-box').classList.add('hidden');
+        };
 
-        function calculateAggregatedCopiesMetricCounter() { 
+        window.sendGlobalChatMessage = () => {
+            if(!db) return;
+            const input = document.getElementById('chat-text-input');
+            const text = input.value.trim();
+            if(!text && !pendingChatImageBase64) return;
+            
+            const payload = {
+                sender: dhmUserProfile.name,
+                avatar: dhmUserProfile.avatar,
+                color: dhmUserProfile.color,
+                timestamp: Date.now()
+            };
+            if(text) payload.text = text;
+            if(pendingChatImageBase64) payload.imageUrl = pendingChatImageBase64;
+
+            push(ref(db, 'global_chat'), payload).then(() => {
+                input.value = '';
+                window.cancelChatImage();
+                window.playAudioSfx('success');
+                recordUserActivity("Sent Global Chat Message");
+            }).catch(() => {
+                window.dispatchSystemToastNotificationNotification('Gagal mengirim pesan (File terlalu besar?)', 'error');
+            });
+        };
+
+        if(db) {
+            try {
+                onValue(ref(db, 'system_guard'), (snap) => {
+                    if(snap.exists()) {
+                        const guard = snap.val();
+                        const screen = document.getElementById('maintenance-lockscreen-layer');
+                        if(guard.maintenanceMode === true || guard.maintenanceMode === "true") {
+                            screen.classList.remove('hidden'); document.getElementById('maintenance-realtime-msg').innerText = guard.maintenanceMessage || 'Sistem Sedang Maintenance Server.';
+                        } else { screen.classList.add('hidden'); }
+                        if(guard.announcement && guard.announcement.enabled === true) {
+                            document.getElementById('ticker-marquee-text-payload').innerText = guard.announcement.text || 'Selamat datang di DHM COMMUNITY!';
+                        }
+                    }
+                }, e => console.error(e));
+            } catch(e) {}
+
+            try {
+                onValue(ref(db, 'categories'), (snap) => {
+                    const listContainer = document.getElementById('list-options-game-cat');
+                    let drpHtml = `<li onclick="window.commitActiveCategorySelectionPipeline('Semua Game', '🌐 Semua Game')" class="p-3 hover:bg-white/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5"><span data-i18n="catAll">🌐 Semua Game</span></li>`;
+                    
+                    if(snap.exists()) {
+                        Object.values(snap.val()).forEach(categoryName => {
+                            drpHtml += `<li onclick="window.commitActiveCategorySelectionPipeline('${categoryName}', '🎮 ${categoryName}')" class="p-3 hover:bg-white/10 cursor-pointer border-b border-white/5 flex items-center gap-1.5 truncate">🎮 ${categoryName}</li>`;
+                        });
+                    }
+                    listContainer.innerHTML = drpHtml;
+                    window.applyLanguage(); 
+                    window.executeMainUIRendererPipelineStreamer();
+                }, e => console.error(e));
+            } catch(e) {}
+
+            try {
+                onValue(ref(db, 'banners'), (snapshot) => {
+                    const track = document.getElementById('carousel-track-container');
+                    const dotsContainer = document.getElementById('carousel-dots-container');
+                    const bannerShell = document.getElementById('carousel-banner-shell');
+                    track.innerHTML = ''; dotsContainer.innerHTML = '';
+                    if(snapshot.exists()) {
+                        const bannersList = Object.entries(snapshot.val());
+                        totalCarouselBanners = bannersList.length;
+                        if(totalCarouselBanners > 0) {
+                            bannerShell.classList.remove('hidden');
+                            bannersList.forEach(([key, value], idx) => {
+                                const bgInlineStyle = value.imageUrl ? `background: url('${value.imageUrl}') center/cover no-repeat;` : '';
+                                track.innerHTML += `
+                                    <div class="w-full h-full flex-shrink-0 flex flex-col justify-center px-5 relative" style="${bgInlineStyle}">
+                                        <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px] z-0"></div>
+                                        <div class="z-10 relative">
+                                            <span class="text-[7px] accent-bg-gradient text-white px-2 py-0.5 rounded font-mono font-black uppercase tracking-widest w-max block">${value.badge || 'INFO'}</span>
+                                            <h2 class="text-xs font-black text-white mt-1 uppercase tracking-wide truncate">${value.title}</h2>
+                                            <p class="text-[10px] text-gray-300 font-medium line-clamp-1 mt-0.5">${value.subtitle}</p>
+                                        </div>
+                                    </div>`;
+                                dotsContainer.innerHTML += `<span class="w-1.5 h-1.5 rounded-full ${idx === 0 ? 'bg-white' : 'bg-white/30'} transition-all duration-300" id="dot-${idx}"></span>`;
+                            });
+                        } else { bannerShell.classList.add('hidden'); }
+                    } else { bannerShell.classList.add('hidden'); }
+                }, e => console.error(e));
+            } catch(e) {}
+
+            try {
+                onValue(ref(db, 'faqs'), (snap) => {
+                    const box = document.getElementById('faq-accordion-live-injections-box'); box.innerHTML = '';
+                    if(snap.exists()) {
+                        Object.entries(snap.val()).forEach(([id, model], idx) => {
+                            box.innerHTML += `
+                                <div class="border-b border-gray-800/50 pb-2.5 animate-premium-card">
+                                    <button onclick="window.toggleFaqCollapseRowAnimation('${idx}')" class="w-full text-left font-black text-[var(--text-color)] text-xs flex justify-between items-center py-2 focus:outline-none">
+                                        <span>❓ ${model.question}</span>
+                                        <i id="faq-chevron-icon-${idx}" class="fa-solid fa-chevron-down text-[9px] text-gray-500 transition duration-300"></i>
+                                    </button>
+                                    <p id="faq-answer-collapse-block-${idx}" class="hidden text-[11px] text-gray-400 bg-black/10 p-3 dynamic-elem mt-1.5 leading-relaxed font-medium">💡 ${model.answer}</p>
+                                </div>`;
+                        });
+                    } else { box.innerHTML = '<p class="text-xs text-gray-600 font-mono text-center py-4">Belum ada FAQ bantuan.</p>'; }
+                }, e => console.error(e));
+            } catch(e) {}
+            
+            try {
+                onValue(ref(db, 'scripts'), (snap) => { 
+                    memoryCacheEntireScriptsDataset = snap.val() || {}; 
+                    window.executeMainUIRendererPipelineStreamer(); 
+                    window.calculateAggregatedCopiesMetricCounter(); 
+                }, (error) => {});
+            } catch(e) {}
+
+            try {
+                onValue(ref(db, 'global_chat'), (snap) => {
+                    const box = document.getElementById('live-chat-messages-container');
+                    if(!box) return;
+                    box.innerHTML = '';
+                    if(snap.exists()) {
+                        const msgs = Object.values(snap.val());
+                        msgs.sort((a,b) => a.timestamp - b.timestamp).forEach(m => {
+                            const isMe = m.sender === dhmUserProfile.name;
+                            const isAdmin = m.sender === "🛡️ ADMIN";
+                            const time = new Date(m.timestamp).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+                            
+                            const imgHtml = m.imageUrl ? `<img src="${m.imageUrl}" class="mt-1.5 dynamic-elem max-w-[150px] md:max-w-[200px] border border-white/10 cursor-pointer hover:opacity-80 transition" onclick="window.open('${m.imageUrl}', '_blank')">` : '';
+                            const textHtml = m.text ? `<p class="text-[10px] md:text-xs text-white leading-relaxed mt-0.5 break-words">${window.escapeHTML(m.text)}</p>` : '';
+                            const adminBadge = isAdmin ? '<i class="fa-solid fa-shield-check text-[8px] text-amber-400 ml-1"></i>' : '';
+                            const senderNameStyle = isAdmin ? 'text-amber-400' : (isMe ? 'accent-text-glow' : 'text-gray-400');
+                            
+                            box.innerHTML += `
+                                <div class="flex gap-2.5 ${isMe && !isAdmin ? 'flex-row-reverse' : ''} animate-premium-card">
+                                    <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white border border-white/10 shadow-lg ${m.color || 'bg-gray-700'}">
+                                        <i class="fa-solid ${m.avatar || 'fa-user'} text-[10px]"></i>
+                                    </div>
+                                    <div class="flex flex-col ${isMe && !isAdmin ? 'items-end' : 'items-start'} max-w-[75%]">
+                                        <div class="flex items-center gap-1.5 mb-0.5">
+                                            <span class="text-[9px] font-black ${senderNameStyle}">${m.sender}${adminBadge}</span>
+                                            <span class="text-[7px] text-gray-500 font-mono">${time}</span>
+                                        </div>
+                                        <div class="bg-black/40 border ${isAdmin ? 'border-amber-500/40 shadow-[0_0_10px_rgba(251,191,36,0.1)]' : (isMe ? 'border-white/20' : 'border-white/10')} px-3 py-2 dynamic-elem">
+                                            ${textHtml}
+                                            ${imgHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        setTimeout(() => { box.scrollTop = box.scrollHeight; }, 100);
+                    } else {
+                        box.innerHTML = '<div class="flex-1 flex items-center justify-center text-[10px] text-gray-500 font-mono">Ruang obrolan masih kosong.</div>';
+                    }
+                });
+            } catch(e) {}
+        }
+
+        window.toggleFaqCollapseRowAnimation = (idx) => { 
+            document.getElementById(`faq-answer-collapse-block-${idx}`).classList.toggle('hidden');
+            window.playAudioSfx('click'); 
+        };
+
+        window.calculateAggregatedCopiesMetricCounter = () => { 
             let total = 0; 
             Object.values(memoryCacheEntireScriptsDataset).forEach(s => total += (s.copyCount || 0)); 
             document.getElementById('metric-label-copies').innerText = total; 
         }
 
-        function executeMainUIRendererPipelineStreamer() {
+        window.executeMainUIRendererPipelineStreamer = () => {
             const box = document.getElementById('live-scripts-render-target-box');
             const paginationContainer = document.getElementById('pagination-controls-container');
             const leaderboardBox = document.getElementById('leaderboard-render-target-box');
-            const search = document.getElementById('pipeline-search-input-field').value.toLowerCase();
+            const searchInput = document.getElementById('pipeline-search-input-field');
+            const search = searchInput ? searchInput.value.toLowerCase() : "";
 
+            if(!box) return;
             box.innerHTML = ''; 
             let list = Object.keys(memoryCacheEntireScriptsDataset).map(k => ({ id: k, ...memoryCacheEntireScriptsDataset[k] }));
 
-            // RENDER LEADERBOARD
             if (leaderboardBox && list.length > 0) {
                 let topScripts = [...list].sort((a, b) => (b.copyCount || 0) - (a.copyCount || 0)).slice(0, 10);
                 leaderboardBox.innerHTML = '';
@@ -890,40 +1126,41 @@
                 
                 topScripts.forEach((item, index) => {
                     let isTop3 = index < 3;
-                    let iconColor = isTop3 ? medalColors[index] : 'text-purple-400';
+                    let iconColor = isTop3 ? medalColors[index] : 'accent-text-glow';
                     let iconClass = isTop3 ? crownIcons[index] : 'fa-ranking-star';
                     let rankText = isTop3 ? ['#1 TERATAS', '#2 POPULER', '#3 FAVORIT'][index] : `#${index + 1} POPULER`;
 
                     leaderboardBox.innerHTML += `
-                        <div class="glass-ui p-3.5 rounded-2xl border border-white/5 flex items-center gap-3.5 relative overflow-hidden group hover:bg-white/5 transition duration-300 cursor-pointer" onclick="window.openScriptDetailTab('${item.id}')">
-                            ${isTop3 ? `<div class="absolute -right-4 -top-4 w-16 h-16 bg-white/5 rounded-full blur-xl group-hover:bg-purple-500/20 transition duration-500"></div>` : ''}
+                        <div class="glass-ui p-3.5 border border-white/5 flex items-center gap-3.5 relative overflow-hidden group hover:bg-white/5 transition duration-300 cursor-pointer" onclick="window.openScriptDetailTab('${item.id}')">
+                            ${isTop3 ? `<div class="absolute -right-4 -top-4 w-16 h-16 bg-white/5 rounded-full blur-xl transition duration-500"></div>` : ''}
                             <div class="w-11 h-11 rounded-full bg-black/50 border border-white/10 flex items-center justify-center flex-shrink-0 ${iconColor} shadow-lg text-lg">
                                 <i class="fa-solid ${iconClass}"></i>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <span class="text-[9px] ${iconColor} font-black uppercase tracking-wider block">${rankText}</span>
-                                <h4 class="text-xs font-black text-[var(--text-color)] truncate tracking-wide mt-0.5">${item.title}</h4>
+                                <h4 class="text-xs font-black text-[var(--text-color)] truncate tracking-wide mt-0.5" title="${window.escapeHTML(item.title)}">${item.title}</h4>
                                 <span class="text-[10px] text-gray-400 font-medium"><i class="fa-solid fa-copy text-[9px] mr-1"></i> ${item.copyCount || 0} Kali Disalin</span>
                             </div>
-                            <div class="w-8 h-8 flex items-center justify-center text-gray-500 group-hover:text-purple-400 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></div>
+                            <div class="w-8 h-8 flex items-center justify-center text-gray-500 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></div>
                         </div>
                     `;
                 });
             }
 
-            if(search) list = list.filter(item => item.title.toLowerCase().includes(search) || item.purpose.toLowerCase().includes(search));
-            if(activeSelectedGameCategoryValue !== 'Semua Game') list = list.filter(item => item.category === activeSelectedGameCategoryValue);
+            if(search) list = list.filter(item => (item.title && item.title.toLowerCase().includes(search)) || (item.purpose && item.purpose.toLowerCase().includes(search)));
+            if(activeSelectedGameCategoryValue !== 'Semua Game' && activeSelectedGameCategoryValue !== 'All Games') list = list.filter(item => item.category === activeSelectedGameCategoryValue);
             if(isQuickFavoriteFilterActive) list = list.filter(item => localBookmarksRegistryList.includes(item.id));
 
-            if(activeSelectedSortOrderValue === 'newest') list.sort((a, b) => b.timestamp - a.timestamp);
+            if(activeSelectedSortOrderValue === 'newest') list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             else if(activeSelectedSortOrderValue === 'popular') list.sort((a, b) => (b.copyCount || 0) - (a.copyCount || 0));
-            else if(activeSelectedSortOrderValue === 'alphabet') list.sort((a, b) => a.title.localeCompare(b.title));
+            else if(activeSelectedSortOrderValue === 'alphabet') list.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
 
-            document.getElementById('metric-label-total').innerText = list.length;
+            const mTotal = document.getElementById('metric-label-total');
+            if(mTotal) mTotal.innerText = list.length;
 
             if(list.length === 0) {
                 box.innerHTML = `<p class="text-center col-span-full py-8 text-xs text-gray-400 font-mono">Skrip tidak ditemukan</p>`;
-                paginationContainer.innerHTML = '';
+                if(paginationContainer) paginationContainer.innerHTML = '';
                 return;
             }
 
@@ -935,154 +1172,270 @@
             const endIndex = startIndex + itemsPerPage;
             const paginatedList = list.slice(startIndex, endIndex);
 
-            paginatedList.forEach(item => { box.insertAdjacentHTML('beforeend', generateCoreScriptHtmlCardLayoutStructure(item, localBookmarksRegistryList.includes(item.id))); });
-            renderPaginationControls(totalPages);
-        }
+            paginatedList.forEach(item => { box.insertAdjacentHTML('beforeend', window.generateCoreScriptHtmlCardLayoutStructure(item, localBookmarksRegistryList.includes(item.id))); });
+            window.renderPaginationControls(totalPages);
+        };
 
-        function renderPaginationControls(totalPages) {
+        window.renderPaginationControls = (totalPages) => {
             const container = document.getElementById('pagination-controls-container');
+            if(!container) return;
             container.innerHTML = '';
-            
             if(totalPages <= 1) return;
 
             let html = '';
-            const prevDisabled = currentPage === 1 ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 hover:text-purple-400';
-            html += `<button onclick="window.changePage(${currentPage - 1})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 ${prevDisabled} transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>`;
+            const prevDisabled = currentPage === 1 ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 text-white';
+            html += `<button onclick="window.changePage(${currentPage - 1})" class="w-8 h-8 flex items-center justify-center dynamic-elem glass-ui border border-white/5 text-gray-400 ${prevDisabled} transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>`;
 
             let maxPagesToShow = 5;
             let startPage = Math.max(1, currentPage - 2);
             let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
             if (endPage - startPage + 1 < maxPagesToShow) { startPage = Math.max(1, endPage - maxPagesToShow + 1); }
 
             if (startPage > 1) {
-                html += `<button onclick="window.changePage(1)" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-purple-400 transition text-xs font-black">1</button>`;
+                html += `<button onclick="window.changePage(1)" class="w-8 h-8 flex items-center justify-center dynamic-elem glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition text-xs font-black">1</button>`;
                 if (startPage > 2) html += `<span class="text-gray-500 text-xs px-1">...</span>`;
             }
 
             for(let i = startPage; i <= endPage; i++) {
-                const activeClass = i === currentPage ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-none shadow-lg' : 'glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-purple-400';
-                html += `<button onclick="window.changePage(${i})" class="w-8 h-8 flex items-center justify-center rounded-lg ${activeClass} transition text-xs font-black">${i}</button>`;
+                const activeClass = i === currentPage ? 'accent-bg-gradient text-white border-none shadow-lg' : 'glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-white';
+                html += `<button onclick="window.changePage(${i})" class="w-8 h-8 flex items-center justify-center dynamic-elem ${activeClass} transition text-xs font-black">${i}</button>`;
             }
 
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) html += `<span class="text-gray-500 text-xs px-1">...</span>`;
-                html += `<button onclick="window.changePage(${totalPages})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-purple-400 transition text-xs font-black">${totalPages}</button>`;
+                html += `<button onclick="window.changePage(${totalPages})" class="w-8 h-8 flex items-center justify-center dynamic-elem glass-ui border border-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition text-xs font-black">${totalPages}</button>`;
             }
 
-            const nextDisabled = currentPage === totalPages ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 hover:text-purple-400';
-            html += `<button onclick="window.changePage(${currentPage + 1})" class="w-8 h-8 flex items-center justify-center rounded-lg glass-ui border border-white/5 text-gray-400 ${nextDisabled} transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>`;
+            const nextDisabled = currentPage === totalPages ? 'opacity-50 pointer-events-none' : 'hover:bg-white/10 text-white';
+            html += `<button onclick="window.changePage(${currentPage + 1})" class="w-8 h-8 flex items-center justify-center dynamic-elem glass-ui border border-white/5 text-gray-400 ${nextDisabled} transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>`;
 
             container.innerHTML = html;
-        }
+        };
 
         window.changePage = (page) => {
             currentPage = page;
-            executeMainUIRendererPipelineStreamer();
+            window.executeMainUIRendererPipelineStreamer();
             window.scrollTo({top: 0, behavior: 'smooth'});
+            window.playAudioSfx('click');
         };
 
-        function generateCoreScriptHtmlCardLayoutStructure(item, bookmarked) {
+        window.generateCoreScriptHtmlCardLayoutStructure = (item, bookmarked) => {
             const size = item.imageScaleSize || 'small';
+            const autoTags = (item.title || "").split(' ').slice(0,3).map(t => '#' + t.replace(/[^a-zA-Z]/g,'').toLowerCase()).filter(t=>t.length>2).join(' ');
+            
+            const hotBadge = (item.copyCount || 0) > 50 ? `<span class="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[8px] font-black px-2 py-1 rounded-md shadow-lg z-20 animate-pulse border border-orange-300/50 flex items-center gap-1"><i class="fa-solid fa-fire"></i> HOT</span>` : '';
+
             const actionButtonsHtml = `
                 <div class="flex gap-1.5 mt-2">
-                    <button id="btn-copy-main-${item.id}" onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-1"><i class="fa-solid fa-copy"></i> SALIN</button>
-                    <button onclick="window.openScriptDetailTab('${item.id}')" class="flex-1 bg-black/10 hover:bg-black/20 text-gray-300 py-2.5 rounded-xl text-[10px] font-black shadow-lg active:scale-[0.97] transition border border-gray-500/20"><i class="fa-solid fa-eye"></i> DETAIL</button>
+                    <button id="btn-copy-main-${item.id}" onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText || ''))}\`, event)" class="dynamic-elem relative overflow-hidden flex-1 accent-bg-gradient text-white py-2.5 text-[10px] font-black shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-1"><i class="fa-solid fa-copy"></i> SALIN</button>
+                    <button onclick="window.openScriptDetailTab('${item.id}')" class="dynamic-elem flex-1 bg-black/10 hover:bg-black/20 text-gray-300 py-2.5 text-[10px] font-black shadow-lg active:scale-[0.97] transition border border-gray-500/20"><i class="fa-solid fa-eye"></i> DETAIL</button>
                 </div>
                 <div class="flex gap-1.5 mt-1.5">
-                    <button onclick="window.downloadScriptTxt('${item.title}', \`${btoa(encodeURIComponent(item.scriptText))}\`)" class="flex-1 bg-black/5 hover:bg-emerald-500/20 text-emerald-400 py-2 rounded-xl text-[9px] font-bold active:scale-[0.97] transition border border-emerald-500/20"><i class="fa-solid fa-download"></i> .TXT</button>
-                    <button onclick="window.shareSpecificScript('${item.title}', '${item.purpose}')" class="flex-1 bg-black/5 hover:bg-blue-500/20 text-blue-400 py-2 rounded-xl text-[9px] font-bold active:scale-[0.97] transition border border-blue-500/20"><i class="fa-solid fa-share-nodes"></i> SHARE</button>
+                    <button onclick="window.downloadScriptFile('${item.title || 'script'}', \`${btoa(encodeURIComponent(item.scriptText || ''))}\`, 'txt')" class="dynamic-elem flex-1 bg-black/5 text-gray-400 py-2 text-[9px] font-bold active:scale-[0.97] transition border border-white/10"><i class="fa-solid fa-download"></i> .TXT</button>
+                    <button onclick="window.shareSpecificScript('${item.title || 'script'}', '${item.purpose || ''}')" class="dynamic-elem flex-1 bg-black/5 text-gray-400 py-2 text-[9px] font-bold active:scale-[0.97] transition border border-white/10"><i class="fa-solid fa-share-nodes"></i> SHARE</button>
                 </div>
             `;
 
             if(size === 'large') {
                 return `
-                    <div class="glass-ui p-4 rounded-3xl space-y-2 relative animate-premium-card flex flex-col justify-between">
+                    <div class="glass-ui p-4 space-y-2 relative animate-premium-card premium-hover-card flex flex-col justify-between z-10 select-none" ondblclick="window.executeTargetBookmarkTogglePipeline('${item.id}', event)">
                         <div>
-                            <div class="relative w-full h-40 rounded-2xl overflow-hidden border border-white/5 bg-slate-900">
-                                <img src="${item.icon || 'https://via.placeholder.com/300'}" class="w-full h-full object-cover">
-                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-base backdrop-blur-md ${bookmarked ? 'text-pink-500' : 'text-gray-300'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
+                            <div class="relative w-full h-40 dynamic-elem overflow-hidden border border-white/5 bg-slate-900 cursor-pointer" title="Double tap to like">
+                                <img src="${item.icon || 'https://via.placeholder.com/300'}" loading="lazy" onerror="this.src='https://via.placeholder.com/300'" class="w-full h-full object-cover">
+                                ${hotBadge}
+                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-base backdrop-blur-md ${bookmarked ? 'accent-text-glow' : 'text-gray-300'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
                             </div>
                             <div class="pt-2">
-                                <span class="bg-black/10 text-gray-400 text-[8px] font-black px-2 py-0.5 rounded border border-gray-500/20 uppercase font-mono">${item.category}</span>
-                                <h3 class="text-xs font-black text-[var(--text-color)] mt-1.5 truncate uppercase tracking-wide">${item.title}</h3>
-                                <p class="text-[11px] text-gray-500 line-clamp-2 font-medium mt-0.5">${item.purpose}</p>
+                                <span class="bg-black/10 text-gray-400 text-[8px] font-black px-2 py-0.5 rounded border border-gray-500/20 uppercase font-mono">${item.category || 'Game'}</span>
+                                <h3 class="text-xs font-black text-[var(--text-color)] mt-1.5 truncate uppercase tracking-wide" title="${window.escapeHTML(item.title)}">${item.title}</h3>
+                                <p class="text-[8px] font-mono mt-0.5 tracking-wider accent-text-glow opacity-80">${autoTags}</p>
+                                <p class="text-[11px] text-gray-500 line-clamp-2 font-medium mt-1">${item.purpose || ''}</p>
                             </div>
                         </div>
                         ${actionButtonsHtml}
                     </div>`;
             } else {
-                const imgDimensionsClass = size === 'medium' ? 'w-16 h-16 rounded-2xl' : 'w-12 h-12 rounded-2xl';
+                const imgDimensionsClass = size === 'medium' ? 'w-16 h-16 dynamic-elem' : 'w-12 h-12 dynamic-elem';
                 return `
-                    <div class="glass-ui p-4 rounded-3xl space-y-2 relative animate-premium-card flex flex-col justify-between">
+                    <div class="glass-ui p-4 space-y-2 relative animate-premium-card premium-hover-card flex flex-col justify-between z-10 select-none" ondblclick="window.executeTargetBookmarkTogglePipeline('${item.id}', event)">
                         <div>
                             <div class="flex items-start gap-3">
-                                <img src="${item.icon || 'https://via.placeholder.com/60'}" class="${imgDimensionsClass} object-cover bg-slate-900 border border-white/5 flex-shrink-0">
-                                <div class="flex-1 min-w-0">
-                                    <span class="bg-black/10 text-gray-400 text-[8px] font-black px-2 py-0.5 rounded border border-gray-500/20 uppercase font-mono">${item.category}</span>
-                                    <h3 class="text-xs font-black text-[var(--text-color)] mt-1 truncate tracking-wide uppercase">${item.title}</h3>
-                                    <p class="text-[11px] text-gray-500 line-clamp-1 font-medium mt-0.5">${item.purpose}</p>
+                                <div class="relative flex-shrink-0 cursor-pointer" title="Double tap to like">
+                                    <img src="${item.icon || 'https://via.placeholder.com/60'}" loading="lazy" onerror="this.src='https://via.placeholder.com/60'" class="${imgDimensionsClass} object-cover bg-slate-900 border border-white/5">
+                                    ${hotBadge}
                                 </div>
-                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="p-1 text-base ${bookmarked ? 'text-pink-500' : 'text-gray-400'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
+                                <div class="flex-1 min-w-0">
+                                    <span class="bg-black/10 text-gray-400 text-[8px] font-black px-2 py-0.5 rounded border border-gray-500/20 uppercase font-mono">${item.category || 'Game'}</span>
+                                    <h3 class="text-xs font-black text-[var(--text-color)] mt-1 truncate tracking-wide uppercase" title="${window.escapeHTML(item.title)}">${item.title}</h3>
+                                    <p class="text-[8px] font-mono mt-0.5 tracking-wider truncate accent-text-glow opacity-80">${autoTags}</p>
+                                    <div class="flex items-center justify-between mt-1">
+                                        <p class="text-[10px] text-gray-500 line-clamp-1 font-medium flex-1 mr-2">${item.purpose || ''}</p>
+                                    </div>
+                                </div>
+                                <button onclick="window.executeTargetBookmarkTogglePipeline('${item.id}')" class="p-1 text-base flex-shrink-0 ${bookmarked ? 'accent-text-glow' : 'text-gray-400'}"><i class="fa-${bookmarked ? 'solid' : 'regular'} fa-heart"></i></button>
                             </div>
                         </div>
                         ${actionButtonsHtml}
                     </div>`;
             }
-        }
+        };
 
-        window.executeCopyScriptPayloadPipeline = (id, b64) => {
+        window.executeCopyScriptPayloadPipeline = (id, b64, e) => {
             const originalText = decodeURIComponent(atob(b64));
             navigator.clipboard.writeText(originalText).then(() => {
                 window.dispatchSystemToastNotificationNotification('Skrip berhasil disalin!', 'success');
-                runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
+                window.playAudioSfx('success');
+                if(navigator.vibrate) navigator.vibrate(50);
+                if(db) runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
                 confetti({ zIndex: 9999, particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                
                 const btn = document.getElementById(`btn-copy-main-${id}`);
                 if(btn) {
+                    if(e) {
+                        const rect = btn.getBoundingClientRect();
+                        const circle = document.createElement('span');
+                        const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+                        circle.style.width = circle.style.height = `${diameter}px`;
+                        circle.style.left = `${e.clientX - rect.left - diameter/2}px`;
+                        circle.style.top = `${e.clientY - rect.top - diameter/2}px`;
+                        circle.className = 'absolute bg-white/30 rounded-full animate-ping scale-0 pointer-events-none';
+                        btn.appendChild(circle);
+                        setTimeout(() => circle.remove(), 600);
+                    }
                     const originalInner = btn.innerHTML;
-                    btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> COPIED`;
+                    btn.innerHTML = `<i class="fa-solid fa-check text-white"></i> COPIED`;
                     setTimeout(() => { btn.innerHTML = originalInner; }, 2000);
                 }
+                recordUserActivity(`Copy Script: ${id}`);
             });
         };
 
-        window.executeTargetBookmarkTogglePipeline = (id) => {
+        window.executeTargetBookmarkTogglePipeline = (id, e) => {
             localBookmarksRegistryList = localBookmarksRegistryList.includes(id) ? localBookmarksRegistryList.filter(i => i !== id) : [...localBookmarksRegistryList, id];
             localStorage.setItem('dhm_v10_bookmarks', JSON.stringify(localBookmarksRegistryList));
             document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length; 
-            executeMainUIRendererPipelineStreamer();
-        };
-
-        window.switchActiveViewportContext = (id, ref) => {
-            document.getElementById('viewport-scripts-hub').classList.toggle('hidden', id !== 'scripts');
-            document.getElementById('viewport-chat-hub').classList.toggle('hidden', id !== 'chat');
-            document.getElementById('viewport-message-hub').classList.toggle('hidden', id !== 'message');
-            document.getElementById('viewport-leaderboard-hub').classList.toggle('hidden', id !== 'leaderboard');
-            document.getElementById('viewport-faq-hub').classList.toggle('hidden', id !== 'faq');
+            window.executeMainUIRendererPipelineStreamer();
+            window.playAudioSfx('click');
             
-            document.querySelectorAll('.active-navigation-node').forEach(n => { n.classList.remove('text-purple-400', 'active-navigation-node'); n.classList.add('text-gray-500'); });
-            ref.classList.add('text-purple-400', 'active-navigation-node'); ref.classList.remove('text-gray-500');
-            window.scrollTo({top: 0, behavior: 'smooth'});
-            
-            if(id === 'chat') {
-                const box = document.getElementById('chat-messages-container');
-                box.scrollTop = box.scrollHeight;
+            if(e && localBookmarksRegistryList.includes(id)) {
+                const heart = document.createElement('i');
+                heart.className = 'fa-solid fa-heart absolute text-4xl accent-text-glow pointer-events-none z-50';
+                heart.style.left = `${e.clientX}px`;
+                heart.style.top = `${e.clientY}px`;
+                heart.style.animation = 'floatUpFade 1s ease-out forwards';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 1000);
             }
         };
 
-        window.triggerLocalPreferencesControlPanel = () => { 
-            document.getElementById('preferences-dropdown-panel').classList.toggle('hidden'); 
+        window.toggleQuickFavoriteFilteringMode = () => {
+            isQuickFavoriteFilterActive = !isQuickFavoriteFilterActive;
+            const btn = document.getElementById('quick-fav-filter-toggle');
+            if(isQuickFavoriteFilterActive) {
+                btn.classList.add('bg-white/10');
+                btn.classList.remove('text-gray-400');
+                btn.style.color = 'var(--accent)';
+            } else {
+                btn.classList.remove('bg-white/10');
+                btn.classList.add('text-gray-400');
+                btn.style.color = '';
+            }
+            currentPage = 1;
+            window.executeMainUIRendererPipelineStreamer();
+            window.playAudioSfx('click');
         };
-        
+
         window.clearActiveSearchFieldPipeline = () => { 
             const input = document.getElementById('pipeline-search-input-field');
-            input.value = ''; 
+            if(input) input.value = ''; 
             document.getElementById('pipeline-search-clear-btn').classList.add('hidden');
             currentPage = 1; 
-            executeMainUIRendererPipelineStreamer(); 
+            window.executeMainUIRendererPipelineStreamer(); 
+            window.playAudioSfx('click');
         };
-        
+
+        let typingTimeout;
+        const searchInputEl = document.getElementById('pipeline-search-input-field');
+        if(searchInputEl) {
+            searchInputEl.addEventListener('input', (e) => {
+                const clearBtn = document.getElementById('pipeline-search-clear-btn');
+                const val = e.target.value.trim();
+                if (val.length > 0) { clearBtn.classList.remove('hidden'); } else { clearBtn.classList.add('hidden'); }
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    if(val && val.length > 2) {
+                        const lowerVal = val.toLowerCase();
+                        searchHistoryList = searchHistoryList.filter(t => t !== lowerVal);
+                        searchHistoryList.unshift(lowerVal);
+                        if(searchHistoryList.length > 6) searchHistoryList.pop();
+                        localStorage.setItem('dhm_search_history', JSON.stringify(searchHistoryList));
+                        window.renderSearchHistoryBox();
+                    }
+                }, 1500);
+                currentPage = 1; 
+                window.executeMainUIRendererPipelineStreamer();
+            });
+        }
+
+        window.renderSearchHistoryBox = () => {
+            const box = document.getElementById('search-history-box');
+            const pillsBox = document.getElementById('search-history-pills');
+            if(!box || !pillsBox) return;
+            if(searchHistoryList.length === 0) { box.classList.add('hidden'); return; }
+            box.classList.remove('hidden');
+            pillsBox.innerHTML = searchHistoryList.map(term => `
+                <button onclick="window.triggerSearchFromHistory('${term}')" class="bg-white/5 border border-white/10 hover:text-white px-3 py-1.5 rounded-lg text-gray-400 transition active:scale-95 flex-shrink-0 whitespace-nowrap shadow-sm" style="hover:border-color: var(--accent);">${term}</button>
+            `).join('');
+        };
+        window.renderSearchHistoryBox();
+
+        window.triggerSearchFromHistory = (term) => {
+            const input = document.getElementById('pipeline-search-input-field');
+            if(input) input.value = term;
+            document.getElementById('pipeline-search-clear-btn').classList.remove('hidden');
+            currentPage = 1;
+            window.executeMainUIRendererPipelineStreamer();
+            window.playAudioSfx('click');
+        };
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            const micBtn = document.getElementById('voice-search-btn');
+            const searchInput = document.getElementById('pipeline-search-input-field');
+            const clearBtn = document.getElementById('pipeline-search-clear-btn');
+
+            if(micBtn) {
+                micBtn.addEventListener('click', () => {
+                    try {
+                        recognition.lang = window.currentLanguage === 'id' ? 'id-ID' : 'en-US';
+                        recognition.start();
+                        micBtn.innerHTML = `<i class="fa-solid fa-microphone-lines animate-pulse text-xs accent-text-glow"></i>`;
+                        window.dispatchSystemToastNotificationNotification(window.currentLanguage === 'id' ? 'Silakan bicara...' : 'Please speak...', 'success');
+                    } catch(e) {}
+                });
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript.replace(/\.$/, '').trim();
+                    if(searchInput) searchInput.value = transcript;
+                    micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`;
+                    if(clearBtn) clearBtn.classList.remove('hidden');
+                    window.dispatchSystemToastNotificationNotification(`Mencari: "${transcript}"`);
+                    if(searchInput) searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                };
+                recognition.onend = () => { micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`; };
+                recognition.onerror = (e) => {
+                    micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`;
+                    if(e.error !== 'no-speech') window.dispatchSystemToastNotificationNotification('Gagal mendeteksi suara.', 'error');
+                };
+            }
+        } else {
+            const btn = document.getElementById('voice-search-btn');
+            if(btn) btn.style.display = 'none';
+        }
+
         window.openScriptDetailTab = (id) => {
+            window.playAudioSfx('click');
             const item = memoryCacheEntireScriptsDataset[id];
             if(!item) return window.dispatchSystemToastNotificationNotification('Gagal memuat detail data.', 'error');
             
@@ -1097,33 +1450,39 @@
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-premium-card';
             modal.innerHTML = `
-                <div class="glass-ui p-6 rounded-3xl max-w-lg w-full border border-purple-500/30 shadow-2xl relative max-h-[90vh] flex flex-col">
-                    <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90 z-50"><i class="fa-solid fa-xmark"></i></button>
+                <div class="glass-ui p-6 max-w-lg w-full shadow-2xl relative max-h-[90vh] flex flex-col">
+                    <button onclick="this.parentElement.parentElement.remove(); window.playAudioSfx('click');" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90 z-50"><i class="fa-solid fa-xmark"></i></button>
                     
-                    <div class="mb-4 pr-8">
-                        <span class="bg-gradient-to-r from-purple-600 to-blue-600 px-2.5 py-1 rounded-md text-[9px] font-black uppercase text-white shadow-lg tracking-wider inline-flex items-center gap-1">
-                            <i class="fa-solid fa-gamepad"></i> ${item.category}
-                        </span>
-                        <h1 class="text-lg font-black text-[var(--text-color)] mt-2.5 leading-tight tracking-wide uppercase">${item.title}</h1>
-                        <p class="text-[11px] text-gray-400 mt-1 font-medium leading-relaxed bg-black/10 p-2 rounded-lg border border-gray-500/20"><i class="fa-solid fa-circle-info text-purple-400 mr-1"></i>${item.purpose}</p>
+                    <div class="mb-4 pr-8 flex items-start justify-between">
+                        <div>
+                            <span class="accent-bg-gradient px-2.5 py-1 dynamic-elem text-[9px] font-black uppercase text-white shadow-lg tracking-wider inline-flex items-center gap-1">
+                                <i class="fa-solid fa-gamepad"></i> ${item.category || 'Game'}
+                            </span>
+                            <h1 class="text-lg font-black text-[var(--text-color)] mt-2.5 leading-tight tracking-wide uppercase">${item.title}</h1>
+                            <p class="text-[11px] text-gray-400 mt-1 font-medium leading-relaxed bg-black/10 p-2 dynamic-elem border border-gray-500/20"><i class="fa-solid fa-circle-info accent-text-glow mr-1"></i>${item.purpose || ''}</p>
+                        </div>
+                        <div class="ml-2 hidden md:block">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=${encodeURIComponent(window.location.href)}&bgcolor=11-15-26&color=ffffff" class="dynamic-elem border border-white/20">
+                            <p class="text-[6px] text-center text-gray-500 mt-1 uppercase tracking-widest">Share QR</p>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 mb-4 bg-black/10 p-3 rounded-xl border border-gray-500/20 text-[11px]">
+                    <div class="grid grid-cols-2 gap-3 mb-4 bg-black/10 p-3 dynamic-elem border border-gray-500/20 text-[11px]">
                         <div>
-                            <span class="block text-[9px] text-purple-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-regular fa-calendar-days"></i> Hari / Tanggal</span>
+                            <span class="block text-[9px] font-black uppercase tracking-wider mb-0.5 accent-text-glow"><i class="fa-regular fa-calendar-days"></i> Hari / Tanggal</span>
                             <span class="text-[var(--text-color)] font-bold">${fullDate}</span>
                         </div>
                         <div>
-                            <span class="block text-[9px] text-purple-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-regular fa-clock"></i> Waktu Rilis</span>
+                            <span class="block text-[9px] font-black uppercase tracking-wider mb-0.5 accent-text-glow"><i class="fa-regular fa-clock"></i> Waktu Rilis</span>
                             <span class="text-[var(--text-color)] font-bold">${fullTime} WIB</span>
                         </div>
                         <div>
-                            <span class="block text-[9px] text-blue-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-solid fa-chart-simple"></i> Total Salinan</span>
+                            <span class="block text-[9px] font-black uppercase tracking-wider mb-0.5 text-blue-400"><i class="fa-solid fa-chart-simple"></i> Total Salinan</span>
                             <span class="text-[var(--text-color)] font-bold">${item.copyCount || 0} Kali Digunakan</span>
                         </div>
                         <div>
-                            <span class="block text-[9px] text-amber-400 font-black uppercase tracking-wider mb-0.5"><i class="fa-solid fa-code-branch"></i> Struktur Mekanis</span>
-                            <span class="text-amber-500 font-bold">${scriptArchitectureType}</span>
+                            <span class="block text-[9px] font-black uppercase tracking-wider mb-0.5 text-amber-400"><i class="fa-solid fa-code-branch"></i> Struktur Mekanis</span>
+                            <span class="text-[var(--text-color)] font-bold">${scriptArchitectureType}</span>
                         </div>
                         <div class="col-span-2 border-t border-gray-500/20 pt-2 flex justify-between text-[10px] text-gray-500 font-mono">
                             <span>Karakter: <b class="text-[var(--text-color)]">${codeLength}</b></span>
@@ -1131,10 +1490,17 @@
                         </div>
                     </div>
                     
-                    <span class="text-[10px] text-purple-400 font-black uppercase tracking-widest mb-1 block"><i class="fa-solid fa-code text-xs"></i> Source Code Script:</span>
-                    <pre class="bg-[#04060a] p-3.5 rounded-xl border border-white/10 font-mono text-[10px] overflow-y-auto custom-scrollbar flex-1 mb-4 select-all shadow-inner" style="max-height: 25vh;"><code class="language-lua">${escapeHTML(item.scriptText)}</code></pre>
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-[10px] font-black uppercase tracking-widest block accent-text-glow"><i class="fa-solid fa-code text-xs"></i> Source Code Script:</span>
+                        <select onchange="document.getElementById('code-view-block-${item.id}').style.fontFamily = this.value" class="bg-black/40 border border-white/10 text-gray-300 text-[8px] p-1 rounded outline-none transition" style="focus:border-color: var(--accent);">
+                            <option value="monospace">Default Mono</option>
+                            <option value="'Courier New', Courier, monospace">Courier New</option>
+                            <option value="'Fira Code', monospace">Dev Code</option>
+                        </select>
+                    </div>
+                    <pre class="bg-[#04060a] p-3.5 dynamic-elem border border-white/10 font-mono text-[10px] overflow-y-auto custom-scrollbar flex-1 mb-4 select-all shadow-inner" style="max-height: 25vh;"><code id="code-view-block-${item.id}" class="language-lua">${window.escapeHTML(item.scriptText || '')}</code></pre>
                     
-                    <button id="modal-copy-btn" class="w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-purple-600/20 active:scale-[0.97] transition flex items-center justify-center gap-2">
+                    <button id="modal-copy-btn" class="dynamic-elem w-full accent-bg-gradient text-white py-3.5 font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-copy"></i> SALIN SOURCE CODE SKRIP
                     </button>
                 </div>
@@ -1144,28 +1510,33 @@
             setTimeout(() => { Prism.highlightAllUnder(modal); }, 0);
             
             const copyBtn = modal.querySelector('#modal-copy-btn');
-            copyBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(item.scriptText).then(() => {
+            copyBtn.addEventListener('click', (e) => {
+                navigator.clipboard.writeText(item.scriptText || '').then(() => {
                     window.dispatchSystemToastNotificationNotification('Script berhasil disalin langsung dari menu detail!', 'success');
-                    runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
+                    window.playAudioSfx('success');
+                    if(navigator.vibrate) navigator.vibrate(50);
+                    if(db) runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
                     confetti({ zIndex: 9999, particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                    recordUserActivity(`Copy Details: ${id}`);
                 });
             });
         };
 
-        window.downloadScriptTxt = (title, b64) => {
+        window.downloadScriptFile = (title, b64, ext) => {
             const text = decodeURIComponent(atob(b64));
             const blob = new Blob([text], {type: "text/plain"});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `[DHM] ${title}.txt`;
+            a.download = `[DHM] ${title}.${ext}`;
             a.click();
             URL.revokeObjectURL(url);
-            window.dispatchSystemToastNotificationNotification('File .txt berhasil di-download!', 'success');
+            window.dispatchSystemToastNotificationNotification(`File .${ext} berhasil di-download!`, 'success');
+            window.playAudioSfx('success');
         };
 
         window.shareSpecificScript = (title, purpose) => {
+            window.playAudioSfx('click');
             if (navigator.share) {
                 navigator.share({ title: `DHM SCRIPT: ${title}`, text: `Dapatkan Script Terkeren ini: ${title}\nFitur: ${purpose}\n\nDownload sekarang di DHM COMMUNITY Portal!`, url: window.location.href }).catch(() => {});
             } else {
@@ -1174,15 +1545,88 @@
             }
         };
 
+        window.injectPresetTextTemplateIntoMessagePayload = (id) => {
+            const box = document.getElementById('private-msg-text-content');
+            if(id === 1) box.value = "[SCRIPT PATCHED / RUSAK]: Tolong update script ini karena sudah tidak berfungsi di Executor Mobile: ";
+            else if(id === 2) box.value = "[REQUEST SCRIPT GAME]: Tolong tambahkan script terbaru untuk game Roblox: ";
+            else if(id === 3) box.value = "[LAPORAN BUG / LAINNYA]: ";
+            window.playAudioSfx('click');
+        };
+
+        window.submitPrivateUserMessagePipeline = () => {
+            const n = dhmUserProfile.name;
+            const m = document.getElementById('private-msg-text-content').value.trim();
+            
+            if(!m) return window.dispatchSystemToastNotificationNotification('Isi laporan wajib diisi!', 'error');
+            if(!db) return window.dispatchSystemToastNotificationNotification('Database tidak terkoneksi!', 'error');
+
+            set(push(ref(db, 'messages')), { 
+                sender: n, target: activeSelectedMsgTargetRoleValue, message: m, timestamp: Date.now() 
+            }).then(() => {
+                window.dispatchSystemToastNotificationNotification(`Laporan sukses dikirim ke ${activeSelectedMsgTargetRoleValue}!`);
+                window.playAudioSfx('success');
+                document.getElementById('private-msg-text-content').value = '';
+                recordUserActivity("Sent Private Report");
+            }).catch(() => window.dispatchSystemToastNotificationNotification('Gagal mengirim laporan.', 'error'));
+        };
+
+        window.escapeHTML = (str) => {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        };
+
         window.dispatchSystemToastNotificationNotification = (msg, type = 'success') => {
             const hub = document.getElementById('toast-master-hub');
+            if(!hub) return;
             const toast = document.createElement('div');
-            toast.className = `glass-ui flex items-center gap-3 text-white px-4 py-3 rounded-full text-xs font-black border ${type === 'success' ? 'border-emerald-500/20' : 'border-red-500/20'} shadow-2xl opacity-0 transition duration-300 transform translate-y-[-15px] pointer-events-auto`;
-            toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse"></span> ${msg}`;
+            toast.className = `glass-ui flex items-center gap-3 text-white px-4 py-3 dynamic-elem text-xs font-black border ${type === 'success' ? 'border-white/20' : 'border-red-500/20'} shadow-2xl opacity-0 transition duration-300 transform translate-y-[-15px] pointer-events-auto`;
+            toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${type === 'success' ? 'accent-bg-gradient' : 'bg-red-500'} animate-pulse"></span> ${msg}`;
             hub.appendChild(toast);
             setTimeout(() => toast.classList.remove('opacity-0', 'translate-y-[-15px]'), 15);
             setTimeout(() => { toast.classList.add('opacity-0', 'scale-90'); setTimeout(() => toast.remove(), 300); }, 3500);
         };
+        
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', () => {
+            const fabTop = document.getElementById('fab-scroll-top');
+            const fabBot = document.getElementById('fab-scroll-bottom');
+            const navBar = document.getElementById('bottom-nav-bar');
+            
+            const scrollNode = document.getElementById('scroll-track-node');
+            if(scrollNode) {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                scrollNode.style.width = scrolled + "%";
+            }
+
+            if(window.scrollY > 300) { fabTop.classList.remove('opacity-0', 'pointer-events-none'); }
+            else { fabTop.classList.add('opacity-0', 'pointer-events-none'); }
+            
+            if((window.innerHeight + window.scrollY) < document.body.scrollHeight - 100) {
+                fabBot.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                fabBot.classList.add('opacity-0', 'pointer-events-none');
+            }
+
+            if(window.scrollY > lastScrollY && window.scrollY > 150) {
+                navBar.style.transform = 'translateY(150%)';
+            } else {
+                navBar.style.transform = 'translateY(0)';
+            }
+            lastScrollY = window.scrollY;
+        });
+
+        setInterval(() => {
+            if(window.totalCarouselBanners <= 1) return;
+            const track = document.getElementById('carousel-track-container');
+            window.activeCarouselIndex = (window.activeCarouselIndex + 1) % window.totalCarouselBanners;
+            if(track) track.style.transform = `translateX(-${window.activeCarouselIndex * 100}%)`;
+            for(let i=0; i<window.totalCarouselBanners; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if(dot) dot.className = i === window.activeCarouselIndex ? "w-1.5 h-1.5 rounded-full bg-white transition-all duration-300" : "w-1.5 h-1.5 rounded-full bg-white/30 transition-all duration-300";
+            }
+        }, 5000);
     </script>
 </body>
 </html>
