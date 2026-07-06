@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://via.placeholder.com/192">
     
-    <title>DHM COMMUNITY | WEBSITE</title>
+    <title>DHM COMMUNITY | Sovereign v20.7 (Ultra Custom)</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -83,7 +83,6 @@
         .accent-text-glow { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
         .accent-bg-gradient { background: linear-gradient(to right, var(--accent), var(--neon-blue)); }
         
-        /* FIX: Class khusus untuk text gradient agar tidak menjadi blok kotak */
         .accent-text-gradient {
             background: linear-gradient(to right, var(--accent), var(--neon-blue));
             -webkit-background-clip: text;
@@ -99,6 +98,27 @@
     <div id="background-particles"></div>
     <div class="progress-indicator-bar" id="scroll-track-node"></div>
     <div id="toast-master-hub" class="fixed top-4 left-0 right-0 z-[200] flex flex-col items-center space-y-2 pointer-events-none px-4"></div>
+
+    <div id="mission-modal-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 backdrop-blur-xl transition-all duration-300">
+        <div class="glass-ui p-6 max-w-sm w-full rounded-3xl border border-white/10 shadow-2xl animate-premium-card relative bg-[#0a0c16]">
+            <button onclick="document.getElementById('mission-modal-layer').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-white w-8 h-8 rounded-full flex items-center justify-center bg-white/5 transition"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="text-center mb-6 mt-2">
+                <div class="w-16 h-16 rounded-full bg-purple-900/30 border border-purple-500/50 flex items-center justify-center mx-auto mb-3 shadow-[0_0_20px_rgba(168,85,247,0.2)]">
+                    <i class="fa-solid fa-unlock-keyhole text-2xl text-purple-400"></i>
+                </div>
+                <h2 class="text-sm font-black text-white uppercase tracking-widest accent-text-gradient">Unlock Script</h2>
+                <p class="text-[10px] text-gray-400 mt-1">Selesaikan misi di bawah ini untuk membuka detail skrip.</p>
+            </div>
+            
+            <div class="space-y-3" id="mission-tasks-container">
+            </div>
+            
+            <button id="btn-unlock-proceed" disabled class="w-full bg-gray-800 text-gray-500 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest mt-6 transition-all duration-300 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-lock"></i> Selesaikan Misi Dulu
+            </button>
+        </div>
+    </div>
 
     <button id="fab-scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="fixed bottom-24 right-4 w-10 h-10 accent-bg-gradient rounded-full shadow-lg text-white flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 z-[100] active:scale-90">
         <i class="fa-solid fa-arrow-up"></i>
@@ -124,7 +144,6 @@
         </div>
     </div>
 
-    <!-- Advanced Profile Customization UI -->
     <div id="profile-modal-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 backdrop-blur-xl">
         <div class="glass-ui p-6 max-w-sm w-full space-y-4 shadow-2xl animate-premium-card relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             <button onclick="window.toggleProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-xmark"></i></button>
@@ -222,7 +241,6 @@
                     <i id="header-avatar-icon" class="fa-solid fa-user-ninja"></i>
                 </div>
                 <div>
-                    <!-- FIX: Menggunakan accent-text-gradient khusus agar teks tidak berubah menjadi blok warna -->
                     <h1 class="font-black tracking-widest text-sm accent-text-gradient pb-0.5">DHM COMMUNITY</h1>
                     <p id="header-username-text" class="text-[9px] font-bold text-gray-400 mt-0.5 tracking-wide flex items-center gap-1">
                         <span id="dynamic-greeting-node" class="text-[8px] text-gray-500 font-mono hidden md:inline-block mr-1"></span>
@@ -688,6 +706,84 @@
 
         document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length;
 
+        // MISSION LOGIC
+        window.currentUnlockScriptId = null;
+        window.currentMissionsList = [];
+        window.missionStatus = [];
+
+        window.openUnlockMissionModal = (id) => {
+            const item = memoryCacheEntireScriptsDataset[id];
+            if (!item) return;
+
+            window.currentUnlockScriptId = id;
+            window.currentMissionsList = item.missions || [];
+            
+            if (window.currentMissionsList.length === 0) {
+                window.openScriptDetailTab(id);
+                return;
+            }
+
+            window.missionStatus = new Array(window.currentMissionsList.length).fill(false);
+            window.renderMissionTasks();
+            document.getElementById('mission-modal-layer').classList.remove('hidden');
+            window.playAudioSfx('click');
+        };
+
+        window.renderMissionTasks = () => {
+            const container = document.getElementById('mission-tasks-container');
+            const btnProceed = document.getElementById('btn-unlock-proceed');
+            
+            const isAllDone = window.missionStatus.every(s => s === true);
+            
+            container.innerHTML = window.currentMissionsList.map((m, idx) => {
+                const isDone = window.missionStatus[idx];
+                let iconClass = "fa-solid fa-link";
+                let hoverColor = "group-hover:text-white";
+                
+                if(m.platform === 'tiktok') { iconClass = "fa-brands fa-tiktok"; hoverColor = "group-hover:text-white"; }
+                else if(m.platform === 'youtube') { iconClass = "fa-brands fa-youtube"; hoverColor = "group-hover:text-red-500"; }
+                else if(m.platform === 'instagram') { iconClass = "fa-brands fa-instagram"; hoverColor = "group-hover:text-pink-500"; }
+                else if(m.platform === 'telegram') { iconClass = "fa-brands fa-telegram"; hoverColor = "group-hover:text-blue-400"; }
+                
+                return `
+                <button onclick="window.doMission(${idx}, '${m.url || ''}')" class="w-full flex items-center justify-between p-4 rounded-xl border ${isDone ? 'border-emerald-500/50 bg-emerald-900/20' : 'border-white/10 bg-black/40 hover:bg-white/5'} transition duration-300 group">
+                    <div class="flex items-center gap-3">
+                        <i class="${iconClass} text-lg ${isDone ? 'text-emerald-400' : 'text-gray-400 ' + hoverColor}"></i>
+                        <span class="text-xs font-bold ${isDone ? 'text-emerald-400' : 'text-gray-300'} text-left">${m.label || 'Tugas Misi'}</span>
+                    </div>
+                    ${isDone ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : '<i class="fa-solid fa-arrow-right text-gray-500 text-[10px]"></i>'}
+                </button>
+                `;
+            }).join('');
+
+            if (isAllDone) {
+                btnProceed.disabled = false;
+                btnProceed.className = "w-full accent-bg-gradient text-white py-3.5 rounded-xl font-black text-xs uppercase tracking-widest mt-6 shadow-lg active:scale-95 transition-all duration-300 flex items-center justify-center gap-2";
+                btnProceed.innerHTML = '<i class="fa-solid fa-unlock"></i> Lihat Detail Skrip';
+                btnProceed.onclick = () => {
+                    document.getElementById('mission-modal-layer').classList.add('hidden');
+                    window.openScriptDetailTab(window.currentUnlockScriptId);
+                };
+            } else {
+                btnProceed.disabled = true;
+                btnProceed.className = "w-full bg-gray-800 text-gray-500 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest mt-6 transition-all duration-300 flex items-center justify-center gap-2";
+                btnProceed.innerHTML = '<i class="fa-solid fa-lock"></i> Selesaikan Misi Dulu';
+                btnProceed.onclick = null;
+            }
+        };
+
+        window.doMission = (idx, url) => {
+            if(url && url.trim() !== '') {
+                window.open(url, '_blank');
+            }
+            
+            setTimeout(() => {
+                window.missionStatus[idx] = true;
+                window.renderMissionTasks();
+                window.playAudioSfx('success');
+            }, 3000);
+        };
+
         window.exportBookmarks = () => {
             const data = localStorage.getItem('dhm_v10_bookmarks') || '[]';
             const blob = new Blob([data], {type: "application/json"});
@@ -1131,7 +1227,7 @@
                     let rankText = isTop3 ? ['#1 TERATAS', '#2 POPULER', '#3 FAVORIT'][index] : `#${index + 1} POPULER`;
 
                     leaderboardBox.innerHTML += `
-                        <div class="glass-ui p-3.5 border border-white/5 flex items-center gap-3.5 relative overflow-hidden group hover:bg-white/5 transition duration-300 cursor-pointer" onclick="window.openScriptDetailTab('${item.id}')">
+                        <div class="glass-ui p-3.5 border border-white/5 flex items-center gap-3.5 relative overflow-hidden group hover:bg-white/5 transition duration-300 cursor-pointer" onclick="window.openUnlockMissionModal('${item.id}')">
                             ${isTop3 ? `<div class="absolute -right-4 -top-4 w-16 h-16 bg-white/5 rounded-full blur-xl transition duration-500"></div>` : ''}
                             <div class="w-11 h-11 rounded-full bg-black/50 border border-white/10 flex items-center justify-center flex-shrink-0 ${iconColor} shadow-lg text-lg">
                                 <i class="fa-solid ${iconClass}"></i>
@@ -1226,13 +1322,10 @@
             const hotBadge = (item.copyCount || 0) > 50 ? `<span class="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[8px] font-black px-2 py-1 rounded-md shadow-lg z-20 animate-pulse border border-orange-300/50 flex items-center gap-1"><i class="fa-solid fa-fire"></i> HOT</span>` : '';
 
             const actionButtonsHtml = `
-                <div class="flex gap-1.5 mt-2">
-                    <button id="btn-copy-main-${item.id}" onclick="window.executeCopyScriptPayloadPipeline('${item.id}', \`${btoa(encodeURIComponent(item.scriptText || ''))}\`, event)" class="dynamic-elem relative overflow-hidden flex-1 accent-bg-gradient text-white py-2.5 text-[10px] font-black shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-1"><i class="fa-solid fa-copy"></i> SALIN</button>
-                    <button onclick="window.openScriptDetailTab('${item.id}')" class="dynamic-elem flex-1 bg-black/10 hover:bg-black/20 text-gray-300 py-2.5 text-[10px] font-black shadow-lg active:scale-[0.97] transition border border-gray-500/20"><i class="fa-solid fa-eye"></i> DETAIL</button>
-                </div>
-                <div class="flex gap-1.5 mt-1.5">
-                    <button onclick="window.downloadScriptFile('${item.title || 'script'}', \`${btoa(encodeURIComponent(item.scriptText || ''))}\`, 'txt')" class="dynamic-elem flex-1 bg-black/5 text-gray-400 py-2 text-[9px] font-bold active:scale-[0.97] transition border border-white/10"><i class="fa-solid fa-download"></i> .TXT</button>
-                    <button onclick="window.shareSpecificScript('${item.title || 'script'}', '${item.purpose || ''}')" class="dynamic-elem flex-1 bg-black/5 text-gray-400 py-2 text-[9px] font-bold active:scale-[0.97] transition border border-white/10"><i class="fa-solid fa-share-nodes"></i> SHARE</button>
+                <div class="mt-2.5">
+                    <button onclick="window.openUnlockMissionModal('${item.id}')" class="dynamic-elem w-full accent-bg-gradient text-white py-3 text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-2 rounded-xl">
+                        <i class="fa-solid fa-lock"></i> AMBIL SCRIPT
+                    </button>
                 </div>
             `;
 
@@ -1289,23 +1382,6 @@
                 if(db) runTransaction(ref(db, `scripts/${id}/copyCount`), c => (c || 0) + 1);
                 confetti({ zIndex: 9999, particleCount: 100, spread: 70, origin: { y: 0.6 } });
                 
-                const btn = document.getElementById(`btn-copy-main-${id}`);
-                if(btn) {
-                    if(e) {
-                        const rect = btn.getBoundingClientRect();
-                        const circle = document.createElement('span');
-                        const diameter = Math.max(btn.clientWidth, btn.clientHeight);
-                        circle.style.width = circle.style.height = `${diameter}px`;
-                        circle.style.left = `${e.clientX - rect.left - diameter/2}px`;
-                        circle.style.top = `${e.clientY - rect.top - diameter/2}px`;
-                        circle.className = 'absolute bg-white/30 rounded-full animate-ping scale-0 pointer-events-none';
-                        btn.appendChild(circle);
-                        setTimeout(() => circle.remove(), 600);
-                    }
-                    const originalInner = btn.innerHTML;
-                    btn.innerHTML = `<i class="fa-solid fa-check text-white"></i> COPIED`;
-                    setTimeout(() => { btn.innerHTML = originalInner; }, 2000);
-                }
                 recordUserActivity(`Copy Script: ${id}`);
             });
         };
@@ -1500,7 +1576,11 @@
                     </div>
                     <pre class="bg-[#04060a] p-3.5 dynamic-elem border border-white/10 font-mono text-[10px] overflow-y-auto custom-scrollbar flex-1 mb-4 select-all shadow-inner" style="max-height: 25vh;"><code id="code-view-block-${item.id}" class="language-lua">${window.escapeHTML(item.scriptText || '')}</code></pre>
                     
-                    <button id="modal-copy-btn" class="dynamic-elem w-full accent-bg-gradient text-white py-3.5 font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-2">
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="window.downloadScriptFile('${item.title || 'script'}', \`${btoa(encodeURIComponent(item.scriptText || ''))}\`, 'txt')" class="dynamic-elem flex-1 bg-black/20 text-gray-300 py-3 text-[10px] font-bold active:scale-[0.97] transition border border-white/10 rounded-xl hover:bg-white/10"><i class="fa-solid fa-download"></i> .TXT</button>
+                        <button onclick="window.shareSpecificScript('${item.title || 'script'}', '${item.purpose || ''}')" class="dynamic-elem flex-1 bg-black/20 text-gray-300 py-3 text-[10px] font-bold active:scale-[0.97] transition border border-white/10 rounded-xl hover:bg-white/10"><i class="fa-solid fa-share-nodes"></i> SHARE</button>
+                    </div>
+                    <button id="modal-copy-btn" class="dynamic-elem w-full accent-bg-gradient text-white py-3.5 font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-2 mt-2 rounded-xl">
                         <i class="fa-solid fa-copy"></i> SALIN SOURCE CODE SKRIP
                     </button>
                 </div>
