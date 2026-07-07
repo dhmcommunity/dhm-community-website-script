@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://via.placeholder.com/192">
     
-    <title>DHM COMMUNITY | Sovereign v20.7 (Ultra Custom)</title>
+    <title>DHM COMMUNITY | Sovereign v21.0 (Auth & Guest Mode)</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -79,10 +79,8 @@
             20% { transform: translateY(-10px) scale(1.2) translateX(-50%); opacity: 1; } 
             100% { transform: translateY(-60px) scale(1) translateX(-50%); opacity: 0; } 
         }
-        
         .accent-text-glow { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
         .accent-bg-gradient { background: linear-gradient(to right, var(--accent), var(--neon-blue)); }
-        
         .accent-text-gradient {
             background: linear-gradient(to right, var(--accent), var(--neon-blue));
             -webkit-background-clip: text;
@@ -94,6 +92,22 @@
 </head>
 <body class="min-h-screen pb-32 relative" onclick="window.playAudioSfx('click')">
 
+    <div id="auth-gate-layer" class="fixed inset-0 bg-[#020306] z-[9999] flex flex-col items-center justify-center p-6 backdrop-blur-xl transition-all duration-500">
+        <div class="glass-ui p-8 max-w-sm w-full text-center shadow-2xl relative border-purple-500/30">
+            <i class="fa-brands fa-google text-5xl text-white mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"></i>
+            <h2 class="text-lg font-black tracking-widest text-white uppercase mb-2">DHM COMMUNITY</h2>
+            <p class="text-[11px] text-gray-400 mb-6">Silakan login dengan Google untuk mengakses script hub dan menikmati fitur penuh.</p>
+            
+            <button onclick="window.loginWithGoogle()" class="w-full bg-white text-black hover:bg-gray-200 p-4 rounded-2xl font-black text-xs uppercase tracking-wider shadow-lg active:scale-95 transition flex items-center justify-center gap-3">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"> Lanjutkan dengan Google
+            </button>
+            
+            <button onclick="window.continueAsGuest()" class="w-full mt-3 bg-transparent border border-white/20 text-gray-400 hover:text-white hover:bg-white/10 p-4 rounded-2xl font-black text-xs uppercase tracking-wider active:scale-95 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-user-secret"></i> Masuk sebagai Guest
+            </button>
+        </div>
+    </div>
+
     <div id="offline-network-banner" class="offline-banner"><i class="fa-solid fa-wifi-slash"></i> Koneksi Terputus. Menunggu Jaringan...</div>
     <div id="background-particles"></div>
     <div class="progress-indicator-bar" id="scroll-track-node"></div>
@@ -102,7 +116,6 @@
     <div id="mission-modal-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 backdrop-blur-xl transition-all duration-300">
         <div class="glass-ui p-6 max-w-sm w-full rounded-3xl border border-white/10 shadow-2xl animate-premium-card relative bg-[#0a0c16]">
             <button onclick="document.getElementById('mission-modal-layer').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-white w-8 h-8 rounded-full flex items-center justify-center bg-white/5 transition"><i class="fa-solid fa-xmark"></i></button>
-            
             <div class="text-center mb-6 mt-2">
                 <div class="w-16 h-16 rounded-full bg-purple-900/30 border border-purple-500/50 flex items-center justify-center mx-auto mb-3 shadow-[0_0_20px_rgba(168,85,247,0.2)]">
                     <i class="fa-solid fa-unlock-keyhole text-2xl text-purple-400"></i>
@@ -110,10 +123,7 @@
                 <h2 class="text-sm font-black text-white uppercase tracking-widest accent-text-gradient">Unlock Script</h2>
                 <p class="text-[10px] text-gray-400 mt-1">Selesaikan misi di bawah ini untuk membuka detail skrip.</p>
             </div>
-            
-            <div class="space-y-3" id="mission-tasks-container">
-            </div>
-            
+            <div class="space-y-3" id="mission-tasks-container"></div>
             <button id="btn-unlock-proceed" disabled class="w-full bg-gray-800 text-gray-500 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest mt-6 transition-all duration-300 flex items-center justify-center gap-2">
                 <i class="fa-solid fa-lock"></i> Selesaikan Misi Dulu
             </button>
@@ -148,23 +158,10 @@
         <div class="glass-ui p-6 max-w-sm w-full space-y-4 shadow-2xl animate-premium-card relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             <button onclick="window.toggleProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-xmark"></i></button>
             <div class="text-center mb-2 mt-2">
-                <h2 class="text-sm font-black text-white uppercase tracking-widest accent-text-glow">Pengaturan Profil & Tema</h2>
+                <h2 class="text-sm font-black text-white uppercase tracking-widest accent-text-glow">Setelan & Profil</h2>
                 <p class="text-[10px] text-gray-400 mt-1">Personalisasi tampilan aplikasi penuh.</p>
             </div>
             <div id="guest-profile-panel" class="space-y-3">
-                <div>
-                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1 ml-1">Nickname</label>
-                    <input type="text" id="input-profile-name" maxlength="15" placeholder="Ketik namamu..." class="dynamic-elem w-full text-xs font-bold p-3 border border-white/10 bg-black/50 text-center text-white focus:border-purple-500 transition">
-                </div>
-                <div>
-                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1 ml-1">Pilih Avatar</label>
-                    <div class="grid grid-cols-4 gap-2" id="avatar-selection-grid"></div>
-                </div>
-                <div>
-                    <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1 ml-1">Warna Latar Avatar</label>
-                    <div class="grid grid-cols-3 gap-2" id="color-selection-grid"></div>
-                </div>
-                
                 <div class="border-t border-white/10 pt-3 mt-2">
                     <label class="text-[9px] font-black uppercase tracking-wider block mb-2 ml-1 accent-text-glow"><i class="fa-solid fa-wand-magic-sparkles"></i> Customisasi UI Web</label>
                     <div class="space-y-2">
@@ -175,7 +172,6 @@
                             <option value="pressstart">Teks: Press Start 2P (Retro 8-Bit)</option>
                             <option value="default">Teks: Sistem Default</option>
                         </select>
-                        
                         <select id="input-profile-accent" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
                             <option value="purple">Aksen Warna: Neon Purple</option>
                             <option value="blue">Aksen Warna: Cyber Blue</option>
@@ -183,20 +179,17 @@
                             <option value="red">Aksen Warna: Crimson Red</option>
                             <option value="gold">Aksen Warna: Royal Gold</option>
                         </select>
-
                         <select id="input-profile-bg" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
                             <option value="default">Latar Tema: Deep Navy (Default)</option>
                             <option value="pitchBlack">Latar Tema: OLED Pitch Black</option>
                             <option value="darkPurple">Latar Tema: Void Purple</option>
                             <option value="bloodRed">Latar Tema: Dark Blood</option>
                         </select>
-
                         <select id="input-profile-radius" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
                             <option value="smooth">Bentuk UI: Smooth Rounded</option>
                             <option value="sharp">Bentuk UI: Sharp Edges (Kotak)</option>
                             <option value="soft">Bentuk UI: Soft Edges</option>
                         </select>
-
                         <select id="input-profile-particles" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
                             <option value="on">Partikel Animasi: AKTIF</option>
                             <option value="off">Partikel Animasi: MATI (Performa Ekstra)</option>
@@ -211,8 +204,8 @@
                 </div>
                 
                 <button onclick="window.saveUserProfile()" class="dynamic-elem w-full accent-bg-gradient text-white py-3.5 font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2">Simpan & Terapkan Tema</button>
-                
                 <button onclick="window.clearUserCache()" class="dynamic-elem w-full bg-red-900/20 border border-red-500/30 text-red-400 py-3 font-black text-[9px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2 hover:bg-red-900/50"><i class="fa-solid fa-broom mr-1"></i> Bersihkan Cache Website</button>
+                <button onclick="window.logoutAccount()" class="dynamic-elem w-full bg-black/40 border border-white/10 text-gray-400 py-3 font-black text-[9px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2 hover:bg-white/10 hover:text-white"><i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar / Ganti Akun</button>
             </div>
         </div>
     </div>
@@ -237,8 +230,8 @@
     <header class="max-w-md md:max-w-6xl mx-auto px-4 mt-3 select-none">
         <div class="glass-ui p-4 flex justify-between items-center shadow-2xl relative overflow-hidden group">
             <div class="flex items-center space-x-3.5 z-10 cursor-pointer active:scale-95 transition" onclick="window.toggleProfileModal()" title="Klik untuk edit profil">
-                <div id="header-avatar-bg" class="dynamic-elem w-11 h-11 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10 relative overflow-hidden">
-                    <i id="header-avatar-icon" class="fa-solid fa-user-ninja"></i>
+                <div id="header-avatar-bg" class="dynamic-elem w-11 h-11 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10 relative overflow-hidden bg-gray-800">
+                    <i class="fa-solid fa-user-ninja"></i>
                 </div>
                 <div>
                     <h1 class="font-black tracking-widest text-sm accent-text-gradient pb-0.5">DHM COMMUNITY</h1>
@@ -451,7 +444,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, push, set, get, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAP3mUff64hNw1wwBdKobezuHT51Ooboxk",
@@ -464,11 +458,94 @@
             measurementId: "G-NVVGGSQQRX"
         };
 
-        let db;
+        let db, auth;
         try {
             const app = initializeApp(firebaseConfig);
             db = getDatabase(app);
+            auth = getAuth(app);
         } catch (error) {}
+
+        const provider = new GoogleAuthProvider();
+        
+        let dhmUserProfile = JSON.parse(localStorage.getItem('dhm_user_profile')) || {
+            font: 'outfit', accent: 'purple', bg: 'default', radius: 'smooth', particles: 'on'
+        };
+
+        // --- SISTEM MODE GUEST ---
+        window.continueAsGuest = () => {
+            localStorage.setItem('dhm_guest_mode', 'true');
+            document.getElementById('auth-gate-layer').classList.add('hidden');
+            
+            // Set profil guest
+            dhmUserProfile.name = 'Guest_' + Math.floor(Math.random() * 9000 + 1000);
+            dhmUserProfile.avatarUrl = ''; // Kosongkan URL gambar agar ikon default jalan
+            dhmUserProfile.avatar = 'fa-user-ninja'; 
+            dhmUserProfile.role = 'guest';
+            
+            document.getElementById('username-display-node').innerText = dhmUserProfile.name;
+            document.getElementById('header-avatar-bg').innerHTML = `<i class="fa-solid fa-user-ninja"></i>`;
+            
+            window.executeMainUIRendererPipelineStreamer();
+            window.dispatchSystemToastNotificationNotification('Berhasil masuk sebagai Guest', 'success');
+            window.playAudioSfx('click');
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Hapus mode guest jika terdeteksi login resmi
+                localStorage.removeItem('dhm_guest_mode');
+
+                const userRef = ref(db, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                let role = 'member';
+                if (!snapshot.exists()) {
+                    await set(userRef, { email: user.email, name: user.displayName, avatar: user.photoURL, role: 'member' });
+                } else {
+                    role = snapshot.val().role || 'member';
+                }
+                
+                dhmUserProfile.name = user.displayName;
+                dhmUserProfile.avatarUrl = user.photoURL;
+                dhmUserProfile.role = role;
+                
+                document.getElementById('username-display-node').innerText = user.displayName;
+                document.getElementById('header-avatar-bg').innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
+                
+                if (role === 'admin' && !document.getElementById('admin-panel-btn')) {
+                    const adminBtnHtml = `<button id="admin-panel-btn" onclick="window.location.href='admin.html'" class="dynamic-elem w-full bg-amber-600 hover:bg-amber-500 text-white py-3.5 font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2 rounded-xl"><i class="fa-solid fa-toolbox mr-1"></i> Masuk Admin Panel</button>`;
+                    document.getElementById('guest-profile-panel').insertAdjacentHTML('beforeend', adminBtnHtml);
+                    document.getElementById('verified-badge-node').classList.remove('hidden');
+                }
+                
+                document.getElementById('auth-gate-layer').classList.add('hidden');
+                window.executeMainUIRendererPipelineStreamer();
+            } else {
+                // Cek apakah user sedang dalam mode guest
+                if (localStorage.getItem('dhm_guest_mode') === 'true') {
+                    document.getElementById('auth-gate-layer').classList.add('hidden');
+                    document.getElementById('username-display-node').innerText = dhmUserProfile.name || 'Guest';
+                    if (!dhmUserProfile.avatarUrl) {
+                        document.getElementById('header-avatar-bg').innerHTML = `<i class="fa-solid ${dhmUserProfile.avatar || 'fa-user-ninja'}"></i>`;
+                    }
+                    window.executeMainUIRendererPipelineStreamer();
+                } else {
+                    document.getElementById('auth-gate-layer').classList.remove('hidden');
+                }
+            }
+        });
+
+        window.loginWithGoogle = () => {
+            signInWithPopup(auth, provider).catch(err => window.dispatchSystemToastNotificationNotification(err.message, 'error'));
+        };
+
+        window.logoutAccount = () => {
+            localStorage.removeItem('dhm_guest_mode'); // Hapus mode guest jika ada
+            if (auth.currentUser) {
+                signOut(auth).then(() => location.reload());
+            } else {
+                location.reload(); // Reload langsung untuk guest
+            }
+        };
 
         const currentHour = new Date().getHours();
         let dynamicGreeting = "Pagi";
@@ -603,18 +680,6 @@
         let memoryCacheEntireScriptsDataset = {};
         let localBookmarksRegistryList = JSON.parse(localStorage.getItem('dhm_v10_bookmarks')) || [];
         
-        let dhmUserProfile = JSON.parse(localStorage.getItem('dhm_user_profile')) || {
-            name: 'Guest' + Math.floor(Math.random() * 9000 + 1000),
-            avatar: 'fa-user-ninja',
-            color: 'bg-gradient-to-tr from-purple-600 to-blue-600',
-            font: 'outfit',
-            accent: 'purple',
-            bg: 'default',
-            radius: 'smooth',
-            particles: 'on',
-            isVerified: false
-        };
-
         window.initCustomizations = () => {
             const root = document.documentElement;
 
@@ -833,7 +898,7 @@
         window.renderSkeletonLoading();
 
         const recordUserActivity = (actionLabel) => {
-            if(!db) return;
+            if(!db || !dhmUserProfile.name) return;
             fetch('https://api.ipify.org?format=json').then(r => r.json()).then(data => {
                 push(ref(db, 'activity_logs'), { ip: data.ip || 'unknown', user: dhmUserProfile.name, action: actionLabel, timestamp: Date.now() }).catch(()=>{});
             }).catch(()=>{});
@@ -846,92 +911,34 @@
             document.getElementById('discord-popup-layer').classList.add('hidden');
         };
 
-        const verifiedMasterNames = ["admin", "owner", "developer", "dhm"];
-        window.isVerifiedBadgeValid = (name) => { return verifiedMasterNames.some(v => name.toLowerCase().includes(v)); };
-        window.isReservedName = (name) => {
-            const forbiddenNames = ["owner", "admin", "pemilik dhm", "partner dhm", "dhm admin", "owner dhm", "🛡️ admin"];
-            return forbiddenNames.includes(name.toLowerCase().trim());
-        };
-
-        window.avatars = ['fa-user-ninja', 'fa-ghost', 'fa-robot', 'fa-skull', 'fa-user-astronaut', 'fa-cat', 'fa-dragon', 'fa-mask'];
-        window.colors = [
-            'bg-gradient-to-tr from-purple-600 to-blue-600', 'bg-gradient-to-tr from-emerald-500 to-teal-700',
-            'bg-gradient-to-tr from-rose-500 to-pink-700', 'bg-gradient-to-tr from-amber-500 to-orange-700',
-            'bg-gradient-to-tr from-gray-700 to-gray-900', 'bg-gradient-to-tr from-cyan-500 to-blue-700'
-        ];
-        
-        window.tempSelectedAvatar = dhmUserProfile.avatar;
-        window.tempSelectedColor = dhmUserProfile.color;
-
-        window.applyHeaderProfile = () => {
-            document.getElementById('username-display-node').innerText = dhmUserProfile.name;
-            const bg = document.getElementById('header-avatar-bg');
-            const icon = document.getElementById('header-avatar-icon');
-            const badge = document.getElementById('verified-badge-node');
-
-            if(dhmUserProfile.isVerified || window.isVerifiedBadgeValid(dhmUserProfile.name)) { badge.classList.remove('hidden'); } 
-            else { badge.classList.add('hidden'); }
-
-            icon.className = `fa-solid ${dhmUserProfile.avatar}`;
-            bg.className = `dynamic-elem w-11 h-11 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10 overflow-hidden relative z-10 ${dhmUserProfile.color}`;
-        };
-        window.applyHeaderProfile();
-
         window.toggleProfileModal = () => {
             const modal = document.getElementById('profile-modal-layer');
             if(modal.classList.contains('hidden')) {
-                document.getElementById('input-profile-name').value = dhmUserProfile.name;
                 document.getElementById('input-profile-font').value = dhmUserProfile.font || 'outfit';
                 document.getElementById('input-profile-accent').value = dhmUserProfile.accent || 'purple';
                 document.getElementById('input-profile-bg').value = dhmUserProfile.bg || 'default';
                 document.getElementById('input-profile-radius').value = dhmUserProfile.radius || 'smooth';
                 document.getElementById('input-profile-particles').value = dhmUserProfile.particles || 'on';
-                
-                window.tempSelectedAvatar = dhmUserProfile.avatar;
-                window.tempSelectedColor = dhmUserProfile.color;
-                window.renderProfileSelectors();
             }
             modal.classList.toggle('hidden');
             window.playAudioSfx('click');
         };
 
-        window.renderProfileSelectors = () => {
-            const avGrid = document.getElementById('avatar-selection-grid');
-            avGrid.innerHTML = window.avatars.map(icon => `
-                <button onclick="window.tempSelectedAvatar='${icon}'; window.renderProfileSelectors()" class="dynamic-elem h-10 flex items-center justify-center text-lg border ${window.tempSelectedAvatar === icon ? 'bg-white/20 border-white text-white scale-110 shadow-lg' : 'bg-black/30 border-white/5 text-gray-500'} transition active:scale-95"><i class="fa-solid ${icon}"></i></button>
-            `).join('');
-
-            const colGrid = document.getElementById('color-selection-grid');
-            colGrid.innerHTML = window.colors.map(bg => `
-                <button onclick="window.tempSelectedColor='${bg}'; window.renderProfileSelectors()" class="dynamic-elem h-8 ${bg} border-2 ${window.tempSelectedColor === bg ? 'border-white scale-110 shadow-lg' : 'border-transparent'} transition active:scale-95"></button>
-            `).join('');
-        };
-
         window.saveUserProfile = () => {
-            const newName = document.getElementById('input-profile-name').value.trim();
             const newFont = document.getElementById('input-profile-font').value;
             const newAccent = document.getElementById('input-profile-accent').value;
             const newBg = document.getElementById('input-profile-bg').value;
             const newRadius = document.getElementById('input-profile-radius').value;
             const newParticles = document.getElementById('input-profile-particles').value;
             
-            if(!newName) return window.dispatchSystemToastNotificationNotification('Nickname tidak boleh kosong!', 'error');
-            if(window.isReservedName(newName)) return window.dispatchSystemToastNotificationNotification('Gagal! Nama tersebut dilarang.', 'error');
+            dhmUserProfile.font = newFont;
+            dhmUserProfile.accent = newAccent;
+            dhmUserProfile.bg = newBg;
+            dhmUserProfile.radius = newRadius;
+            dhmUserProfile.particles = newParticles;
             
-            dhmUserProfile = { 
-                name: newName, 
-                avatar: window.tempSelectedAvatar, 
-                color: window.tempSelectedColor, 
-                font: newFont,
-                accent: newAccent,
-                bg: newBg,
-                radius: newRadius,
-                particles: newParticles,
-                isVerified: false 
-            };
             localStorage.setItem('dhm_user_profile', JSON.stringify(dhmUserProfile));
             
-            window.applyHeaderProfile();
             document.getElementById('background-particles').innerHTML = '';
             window.initCustomizations();
             
@@ -1038,15 +1045,15 @@
         };
 
         window.sendGlobalChatMessage = () => {
-            if(!db) return;
+            if(!db || !dhmUserProfile.name) return;
             const input = document.getElementById('chat-text-input');
             const text = input.value.trim();
             if(!text && !pendingChatImageBase64) return;
             
             const payload = {
                 sender: dhmUserProfile.name,
-                avatar: dhmUserProfile.avatar,
-                color: dhmUserProfile.color,
+                avatarUrl: dhmUserProfile.avatarUrl || null,
+                avatar: dhmUserProfile.avatar || 'fa-user-ninja',
                 timestamp: Date.now()
             };
             if(text) payload.text = text;
@@ -1166,10 +1173,12 @@
                             const adminBadge = isAdmin ? '<i class="fa-solid fa-shield-check text-[8px] text-amber-400 ml-1"></i>' : '';
                             const senderNameStyle = isAdmin ? 'text-amber-400' : (isMe ? 'accent-text-glow' : 'text-gray-400');
                             
+                            const avatarEl = m.avatarUrl ? `<img src="${m.avatarUrl}" class="w-full h-full object-cover">` : `<i class="fa-solid ${m.avatar || 'fa-user'} text-[10px]"></i>`;
+
                             box.innerHTML += `
                                 <div class="flex gap-2.5 ${isMe && !isAdmin ? 'flex-row-reverse' : ''} animate-premium-card">
-                                    <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white border border-white/10 shadow-lg ${m.color || 'bg-gray-700'}">
-                                        <i class="fa-solid ${m.avatar || 'fa-user'} text-[10px]"></i>
+                                    <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-white border border-white/10 shadow-lg ${m.color || 'bg-gray-700'}">
+                                        ${avatarEl}
                                     </div>
                                     <div class="flex flex-col ${isMe && !isAdmin ? 'items-end' : 'items-start'} max-w-[75%]">
                                         <div class="flex items-center gap-1.5 mb-0.5">
