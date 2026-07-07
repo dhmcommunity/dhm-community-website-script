@@ -7,12 +7,12 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://via.placeholder.com/192">
     
-    <title>DHM COMMUNITY | Sovereign v21.0 (Auth & Guest Mode)</title>
+    <title>DHM COMMUNITY | Sovereign v22.0</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Orbitron:wght@400;700;900&family=Press+Start+2P&family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Orbitron:wght@400;700;900&family=Press+Start+2P&family=Outfit:wght@300;500;700;900&family=Plus+Jakarta+Sans:wght@400;700;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -26,6 +26,7 @@
             --border-color: rgba(255, 255, 255, 0.05);
             --card-radius: 1.5rem;
             --elem-radius: 0.75rem;
+            --avatar-radius: 50%;
         }
         
         body {
@@ -45,6 +46,7 @@
             transition: border-radius 0.3s ease;
         }
         .dynamic-elem { border-radius: var(--elem-radius) !important; transition: border-radius 0.3s ease; }
+        .avatar-shape { border-radius: var(--avatar-radius) !important; transition: border-radius 0.3s ease; }
         
         .progress-indicator-bar {
             position: fixed; top: 0; left: 0; height: 3px;
@@ -68,8 +70,6 @@
             border-radius: var(--card-radius) !important;
         }
         pre[class*="language-"] { margin: 0 !important; border-radius: var(--elem-radius) !important; font-size: 10px !important; background: #04060a !important; }
-        @keyframes badgeGlow { 0%, 100% { filter: drop-shadow(0 0 5px var(--accent)); } 50% { filter: drop-shadow(0 0 12px var(--accent)); } }
-        .badge-verified { animation: badgeGlow 2s infinite; color: var(--accent) !important; }
         .offline-banner { position: fixed; top: 0; left: 0; right: 0; background: #ef4444; color: white; text-align: center; font-size: 10px; font-weight: bold; padding: 4px; z-index: 9999; display: none; }
         #bottom-nav-bar { transition: transform 0.3s ease-in-out; }
         .premium-hover-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
@@ -137,59 +137,84 @@
         <i class="fa-solid fa-arrow-down"></i>
     </button>
 
-    <div id="discord-popup-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 text-center backdrop-blur-xl">
-        <div class="glass-ui p-8 max-w-sm w-full space-y-5 border border-[#5865F2]/40 shadow-2xl animate-premium-card relative">
-            <div class="w-20 h-20 rounded-full bg-[#5865F2]/20 border border-[#5865F2]/50 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(88,101,242,0.3)] relative">
-                <i class="fa-brands fa-discord text-4xl text-[#5865F2] animate-bounce"></i>
-            </div>
-            <div>
-                <h1 class="text-xl font-black tracking-widest text-white uppercase mb-2">Akses Terkunci</h1>
-                <p class="text-[11px] text-gray-400 leading-relaxed font-medium">Anda diwajibkan untuk bergabung dengan server Discord DHM COMMUNITY terlebih dahulu.</p>
-            </div>
-            <div class="flex flex-col pt-2">
-                <a href="https://discord.gg/PyFdf38qj5" target="_blank" onclick="window.markDiscordPopupDone()" class="dynamic-elem w-full bg-gradient-to-r from-[#5865F2] to-[#4752C4] hover:brightness-110 text-white py-4 font-black text-[11px] uppercase tracking-widest shadow-lg shadow-[#5865F2]/40 active:scale-[0.97] transition flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-discord text-base"></i> JOIN DISCORD SEKARANG
-                </a>
-            </div>
-        </div>
-    </div>
-
     <div id="profile-modal-layer" class="hidden fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-6 backdrop-blur-xl">
-        <div class="glass-ui p-6 max-w-sm w-full space-y-4 shadow-2xl animate-premium-card relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <button onclick="window.toggleProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-xmark"></i></button>
-            <div class="text-center mb-2 mt-2">
+        <div class="glass-ui p-6 max-w-sm w-full shadow-2xl animate-premium-card relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <button onclick="window.toggleProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition active:scale-90 z-50"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="text-center mb-4 mt-2">
                 <h2 class="text-sm font-black text-white uppercase tracking-widest accent-text-glow">Setelan & Profil</h2>
                 <p class="text-[10px] text-gray-400 mt-1">Personalisasi tampilan aplikasi penuh.</p>
             </div>
-            <div id="guest-profile-panel" class="space-y-3">
-                <div class="border-t border-white/10 pt-3 mt-2">
+
+            <div class="bg-gradient-to-r from-[#5865F2]/20 to-[#4752C4]/20 border border-[#5865F2]/40 rounded-xl p-4 flex items-center justify-between mb-4 shadow-lg shadow-[#5865F2]/10">
+                <div class="flex items-center gap-3">
+                    <i class="fa-brands fa-discord text-3xl text-[#5865F2] drop-shadow-md"></i>
+                    <div>
+                        <h4 class="text-[11px] font-black text-white uppercase tracking-wider">Komunitas DHM</h4>
+                        <p class="text-[9px] text-gray-300 mt-0.5">Gabung Discord untuk update.</p>
+                    </div>
+                </div>
+                <a href="https://discord.gg/PyFdf38qj5" target="_blank" class="bg-[#5865F2] hover:bg-[#4752C4] text-white text-[9px] font-black uppercase tracking-wider px-3.5 py-2 rounded-lg transition active:scale-95 shadow-lg">JOIN</a>
+            </div>
+
+            <div id="guest-profile-panel" class="space-y-4">
+                
+                <div class="border-t border-white/10 pt-4">
+                    <label class="text-[9px] font-black uppercase tracking-wider block mb-2 ml-1 accent-text-glow"><i class="fa-solid fa-user-pen"></i> Informasi Akun</label>
+                    <div class="flex items-center gap-3 bg-black/40 p-3 rounded-xl border border-white/10">
+                        <div class="relative w-12 h-12 flex-shrink-0">
+                            <img id="preview-custom-avatar" src="https://via.placeholder.com/150" class="w-full h-full object-cover avatar-shape border border-white/20 bg-gray-800">
+                            <label class="absolute -bottom-1 -right-1 w-6 h-6 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 cursor-pointer transition active:scale-90" title="Ganti Foto">
+                                <i class="fa-solid fa-camera text-[10px] text-white"></i>
+                                <input type="file" id="input-custom-avatar" accept="image/*" class="hidden" onchange="window.handleCustomAvatarSelect(event)">
+                            </label>
+                        </div>
+                        <div class="flex-1">
+                            <input type="text" id="input-custom-username" placeholder="Masukkan Username..." class="w-full text-xs p-2.5 bg-black/50 border border-white/10 text-white outline-none rounded-lg focus:border-purple-500 transition font-bold" maxlength="15">
+                            <p id="username-cooldown-text" class="text-[8px] text-amber-400 mt-1 font-bold hidden"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/10 pt-4">
                     <label class="text-[9px] font-black uppercase tracking-wider block mb-2 ml-1 accent-text-glow"><i class="fa-solid fa-wand-magic-sparkles"></i> Customisasi UI Web</label>
                     <div class="space-y-2">
                         <select id="input-profile-font" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
-                            <option value="outfit">Teks: Outfit (Modern & Clean)</option>
-                            <option value="orbitron">Teks: Orbitron (Sci-Fi / Gaming)</option>
-                            <option value="fira">Teks: Fira Code (Hacker / Developer)</option>
-                            <option value="pressstart">Teks: Press Start 2P (Retro 8-Bit)</option>
-                            <option value="default">Teks: Sistem Default</option>
+                            <option value="outfit">Teks: Outfit (Modern)</option>
+                            <option value="plusjakarta">Teks: Plus Jakarta (Clean)</option>
+                            <option value="orbitron">Teks: Orbitron (Sci-Fi)</option>
+                            <option value="fira">Teks: Fira Code (Hacker)</option>
+                            <option value="space">Teks: Space Grotesk (Tech)</option>
+                            <option value="pressstart">Teks: Press Start 2P (Retro)</option>
                         </select>
                         <select id="input-profile-accent" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
-                            <option value="purple">Aksen Warna: Neon Purple</option>
-                            <option value="blue">Aksen Warna: Cyber Blue</option>
-                            <option value="green">Aksen Warna: Matrix Green</option>
-                            <option value="red">Aksen Warna: Crimson Red</option>
-                            <option value="gold">Aksen Warna: Royal Gold</option>
+                            <option value="purple">Aksen: Neon Purple</option>
+                            <option value="cyan">Aksen: Cyber Cyan</option>
+                            <option value="pink">Aksen: Hot Pink</option>
+                            <option value="blue">Aksen: Cyber Blue</option>
+                            <option value="green">Aksen: Matrix Green</option>
+                            <option value="red">Aksen: Crimson Red</option>
+                            <option value="gold">Aksen: Royal Gold</option>
                         </select>
                         <select id="input-profile-bg" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
-                            <option value="default">Latar Tema: Deep Navy (Default)</option>
-                            <option value="pitchBlack">Latar Tema: OLED Pitch Black</option>
-                            <option value="darkPurple">Latar Tema: Void Purple</option>
-                            <option value="bloodRed">Latar Tema: Dark Blood</option>
+                            <option value="default">Latar: Deep Navy (Default)</option>
+                            <option value="midnight">Latar: Midnight Blue</option>
+                            <option value="pitchBlack">Latar: OLED Pitch Black</option>
+                            <option value="darkPurple">Latar: Void Purple</option>
+                            <option value="bloodRed">Latar: Dark Blood</option>
                         </select>
-                        <select id="input-profile-radius" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
-                            <option value="smooth">Bentuk UI: Smooth Rounded</option>
-                            <option value="sharp">Bentuk UI: Sharp Edges (Kotak)</option>
-                            <option value="soft">Bentuk UI: Soft Edges</option>
-                        </select>
+                        <div class="flex gap-2">
+                            <select id="input-profile-radius" class="dynamic-elem flex-1 text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
+                                <option value="smooth">UI: Smooth</option>
+                                <option value="sharp">UI: Sharp (Kotak)</option>
+                                <option value="pill">UI: Pill</option>
+                            </select>
+                            <select id="input-profile-avatar-shape" class="dynamic-elem flex-1 text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
+                                <option value="circle">Avatar: Bulat</option>
+                                <option value="rounded">Avatar: Rounded</option>
+                                <option value="square">Avatar: Kotak</option>
+                            </select>
+                        </div>
                         <select id="input-profile-particles" class="dynamic-elem w-full text-[10px] font-bold p-2.5 border border-white/10 bg-black/50 text-gray-300 transition outline-none">
                             <option value="on">Partikel Animasi: AKTIF</option>
                             <option value="off">Partikel Animasi: MATI (Performa Ekstra)</option>
@@ -203,8 +228,10 @@
                     <button onclick="document.getElementById('import-file').click()" class="dynamic-elem flex-1 bg-white/5 border border-white/10 text-[9px] font-black uppercase py-2.5 text-gray-300 active:scale-95 transition"><i class="fa-solid fa-file-import mr-1"></i> Import Fav</button>
                 </div>
                 
-                <button onclick="window.saveUserProfile()" class="dynamic-elem w-full accent-bg-gradient text-white py-3.5 font-black text-xs uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2">Simpan & Terapkan Tema</button>
-                <button onclick="window.clearUserCache()" class="dynamic-elem w-full bg-red-900/20 border border-red-500/30 text-red-400 py-3 font-black text-[9px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2 hover:bg-red-900/50"><i class="fa-solid fa-broom mr-1"></i> Bersihkan Cache Website</button>
+                <button onclick="window.saveUserProfile()" class="dynamic-elem w-full accent-bg-gradient text-white py-3.5 font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Profil & Tema
+                </button>
+                <button onclick="window.clearUserCache()" class="dynamic-elem w-full bg-red-900/20 border border-red-500/30 text-red-400 py-3 font-black text-[9px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2 hover:bg-red-900/50"><i class="fa-solid fa-broom mr-1"></i> Bersihkan Cache App</button>
                 <button onclick="window.logoutAccount()" class="dynamic-elem w-full bg-black/40 border border-white/10 text-gray-400 py-3 font-black text-[9px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2 hover:bg-white/10 hover:text-white"><i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar / Ganti Akun</button>
             </div>
         </div>
@@ -230,15 +257,14 @@
     <header class="max-w-md md:max-w-6xl mx-auto px-4 mt-3 select-none">
         <div class="glass-ui p-4 flex justify-between items-center shadow-2xl relative overflow-hidden group">
             <div class="flex items-center space-x-3.5 z-10 cursor-pointer active:scale-95 transition" onclick="window.toggleProfileModal()" title="Klik untuk edit profil">
-                <div id="header-avatar-bg" class="dynamic-elem w-11 h-11 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10 relative overflow-hidden bg-gray-800">
+                <div id="header-avatar-bg" class="avatar-shape w-11 h-11 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-black/50 border border-white/10 relative overflow-hidden bg-gray-800">
                     <i class="fa-solid fa-user-ninja"></i>
                 </div>
                 <div>
                     <h1 class="font-black tracking-widest text-sm accent-text-gradient pb-0.5">DHM COMMUNITY</h1>
                     <p id="header-username-text" class="text-[9px] font-bold text-gray-400 mt-0.5 tracking-wide flex items-center gap-1">
                         <span id="dynamic-greeting-node" class="text-[8px] text-gray-500 font-mono hidden md:inline-block mr-1"></span>
-                        <span id="username-display-node">Guest</span>
-                        <i id="verified-badge-node" class="hidden fa-solid fa-circle-check text-[11px] badge-verified" title="Verified Account"></i>
+                        <span id="username-display-node" class="text-white">Guest</span>
                         <span id="streak-display-node" class="ml-1 px-1.5 py-0.5 rounded bg-white/10 text-white border border-white/20 flex items-center gap-1" title="Login Streak">
                             <i class="fa-solid fa-fire text-[8px] accent-text-glow"></i> <span id="streak-count">0</span>
                         </span>
@@ -444,7 +470,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, push, set, get, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, push, set, get, update, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -468,7 +494,19 @@
         const provider = new GoogleAuthProvider();
         
         let dhmUserProfile = JSON.parse(localStorage.getItem('dhm_user_profile')) || {
-            font: 'outfit', accent: 'purple', bg: 'default', radius: 'smooth', particles: 'on'
+            font: 'outfit', accent: 'purple', bg: 'default', radius: 'smooth', particles: 'on', avatarShape: 'circle'
+        };
+
+        // --- ANTI PELESETAN BLACKLIST CHECKER ---
+        const containsBlacklist = (name) => {
+            const normalized = name.toLowerCase()
+                .replace(/[4@]/g, 'a')
+                .replace(/[0]/g, 'o')
+                .replace(/[1!]/g, 'i')
+                .replace(/[3]/g, 'e')
+                .replace(/[^a-z0-9]/g, '');
+            const blacklist = ['admin', 'owner', 'mod', 'moderator', 'staff', 'creator', 'dhm'];
+            return blacklist.some(word => normalized.includes(word));
         };
 
         // --- SISTEM MODE GUEST ---
@@ -476,9 +514,8 @@
             localStorage.setItem('dhm_guest_mode', 'true');
             document.getElementById('auth-gate-layer').classList.add('hidden');
             
-            // Set profil guest
             dhmUserProfile.name = 'Guest_' + Math.floor(Math.random() * 9000 + 1000);
-            dhmUserProfile.avatarUrl = ''; // Kosongkan URL gambar agar ikon default jalan
+            dhmUserProfile.avatarUrl = ''; 
             dhmUserProfile.avatar = 'fa-user-ninja'; 
             dhmUserProfile.role = 'guest';
             
@@ -492,35 +529,45 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Hapus mode guest jika terdeteksi login resmi
                 localStorage.removeItem('dhm_guest_mode');
-
                 const userRef = ref(db, 'users/' + user.uid);
                 const snapshot = await get(userRef);
                 let role = 'member';
+                
                 if (!snapshot.exists()) {
-                    await set(userRef, { email: user.email, name: user.displayName, avatar: user.photoURL, role: 'member' });
+                    let defaultName = user.displayName;
+                    // Proteksi saat registrasi pertama kali dari nama google yg mengandung admin
+                    if(containsBlacklist(defaultName)) defaultName = "User_" + Math.floor(Math.random() * 9999);
+                    // Filter spesial karakter
+                    defaultName = defaultName.replace(/[^a-zA-Z0-9_]/g, '');
+                    
+                    await set(userRef, { email: user.email, name: defaultName, avatar: '', role: 'member', lastUsernameChange: 0 });
+                    dhmUserProfile.name = defaultName;
+                    dhmUserProfile.avatarUrl = '';
                 } else {
-                    role = snapshot.val().role || 'member';
+                    const userData = snapshot.val();
+                    role = userData.role || 'member';
+                    dhmUserProfile.name = userData.name || user.displayName;
+                    dhmUserProfile.avatarUrl = userData.avatar || '';
                 }
                 
-                dhmUserProfile.name = user.displayName;
-                dhmUserProfile.avatarUrl = user.photoURL;
                 dhmUserProfile.role = role;
                 
-                document.getElementById('username-display-node').innerText = user.displayName;
-                document.getElementById('header-avatar-bg').innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
+                document.getElementById('username-display-node').innerText = dhmUserProfile.name;
+                if(dhmUserProfile.avatarUrl) {
+                    document.getElementById('header-avatar-bg').innerHTML = `<img src="${dhmUserProfile.avatarUrl}" class="w-full h-full object-cover avatar-shape">`;
+                } else {
+                    document.getElementById('header-avatar-bg').innerHTML = `<i class="fa-solid fa-user-ninja"></i>`;
+                }
                 
                 if (role === 'admin' && !document.getElementById('admin-panel-btn')) {
                     const adminBtnHtml = `<button id="admin-panel-btn" onclick="window.location.href='admin.html'" class="dynamic-elem w-full bg-amber-600 hover:bg-amber-500 text-white py-3.5 font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-[0.97] transition mt-2 rounded-xl"><i class="fa-solid fa-toolbox mr-1"></i> Masuk Admin Panel</button>`;
                     document.getElementById('guest-profile-panel').insertAdjacentHTML('beforeend', adminBtnHtml);
-                    document.getElementById('verified-badge-node').classList.remove('hidden');
                 }
                 
                 document.getElementById('auth-gate-layer').classList.add('hidden');
                 window.executeMainUIRendererPipelineStreamer();
             } else {
-                // Cek apakah user sedang dalam mode guest
                 if (localStorage.getItem('dhm_guest_mode') === 'true') {
                     document.getElementById('auth-gate-layer').classList.add('hidden');
                     document.getElementById('username-display-node').innerText = dhmUserProfile.name || 'Guest';
@@ -539,12 +586,8 @@
         };
 
         window.logoutAccount = () => {
-            localStorage.removeItem('dhm_guest_mode'); // Hapus mode guest jika ada
-            if (auth.currentUser) {
-                signOut(auth).then(() => location.reload());
-            } else {
-                location.reload(); // Reload langsung untuk guest
-            }
+            localStorage.removeItem('dhm_guest_mode');
+            if (auth.currentUser) { signOut(auth).then(() => location.reload()); } else { location.reload(); }
         };
 
         const currentHour = new Date().getHours();
@@ -576,30 +619,254 @@
             } catch(e) {}
         };
 
-        window.addEventListener('online', () => {
-            document.getElementById('offline-network-banner').style.display = 'none';
-            window.dispatchSystemToastNotificationNotification('Koneksi internet pulih.', 'success');
-        });
-        window.addEventListener('offline', () => {
-            document.getElementById('offline-network-banner').style.display = 'block';
+        window.toggleProfileModal = () => {
+            const modal = document.getElementById('profile-modal-layer');
+            if(modal.classList.contains('hidden')) {
+                document.getElementById('input-profile-font').value = dhmUserProfile.font || 'outfit';
+                document.getElementById('input-profile-accent').value = dhmUserProfile.accent || 'purple';
+                document.getElementById('input-profile-bg').value = dhmUserProfile.bg || 'default';
+                document.getElementById('input-profile-radius').value = dhmUserProfile.radius || 'smooth';
+                document.getElementById('input-profile-particles').value = dhmUserProfile.particles || 'on';
+                document.getElementById('input-profile-avatar-shape').value = dhmUserProfile.avatarShape || 'circle';
+                
+                document.getElementById('input-custom-username').value = dhmUserProfile.name || '';
+                document.getElementById('preview-custom-avatar').src = dhmUserProfile.avatarUrl || 'https://via.placeholder.com/150';
+
+                // CEK COOLDOWN DAN AKSES LOGIN
+                if(auth.currentUser) {
+                    get(ref(db, 'users/' + auth.currentUser.uid)).then(snap => {
+                        if(snap.exists()) {
+                            const data = snap.val();
+                            const lastChange = data.lastUsernameChange || 0;
+                            const fourMonthsMs = 120 * 24 * 60 * 60 * 1000; 
+                            
+                            if(Date.now() - lastChange < fourMonthsMs && lastChange !== 0) {
+                                const daysLeft = Math.ceil((fourMonthsMs - (Date.now() - lastChange)) / (1000 * 60 * 60 * 24));
+                                document.getElementById('input-custom-username').disabled = true;
+                                document.getElementById('username-cooldown-text').classList.remove('hidden');
+                                document.getElementById('username-cooldown-text').innerText = `⏳ Tersedia dalam ${daysLeft} hari.`;
+                            } else {
+                                document.getElementById('input-custom-username').disabled = false;
+                                document.getElementById('username-cooldown-text').classList.add('hidden');
+                            }
+                        }
+                    });
+                } else {
+                    document.getElementById('input-custom-username').disabled = true;
+                    document.getElementById('username-cooldown-text').classList.remove('hidden');
+                    document.getElementById('username-cooldown-text').innerText = `Ganti nama profil permanen butuh Login Google.`;
+                }
+            } else {
+                window.pendingCustomAvatarBase64 = null; // Reset temp avatar saat tutup
+            }
+            modal.classList.toggle('hidden');
             window.playAudioSfx('click');
-        });
+        };
+
+        // --- SISTEM UPLOAD AVATAR CUSTOM ---
+        window.pendingCustomAvatarBase64 = null;
+        window.handleCustomAvatarSelect = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 150; canvas.height = 150; // Resize & kompres otomatis 150px
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 150, 150);
+                    window.pendingCustomAvatarBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                    document.getElementById('preview-custom-avatar').src = window.pendingCustomAvatarBase64;
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.saveUserProfile = async () => {
+            const newFont = document.getElementById('input-profile-font').value;
+            const newAccent = document.getElementById('input-profile-accent').value;
+            const newBg = document.getElementById('input-profile-bg').value;
+            const newRadius = document.getElementById('input-profile-radius').value;
+            const newParticles = document.getElementById('input-profile-particles').value;
+            const newAvatarShape = document.getElementById('input-profile-avatar-shape').value;
+            
+            let newUsername = document.getElementById('input-custom-username').value.trim();
+            
+            // VALIDASI NAMA UNTUK USER LOGIN
+            if (newUsername !== dhmUserProfile.name && auth.currentUser) {
+                
+                if(newUsername.length < 3 || newUsername.length > 15) return window.dispatchSystemToastNotificationNotification('Panjang Username harus 3-15 Karakter!', 'error');
+                if(/[^a-zA-Z0-9_]/.test(newUsername)) return window.dispatchSystemToastNotificationNotification('Username hanya boleh huruf, angka, & underscore!', 'error');
+                
+                // Cek Blacklist Admin
+                if(containsBlacklist(newUsername)) {
+                    return window.dispatchSystemToastNotificationNotification('Username mengandung nama staf/admin terlarang!', 'error');
+                }
+
+                // Cek Cooldown (120 hari)
+                const userRef = ref(db, 'users/' + auth.currentUser.uid);
+                const userSnap = await get(userRef);
+                const userData = userSnap.exists() ? userSnap.val() : {};
+                const fourMonthsMs = 120 * 24 * 60 * 60 * 1000;
+                const lastChange = userData.lastUsernameChange || 0;
+                
+                if (Date.now() - lastChange < fourMonthsMs && lastChange !== 0) {
+                    const daysLeft = Math.ceil((fourMonthsMs - (Date.now() - lastChange)) / (1000 * 60 * 60 * 24));
+                    return window.dispatchSystemToastNotificationNotification(`Masih cooldown! Tunggu ${daysLeft} hari.`, 'error');
+                }
+
+                // Cek Unique Database
+                window.dispatchSystemToastNotificationNotification('Mengecek ketersediaan username...');
+                const allUsersSnap = await get(ref(db, 'users'));
+                let isTaken = false;
+                if(allUsersSnap.exists()) {
+                    const allUsers = allUsersSnap.val();
+                    for(let uid in allUsers) {
+                        if(uid !== auth.currentUser.uid && allUsers[uid].name && allUsers[uid].name.toLowerCase() === newUsername.toLowerCase()) {
+                            isTaken = true; break;
+                        }
+                    }
+                }
+                if(isTaken) return window.dispatchSystemToastNotificationNotification(`Username "${newUsername}" sudah dipakai orang lain!`, 'error');
+
+                // Lolos semua, update DB
+                await update(userRef, { name: newUsername, lastUsernameChange: Date.now() });
+                dhmUserProfile.name = newUsername;
+            } else if (newUsername !== dhmUserProfile.name && !auth.currentUser) {
+                return window.dispatchSystemToastNotificationNotification('Hanya akun terdaftar yang bisa edit nama.', 'error');
+            }
+
+            // SIMPAN AVATAR BARU
+            if (window.pendingCustomAvatarBase64) {
+                if (auth.currentUser) {
+                    await update(ref(db, 'users/' + auth.currentUser.uid), { avatar: window.pendingCustomAvatarBase64 });
+                    dhmUserProfile.avatarUrl = window.pendingCustomAvatarBase64;
+                } else {
+                    return window.dispatchSystemToastNotificationNotification('Silakan login untuk menyimpan foto profil.', 'error');
+                }
+            }
+
+            // SIMPAN TEMA
+            dhmUserProfile.font = newFont;
+            dhmUserProfile.accent = newAccent;
+            dhmUserProfile.bg = newBg;
+            dhmUserProfile.radius = newRadius;
+            dhmUserProfile.particles = newParticles;
+            dhmUserProfile.avatarShape = newAvatarShape;
+            
+            localStorage.setItem('dhm_user_profile', JSON.stringify(dhmUserProfile));
+            
+            document.getElementById('background-particles').innerHTML = '';
+            window.initCustomizations();
+            
+            // Render Live Update Header
+            document.getElementById('username-display-node').innerText = dhmUserProfile.name;
+            if(dhmUserProfile.avatarUrl) {
+                document.getElementById('header-avatar-bg').innerHTML = `<img src="${dhmUserProfile.avatarUrl}" class="w-full h-full object-cover avatar-shape">`;
+            }
+            
+            window.toggleProfileModal();
+            window.dispatchSystemToastNotificationNotification('Profil & UI berhasil diterapkan!', 'success');
+        };
+
+        window.initCustomizations = () => {
+            const root = document.documentElement;
+
+            const fontMap = {
+                'default': 'system-ui, -apple-system, sans-serif',
+                'outfit': '"Outfit", sans-serif',
+                'plusjakarta': '"Plus Jakarta Sans", sans-serif',
+                'space': '"Space Grotesk", sans-serif',
+                'orbitron': '"Orbitron", sans-serif',
+                'fira': '"Fira Code", monospace',
+                'pressstart': '"Press Start 2P", cursive'
+            };
+            document.body.style.fontFamily = fontMap[dhmUserProfile.font] || fontMap['outfit'];
+
+            const accentMap = {
+                'purple': { accent: '#a855f7', glow: 'rgba(168, 85, 247, 0.3)' },
+                'cyan': { accent: '#06b6d4', glow: 'rgba(6, 182, 212, 0.3)' },
+                'pink': { accent: '#ec4899', glow: 'rgba(236, 72, 153, 0.3)' },
+                'blue': { accent: '#3b82f6', glow: 'rgba(59, 130, 246, 0.3)' },
+                'green': { accent: '#10b981', glow: 'rgba(16, 185, 129, 0.3)' },
+                'red': { accent: '#ef4444', glow: 'rgba(239, 68, 68, 0.3)' },
+                'gold': { accent: '#f59e0b', glow: 'rgba(245, 158, 11, 0.3)' }
+            };
+            const currentAccent = accentMap[dhmUserProfile.accent] || accentMap['purple'];
+            root.style.setProperty('--accent', currentAccent.accent);
+            root.style.setProperty('--accent-glow', currentAccent.glow);
+
+            const bgMap = {
+                'default': '#020306',
+                'midnight': '#020617',
+                'pitchBlack': '#000000',
+                'darkPurple': '#0a0310',
+                'bloodRed': '#1a0505'
+            };
+            root.style.setProperty('--bg-main', bgMap[dhmUserProfile.bg] || bgMap['default']);
+
+            const radiusMap = {
+                'smooth': { card: '1.5rem', elem: '0.75rem' },
+                'pill': { card: '2.5rem', elem: '2rem' },
+                'sharp': { card: '0px', elem: '0px' }
+            };
+            const currentRadius = radiusMap[dhmUserProfile.radius] || radiusMap['smooth'];
+            root.style.setProperty('--card-radius', currentRadius.card);
+            root.style.setProperty('--elem-radius', currentRadius.elem);
+            
+            const avatarShapeMap = { 'circle': '50%', 'rounded': '0.75rem', 'square': '0.2rem' };
+            root.style.setProperty('--avatar-radius', avatarShapeMap[dhmUserProfile.avatarShape] || '50%');
+
+            if (dhmUserProfile.particles === 'on' || !dhmUserProfile.particles) {
+                const pDiv = document.getElementById('background-particles');
+                if(pDiv.innerHTML === '') {
+                    try {
+                        particlesJS('background-particles', {
+                            "particles": { "number": { "value": 45, "density": { "enable": true, "value_area": 800 } }, "color": { "value": [currentAccent.accent, "#ffffff"] }, "shape": { "type": "circle" }, "opacity": { "value": 0.3, "random": true }, "size": { "value": 3, "random": true }, "line_linked": { "enable": true, "distance": 150, "color": currentAccent.accent, "opacity": 0.15, "width": 1 }, "move": { "enable": true, "speed": 1.2, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } },
+                            "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true }, "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.5 } }, "push": { "particles_nb": 3 } } },
+                            "retina_detect": true
+                        });
+                    } catch (e) {}
+                }
+            } else {
+                document.getElementById('background-particles').innerHTML = '';
+            }
+        };
+        window.initCustomizations();
+
+        window.clearUserCache = () => {
+            if(confirm('Yakin ingin membersihkan sistem cache untuk memperlancar website? (Pengaturan Profil & Favorit aman)')) {
+                window.playAudioSfx('click');
+                const keepProf = localStorage.getItem('dhm_user_profile');
+                const keepFav = localStorage.getItem('dhm_v10_bookmarks');
+                const keepLan = localStorage.getItem('dhm_lang');
+                
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                if(keepProf) localStorage.setItem('dhm_user_profile', keepProf);
+                if(keepFav) localStorage.setItem('dhm_v10_bookmarks', keepFav);
+                if(keepLan) localStorage.setItem('dhm_lang', keepLan);
+                
+                window.dispatchSystemToastNotificationNotification('Cache memori berhasil dibersihkan! Me-refresh...', 'success');
+                setTimeout(() => { window.location.reload(); }, 1200);
+            }
+        };
+
+        window.addEventListener('online', () => { document.getElementById('offline-network-banner').style.display = 'none'; window.dispatchSystemToastNotificationNotification('Koneksi internet pulih.', 'success'); });
+        window.addEventListener('offline', () => { document.getElementById('offline-network-banner').style.display = 'block'; window.playAudioSfx('click'); });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === '/' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
                 const searchInput = document.getElementById('pipeline-search-input-field');
-                if(searchInput) {
-                    window.switchActiveViewportContext('scripts', document.querySelector('.active-navigation-node'));
-                    searchInput.focus();
-                }
+                if(searchInput) { window.switchActiveViewportContext('scripts', document.querySelector('.active-navigation-node')); searchInput.focus(); }
             }
             if (e.key === 'Escape') {
                 const searchInput = document.getElementById('pipeline-search-input-field');
-                if(searchInput && document.activeElement === searchInput) {
-                    searchInput.blur();
-                    window.clearActiveSearchFieldPipeline();
-                }
+                if(searchInput && document.activeElement === searchInput) { searchInput.blur(); window.clearActiveSearchFieldPipeline(); }
             }
         });
 
@@ -629,21 +896,11 @@
             const userLang = navigator.language || navigator.userLanguage;
             window.currentLanguage = userLang.startsWith('id') ? 'id' : 'en';
             localStorage.setItem('dhm_lang', window.currentLanguage);
-        } else {
-            window.currentLanguage = localStorage.getItem('dhm_lang');
-        }
+        } else { window.currentLanguage = localStorage.getItem('dhm_lang'); }
 
         const dict = {
-            'id': {
-                statDb: "DATABASE", statFav: "FAVORIT", statCopy: "TOTAL COPY",
-                navScript: "Scripts", navChat: "Chat", navPop: "Populer", navMsg: "Lapor", navFaq: "FAQ",
-                searchPlace: "Cari nama script... (Tekan '/')", catAll: "🌐 Semua Game", sortNew: "⏰ Waktu Rilis Terbaru", sortPop: "📊 Salinan Terpopuler", sortAlpha: "🔤 Urutan Abjad Skrip"
-            },
-            'en': {
-                statDb: "DATABASE", statFav: "FAVORITES", statCopy: "TOTAL COPIES",
-                navScript: "Scripts", navChat: "Chat", navPop: "Popular", navMsg: "Report", navFaq: "FAQ",
-                searchPlace: "Search script... (Press '/')", catAll: "🌐 All Games", sortNew: "⏰ Newest Release", sortPop: "📊 Most Copied", sortAlpha: "🔤 Alphabetical"
-            }
+            'id': { statDb: "DATABASE", statFav: "FAVORIT", statCopy: "TOTAL COPY", navScript: "Scripts", navChat: "Chat", navPop: "Populer", navMsg: "Lapor", navFaq: "FAQ", searchPlace: "Cari nama script... (Tekan '/')", catAll: "🌐 Semua Game", sortNew: "⏰ Waktu Rilis Terbaru", sortPop: "📊 Salinan Terpopuler", sortAlpha: "🔤 Urutan Abjad Skrip" },
+            'en': { statDb: "DATABASE", statFav: "FAVORITES", statCopy: "TOTAL COPIES", navScript: "Scripts", navChat: "Chat", navPop: "Popular", navMsg: "Report", navFaq: "FAQ", searchPlace: "Search script... (Press '/')", catAll: "🌐 All Games", sortNew: "⏰ Newest Release", sortPop: "📊 Most Copied", sortAlpha: "🔤 Alphabetical" }
         };
 
         window.applyLanguage = () => {
@@ -668,9 +925,7 @@
             localStorage.setItem('dhm_lang', window.currentLanguage);
             window.applyLanguage();
             window.playAudioSfx('click');
-            if(activeSelectedGameCategoryValue === "Semua Game" || activeSelectedGameCategoryValue === "All Games") {
-                document.getElementById('label-selected-game-cat').innerText = dict[window.currentLanguage].catAll;
-            }
+            if(activeSelectedGameCategoryValue === "Semua Game" || activeSelectedGameCategoryValue === "All Games") { document.getElementById('label-selected-game-cat').innerText = dict[window.currentLanguage].catAll; }
             if(activeSelectedSortOrderValue === "newest") document.getElementById('label-selected-sort-order').innerText = dict[window.currentLanguage].sortNew;
             else if(activeSelectedSortOrderValue === "popular") document.getElementById('label-selected-sort-order').innerText = dict[window.currentLanguage].sortPop;
             else if(activeSelectedSortOrderValue === "alphabet") document.getElementById('label-selected-sort-order').innerText = dict[window.currentLanguage].sortAlpha;
@@ -679,85 +934,6 @@
 
         let memoryCacheEntireScriptsDataset = {};
         let localBookmarksRegistryList = JSON.parse(localStorage.getItem('dhm_v10_bookmarks')) || [];
-        
-        window.initCustomizations = () => {
-            const root = document.documentElement;
-
-            const fontMap = {
-                'default': 'system-ui, -apple-system, sans-serif',
-                'outfit': '"Outfit", sans-serif',
-                'orbitron': '"Orbitron", sans-serif',
-                'fira': '"Fira Code", monospace',
-                'pressstart': '"Press Start 2P", cursive'
-            };
-            document.body.style.fontFamily = fontMap[dhmUserProfile.font] || fontMap['outfit'];
-
-            const accentMap = {
-                'purple': { accent: '#a855f7', glow: 'rgba(168, 85, 247, 0.3)' },
-                'blue': { accent: '#3b82f6', glow: 'rgba(59, 130, 246, 0.3)' },
-                'green': { accent: '#10b981', glow: 'rgba(16, 185, 129, 0.3)' },
-                'red': { accent: '#ef4444', glow: 'rgba(239, 68, 68, 0.3)' },
-                'gold': { accent: '#f59e0b', glow: 'rgba(245, 158, 11, 0.3)' }
-            };
-            const currentAccent = accentMap[dhmUserProfile.accent] || accentMap['purple'];
-            root.style.setProperty('--accent', currentAccent.accent);
-            root.style.setProperty('--accent-glow', currentAccent.glow);
-
-            const bgMap = {
-                'default': '#020306',
-                'pitchBlack': '#000000',
-                'darkPurple': '#0a0310',
-                'bloodRed': '#1a0505'
-            };
-            root.style.setProperty('--bg-main', bgMap[dhmUserProfile.bg] || bgMap['default']);
-
-            const radiusMap = {
-                'smooth': { card: '1.5rem', elem: '0.75rem' },
-                'sharp': { card: '0px', elem: '0px' },
-                'soft': { card: '0.5rem', elem: '0.25rem' }
-            };
-            const currentRadius = radiusMap[dhmUserProfile.radius] || radiusMap['smooth'];
-            root.style.setProperty('--card-radius', currentRadius.card);
-            root.style.setProperty('--elem-radius', currentRadius.elem);
-
-            if (dhmUserProfile.particles === 'on' || !dhmUserProfile.particles) {
-                const pDiv = document.getElementById('background-particles');
-                if(pDiv.innerHTML === '') {
-                    try {
-                        particlesJS('background-particles', {
-                            "particles": { "number": { "value": 45, "density": { "enable": true, "value_area": 800 } }, "color": { "value": [currentAccent.accent, "#ffffff"] }, "shape": { "type": "circle" }, "opacity": { "value": 0.3, "random": true }, "size": { "value": 3, "random": true }, "line_linked": { "enable": true, "distance": 150, "color": currentAccent.accent, "opacity": 0.15, "width": 1 }, "move": { "enable": true, "speed": 1.2, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } },
-                            "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true }, "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.5 } }, "push": { "particles_nb": 3 } } },
-                            "retina_detect": true
-                        });
-                    } catch (e) {}
-                }
-            } else {
-                document.getElementById('background-particles').innerHTML = '';
-            }
-        };
-        window.initCustomizations();
-
-        window.clearUserCache = () => {
-            if(confirm('Yakin ingin membersihkan sistem cache untuk memperlancar website? (Pengaturan Profil & Favorit aman)')) {
-                window.playAudioSfx('click');
-                const keepProf = localStorage.getItem('dhm_user_profile');
-                const keepFav = localStorage.getItem('dhm_v10_bookmarks');
-                const keepLan = localStorage.getItem('dhm_lang');
-                const keepDis = localStorage.getItem('dhm_discord_joined');
-                
-                localStorage.clear();
-                sessionStorage.clear();
-                
-                if(keepProf) localStorage.setItem('dhm_user_profile', keepProf);
-                if(keepFav) localStorage.setItem('dhm_v10_bookmarks', keepFav);
-                if(keepLan) localStorage.setItem('dhm_lang', keepLan);
-                if(keepDis) localStorage.setItem('dhm_discord_joined', keepDis);
-                
-                window.dispatchSystemToastNotificationNotification('Cache memori berhasil dibersihkan! Me-refresh...', 'success');
-                setTimeout(() => { window.location.reload(); }, 1200);
-            }
-        };
-
         let searchHistoryList = JSON.parse(localStorage.getItem('dhm_search_history')) || [];
         let activeSelectedGameCategoryValue = "Semua Game";
         let activeSelectedSortOrderValue = "newest";
@@ -771,7 +947,6 @@
 
         document.getElementById('metric-label-bookmarks').innerText = localBookmarksRegistryList.length;
 
-        // MISSION LOGIC
         window.currentUnlockScriptId = null;
         window.currentMissionsList = [];
         window.missionStatus = [];
@@ -784,8 +959,7 @@
             window.currentMissionsList = item.missions || [];
             
             if (window.currentMissionsList.length === 0) {
-                window.openScriptDetailTab(id);
-                return;
+                window.openScriptDetailTab(id); return;
             }
 
             window.missionStatus = new Array(window.currentMissionsList.length).fill(false);
@@ -838,10 +1012,7 @@
         };
 
         window.doMission = (idx, url) => {
-            if(url && url.trim() !== '') {
-                window.open(url, '_blank');
-            }
-            
+            if(url && url.trim() !== '') window.open(url, '_blank');
             setTimeout(() => {
                 window.missionStatus[idx] = true;
                 window.renderMissionTasks();
@@ -904,47 +1075,6 @@
             }).catch(()=>{});
         };
         setTimeout(() => recordUserActivity("App Launched"), 2500);
-
-        if(!localStorage.getItem('dhm_discord_joined')) { document.getElementById('discord-popup-layer').classList.remove('hidden'); }
-        window.markDiscordPopupDone = () => {
-            localStorage.setItem('dhm_discord_joined', 'true');
-            document.getElementById('discord-popup-layer').classList.add('hidden');
-        };
-
-        window.toggleProfileModal = () => {
-            const modal = document.getElementById('profile-modal-layer');
-            if(modal.classList.contains('hidden')) {
-                document.getElementById('input-profile-font').value = dhmUserProfile.font || 'outfit';
-                document.getElementById('input-profile-accent').value = dhmUserProfile.accent || 'purple';
-                document.getElementById('input-profile-bg').value = dhmUserProfile.bg || 'default';
-                document.getElementById('input-profile-radius').value = dhmUserProfile.radius || 'smooth';
-                document.getElementById('input-profile-particles').value = dhmUserProfile.particles || 'on';
-            }
-            modal.classList.toggle('hidden');
-            window.playAudioSfx('click');
-        };
-
-        window.saveUserProfile = () => {
-            const newFont = document.getElementById('input-profile-font').value;
-            const newAccent = document.getElementById('input-profile-accent').value;
-            const newBg = document.getElementById('input-profile-bg').value;
-            const newRadius = document.getElementById('input-profile-radius').value;
-            const newParticles = document.getElementById('input-profile-particles').value;
-            
-            dhmUserProfile.font = newFont;
-            dhmUserProfile.accent = newAccent;
-            dhmUserProfile.bg = newBg;
-            dhmUserProfile.radius = newRadius;
-            dhmUserProfile.particles = newParticles;
-            
-            localStorage.setItem('dhm_user_profile', JSON.stringify(dhmUserProfile));
-            
-            document.getElementById('background-particles').innerHTML = '';
-            window.initCustomizations();
-            
-            window.toggleProfileModal();
-            window.dispatchSystemToastNotificationNotification('Tema & Profil berhasil diterapkan!', 'success');
-        };
 
         window.toggleCustomSelectorDropdownMenu = (dropdownKeyId) => {
             const panel = document.getElementById(`panel-dropdown-${dropdownKeyId}`);
@@ -1170,19 +1300,17 @@
                             
                             const imgHtml = m.imageUrl ? `<img src="${m.imageUrl}" class="mt-1.5 dynamic-elem max-w-[150px] md:max-w-[200px] border border-white/10 cursor-pointer hover:opacity-80 transition" onclick="window.open('${m.imageUrl}', '_blank')">` : '';
                             const textHtml = m.text ? `<p class="text-[10px] md:text-xs text-white leading-relaxed mt-0.5 break-words">${window.escapeHTML(m.text)}</p>` : '';
-                            const adminBadge = isAdmin ? '<i class="fa-solid fa-shield-check text-[8px] text-amber-400 ml-1"></i>' : '';
                             const senderNameStyle = isAdmin ? 'text-amber-400' : (isMe ? 'accent-text-glow' : 'text-gray-400');
-                            
                             const avatarEl = m.avatarUrl ? `<img src="${m.avatarUrl}" class="w-full h-full object-cover">` : `<i class="fa-solid ${m.avatar || 'fa-user'} text-[10px]"></i>`;
 
                             box.innerHTML += `
                                 <div class="flex gap-2.5 ${isMe && !isAdmin ? 'flex-row-reverse' : ''} animate-premium-card">
-                                    <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-white border border-white/10 shadow-lg ${m.color || 'bg-gray-700'}">
+                                    <div class="w-8 h-8 avatar-shape overflow-hidden flex-shrink-0 flex items-center justify-center text-white border border-white/10 shadow-lg ${m.color || 'bg-gray-700'}">
                                         ${avatarEl}
                                     </div>
                                     <div class="flex flex-col ${isMe && !isAdmin ? 'items-end' : 'items-start'} max-w-[75%]">
                                         <div class="flex items-center gap-1.5 mb-0.5">
-                                            <span class="text-[9px] font-black ${senderNameStyle}">${m.sender}${adminBadge}</span>
+                                            <span class="text-[9px] font-black ${senderNameStyle}">${m.sender}</span>
                                             <span class="text-[7px] text-gray-500 font-mono">${time}</span>
                                         </div>
                                         <div class="bg-black/40 border ${isAdmin ? 'border-amber-500/40 shadow-[0_0_10px_rgba(251,191,36,0.1)]' : (isMe ? 'border-white/20' : 'border-white/10')} px-3 py-2 dynamic-elem">
